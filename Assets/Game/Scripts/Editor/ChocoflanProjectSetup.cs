@@ -14,6 +14,7 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
     public static class ChocoflanProjectSetup
     {
         const string Level01ScenePath = "Assets/Game/Scenes/Level01.unity";
+        const string MainMenuScenePath = "Assets/Game/Scenes/MainMenu.unity";
 
         [MenuItem("Chocoflan/1 - Aplicar ajustes de proyecto", false, 10)]
         public static void ApplyProjectSettings()
@@ -41,7 +42,9 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
             EditorSnapSettings.move = new Vector3(step, step, step);
             EditorSnapSettings.gridSnapEnabled = true;
 
-            AddLevel01ToBuildSettings();
+            // El menu va primero: es la escena con la que arranca el juego.
+            AddSceneToBuildSettings(Level01ScenePath, 0);
+            AddSceneToBuildSettings(MainMenuScenePath, 0);
 
             Debug.Log("[Chocoflan] Ajustes aplicados: " +
                       GridSettings.ReferenceWidthPx + "x" + GridSettings.ReferenceHeightPx +
@@ -54,17 +57,27 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
                       GridSettings.ReferenceWidthPx + "x" + GridSettings.ReferenceHeightPx + ").");
         }
 
-        static void AddLevel01ToBuildSettings()
+        static void AddSceneToBuildSettings(string path, int index)
         {
+            if (!System.IO.File.Exists(path)) return;
+
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
             foreach (var s in scenes)
-                if (s.path == Level01ScenePath) return;
+                if (s.path == path) return;
 
-            if (System.IO.File.Exists(Level01ScenePath))
+            scenes.Insert(Mathf.Clamp(index, 0, scenes.Count), new EditorBuildSettingsScene(path, true));
+            EditorBuildSettings.scenes = scenes.ToArray();
+        }
+
+        [MenuItem("Chocoflan/2b - Abrir menu de inicio", false, 12)]
+        public static void OpenMainMenu()
+        {
+            if (!System.IO.File.Exists(MainMenuScenePath))
             {
-                scenes.Insert(0, new EditorBuildSettingsScene(Level01ScenePath, true));
-                EditorBuildSettings.scenes = scenes.ToArray();
+                Debug.LogError("[Chocoflan] No se encontro " + MainMenuScenePath);
+                return;
             }
+            EditorSceneManager.OpenScene(MainMenuScenePath);
         }
 
         [MenuItem("Chocoflan/2 - Abrir escena Nivel 1", false, 11)]
