@@ -75,6 +75,14 @@ namespace Chocoflan.KiraPotionQuest
         public bool buildOnAwake = true;
         public bool createBackground = true;
 
+        [Header("Nivel 1 con el arte de Melanie")]
+        [Tooltip("ON: el nivel es la composicion que dibujo Melanie (Level01Art). " +
+                 "OFF: el nivel es el mapa ASCII de Level01Data, con placeholders.")]
+        public bool useArtComposition = true;
+
+        [Tooltip("Sprites de Melanie. Los que queden vacios caen en el placeholder generado por codigo.")]
+        public MelanieArt melanieArt = new MelanieArt();
+
         [Header("Arte final (opcional, deja vacio para usar placeholders)")]
         public ArtOverrides art = new ArtOverrides();
 
@@ -128,6 +136,14 @@ namespace Chocoflan.KiraPotionQuest
 
         void Build()
         {
+            // El Nivel 1 ya tiene arte: se construye de la composicion de Melanie.
+            // El de Enzo sigue con su mapa ASCII y placeholders.
+            if (useArtComposition && levelLayout == LevelLayout.Level01)
+            {
+                BuildFromArt();
+                return;
+            }
+
             char[,] grid = ParseMap(levelLayout == LevelLayout.Level02Enzo
                 ? Level02EnzoData.MapTopDown : Level01Data.MapTopDown);
 
@@ -197,6 +213,246 @@ namespace Chocoflan.KiraPotionQuest
             if (gm != null)
                 foreach (var ing in Ingredients) gm.RegisterIngredient(ing);
         }
+
+        // ================= NIVEL 1 A PARTIR DEL ARTE DE MELANIE =============
+        //
+        // Melanie dibuja cada elemento sobre el lienzo completo de 3840 x 2160 y lo
+        // recorta en el Sprite Editor. A 240 PPU ese lienzo son los 16 x 9 u de
+        // pantalla, asi que colocando cada recorte en el centro del rectangulo donde
+        // fue dibujado (Level01Art) la escena queda igual que el PNG, al pixel.
+        //
+        // El collider sale de donde esta DIBUJADA la pieza. Si Melanie mueve algo y
+        // actualiza las constantes de Level01Art, el gameplay la sigue sola.
+
+        void BuildFromArt()
+        {
+            var rootGo = new GameObject(RootName);
+            rootGo.transform.SetParent(transform, false);
+            Root = rootGo.transform;
+
+            Transform fondo = NewGroup("Fondo");
+            Transform tablero = NewGroup("Tablero");
+            Transform obstaculos = NewGroup("Obstaculos");
+            Transform ingredientes = NewGroup("Ingredientes");
+            Transform decoracion = NewGroup("Decoracion");
+
+            m_IngredientMaterial = new PhysicsMaterial2D("IngredienteMat")
+            {
+                friction = 0.45f,
+                bounciness = 0.05f
+            };
+
+            // --- fondo (sin colisión)
+            if (createBackground)
+            {
+                NewArtObject(fondo, "Fondo_Cueva", melanieArt.fondoCueva, ArtKind.Background,
+                    Level01Art.FondoCentro, Level01Art.FondoTamano,
+                    "BackGround", Level01Art.OrdenFondoCueva);
+
+                NewArtObject(fondo, "Tablero_Fondo", melanieArt.tableroFondo, ArtKind.Background,
+                    Level01Art.TableroCentro, Level01Art.TableroTamano,
+                    "BackGround", Level01Art.OrdenTableroFondo);
+            }
+
+            // --- bordes de la zona jugable (el hueco del marco), sin sprite
+            BuildArtBounds(tablero);
+
+            // --- plataformas
+            BuildArtPlatform(tablero, "Pared_Grande", melanieArt.paredGrande,
+                Level01Art.ParedGrandeCentro, Level01Art.ParedGrandeTamano);
+            BuildArtPlatform(tablero, "Pared_Mediana", melanieArt.paredMediana,
+                Level01Art.ParedMedianaCentro, Level01Art.ParedMedianaTamano);
+            BuildArtPlatform(tablero, "Pared_Pequena", melanieArt.paredPequena,
+                Level01Art.ParedPequenaCentro, Level01Art.ParedPequenaTamano);
+
+            // --- velas (la llama quema, la cera es solida)
+            BuildCandle(obstaculos, "Vela_1", melanieArt.vela1, Level01Art.Vela1Centro);
+            BuildCandle(obstaculos, "Vela_2", melanieArt.vela2, Level01Art.Vela2Centro);
+
+            // --- caldero
+            BuildArtCauldron(obstaculos);
+
+            // --- ingrediente
+            Ingredients.Add(BuildArtIngredient(ingredientes));
+
+            // --- marco por delante del tablero
+            NewArtObject(tablero, "Tablero_Marco", melanieArt.tableroMarco, ArtKind.Wall,
+                Level01Art.MarcoCentro, Level01Art.MarcoTamano,
+                "Tablero", Level01Art.OrdenMarco);
+
+            // --- Kira, decorativa, por delante del marco
+            var kira = NewArtObject(decoracion, "Kira", melanieArt.kira, ArtKind.Kira,
+                Level01Art.KiraCentro, Level01Art.KiraTamano, "Character", 0);
+            var kiraAnim = kira.AddComponent<PlaceholderAnimator>();
+            kiraAnim.mode = PlaceholderAnimator.Mode.Bob;
+            kiraAnim.speed = 1.6f;
+            kiraAnim.amplitude = 0.03f;
+
+            if (melanieArt.kiraVarita != null)
+            {
+                var varita = NewArtObject(decoracion, "Kira_Varita", melanieArt.kiraVarita, ArtKind.Kira,
+                    Level01Art.VaritaCentro, Level01Art.VaritaTamano, "Character", 1);
+                var varitaAnim = varita.AddComponent<PlaceholderAnimator>();
+                varitaAnim.mode = PlaceholderAnimator.Mode.Pulse;
+                varitaAnim.speed = 2.2f;
+                varitaAnim.amplitude = 0.04f;
+            }
+
+            var gm = GameManager.Instance;
+            if (gm != null)
+                foreach (var ing in Ingredients) gm.RegisterIngredient(ing);
+        }
+
+        /// <summary>Cuatro colliders alrededor del hueco del marco. Sin sprite: el marco ya se ve.</summary>
+        void BuildArtBounds(Transform parent)
+        {
+            const float t = 1f;   // grosor
+            float minX = Level01Art.ZonaMinX, maxX = Level01Art.ZonaMaxX;
+            float minY = Level01Art.ZonaMinY, maxY = Level01Art.ZonaMaxY;
+            float w = maxX - minX, h = maxY - minY;
+
+            Borde(parent, "Borde_Abajo", new Vector2((minX + maxX) * 0.5f, minY - t * 0.5f), new Vector2(w + t * 2f, t));
+            Borde(parent, "Borde_Arriba", new Vector2((minX + maxX) * 0.5f, maxY + t * 0.5f), new Vector2(w + t * 2f, t));
+            Borde(parent, "Borde_Izquierda", new Vector2(minX - t * 0.5f, (minY + maxY) * 0.5f), new Vector2(t, h + t * 2f));
+            Borde(parent, "Borde_Derecha", new Vector2(maxX + t * 0.5f, (minY + maxY) * 0.5f), new Vector2(t, h + t * 2f));
+        }
+
+        static void Borde(Transform parent, string name, Vector2 center, Vector2 size)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.position = center;
+            var box = go.AddComponent<BoxCollider2D>();
+            box.size = size;
+        }
+
+        void BuildArtPlatform(Transform parent, string name, Sprite sprite, Vector2 center, Vector2 size)
+        {
+            var go = NewArtObject(parent, name, sprite, ArtKind.Shelf, center, size,
+                "Tablero", Level01Art.OrdenPlataformas);
+            AddBoxSized(go, size, false);
+        }
+
+        void BuildCandle(Transform parent, string name, Sprite sprite, Vector2 center)
+        {
+            var go = NewArtObject(parent, name, sprite, ArtKind.Fire, center, Level01Art.VelaTamano,
+                "Tablero", Level01Art.OrdenObstaculos);
+
+            Vector3 s = go.transform.localScale;
+            float sx = Mathf.Approximately(s.x, 0f) ? 1f : s.x;
+            float sy = Mathf.Approximately(s.y, 0f) ? 1f : s.y;
+
+            // La cera: solida, para poder apoyarse al lado de la vela sin quemarse.
+            var cera = go.AddComponent<BoxCollider2D>();
+            cera.size = new Vector2(Level01Art.CeraTamano.x / sx, Level01Art.CeraTamano.y / sy);
+            cera.offset = new Vector2(0f, Level01Art.CeraOffsetY / sy);
+
+            // La llama: trigger que destruye el ingrediente.
+            var llama = go.AddComponent<BoxCollider2D>();
+            llama.size = new Vector2(Level01Art.LlamaTamano.x / sx, Level01Art.LlamaTamano.y / sy);
+            llama.offset = new Vector2(0f, Level01Art.LlamaOffsetY / sy);
+            llama.isTrigger = true;
+
+            var hazard = go.AddComponent<Hazard>();
+            hazard.type = Hazard.HazardType.Fire;
+
+            var anim = go.AddComponent<PlaceholderAnimator>();
+            anim.mode = PlaceholderAnimator.Mode.Flicker;
+            anim.speed = 3f;
+        }
+
+        void BuildArtCauldron(Transform parent)
+        {
+            var go = NewArtObject(parent, "Caldero", melanieArt.caldero, ArtKind.Cauldron,
+                Level01Art.CalderoCentro, Level01Art.CalderoTamano,
+                "Tablero", Level01Art.OrdenObstaculos);
+
+            Vector3 s = go.transform.localScale;
+            float sx = Mathf.Approximately(s.x, 0f) ? 1f : s.x;
+            float sy = Mathf.Approximately(s.y, 0f) ? 1f : s.y;
+
+            // Solo la boca es trigger: el ingrediente no entra, choca con ella.
+            var boca = go.AddComponent<BoxCollider2D>();
+            boca.size = new Vector2(Level01Art.BocaAncho / sx, Level01Art.BocaAlto / sy);
+            boca.offset = new Vector2(0f, Level01Art.BocaOffsetY / sy);
+            boca.isTrigger = true;
+
+            CauldronRef = go.AddComponent<Cauldron>();
+
+            var anim = go.AddComponent<PlaceholderAnimator>();
+            anim.mode = PlaceholderAnimator.Mode.Pulse;
+            anim.speed = 2f;
+            anim.amplitude = 0.02f;
+        }
+
+        Ingredient BuildArtIngredient(Transform parent)
+        {
+            var go = NewArtObject(parent, "Ingrediente_Huevo", melanieArt.huevo, ArtKind.IngredientEgg,
+                Level01Art.HuevoCentro, Level01Art.HuevoTamano, "Ingredients", 0);
+
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Dynamic;
+
+            // El sprite incluye el resplandor amarillo, asi que el collider NO es el
+            // sprite: es el huevo de 0.8 u que pide el documento de arte.
+            var circle = go.AddComponent<CircleCollider2D>();
+            circle.radius = (Level01Art.HuevoColliderDiametro * 0.5f)
+                            / Mathf.Max(0.0001f, go.transform.localScale.x);
+            circle.sharedMaterial = m_IngredientMaterial;
+
+            var ing = go.AddComponent<Ingredient>();
+            ing.ingredientName = "El huevo";
+            ing.fragile = true;
+            ing.breakImpactSpeed = 10f;
+            return ing;
+        }
+
+        /// <summary>
+        /// Coloca un sprite de Melanie en su sitio. Si el sprite falta, usa el
+        /// placeholder generado por codigo con el mismo tamano, para que el nivel
+        /// siga siendo jugable mientras llega el arte.
+        /// </summary>
+        GameObject NewArtObject(Transform parent, string name, Sprite sprite, ArtKind fallback,
+                                Vector2 center, Vector2 size, string sortingLayer, int sortingOrder)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.position = center;
+
+            var sr = go.AddComponent<SpriteRenderer>();
+
+            if (sprite != null)
+            {
+                sr.sprite = sprite;
+                // A 240 PPU el recorte ya mide lo que toca y la escala queda en 1.
+                // Se calcula igual por si el PNG esta importado a otro PPU.
+                Vector2 native = sprite.bounds.size;
+                go.transform.localScale = new Vector3(
+                    native.x > 0.0001f ? size.x / native.x : 1f,
+                    native.y > 0.0001f ? size.y / native.y : 1f,
+                    1f);
+            }
+            else
+            {
+                int wTiles = Mathf.Max(1, Mathf.RoundToInt(size.x / GridSettings.TileSize));
+                int hTiles = Mathf.Max(1, Mathf.RoundToInt(size.y / GridSettings.TileSize));
+                sr.sprite = PlaceholderArt.Get(fallback, wTiles, hTiles);
+                Vector2 native = sr.sprite.bounds.size;
+                go.transform.localScale = new Vector3(
+                    native.x > 0.0001f ? size.x / native.x : 1f,
+                    native.y > 0.0001f ? size.y / native.y : 1f,
+                    1f);
+            }
+
+            sr.sortingLayerName = sortingLayer;
+            sr.sortingOrder = sortingOrder;
+            Material mat = PlaceholderArt.UnlitSpriteMaterial();
+            if (mat != null) sr.sharedMaterial = mat;
+
+            return go;
+        }
+
+        // ====================================================================
 
         Transform NewGroup(string name)
         {

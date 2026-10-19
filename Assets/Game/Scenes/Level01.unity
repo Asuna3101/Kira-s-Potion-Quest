@@ -459,8 +459,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfd500a5623cd81f0a3162a9c0890e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelLayout: 0
   buildOnAwake: 1
   createBackground: 1
+  useArtComposition: 1
+  melanieArt:
+    fondoCueva: {fileID: -2612864455124819932, guid: df134d7f45a672047a3666eacce6bcd1, type: 3}
+    tableroFondo: {fileID: 8462274883908310193, guid: c80efd5bc623eb44e8c332c9298ed749, type: 3}
+    tableroMarco: {fileID: 7909585728941913359, guid: b10d0604d50f13d42927bb04165116cb, type: 3}
+    paredGrande: {fileID: -396741644392594613, guid: d028c41aa44e9764f85dff2141c6d709, type: 3}
+    paredMediana: {fileID: 7423148631968700404, guid: c3032a9a80e645b4e8b20a2d7f83fa35, type: 3}
+    paredPequena: {fileID: -7259912736566094623, guid: 6ec0413ecbbb11149949f22e83971e77, type: 3}
+    vela1: {fileID: 5339118113947545926, guid: bddda0c6bb3b8294f892f19a45139fc8, type: 3}
+    vela2: {fileID: 4644114821656363341, guid: 1d33ea2afff2771468d2e2f3c60f7868, type: 3}
+    caldero: {fileID: -6919974857959850277, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+    huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
+    kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
+    kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
   art:
     wall: {fileID: 0}
     shelf: {fileID: 0}

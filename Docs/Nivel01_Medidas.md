@@ -116,7 +116,12 @@ El HUD va en un Canvas **Screen Space - Overlay** con Canvas Scaler a
 
 ---
 
-## 2. Layout del Nivel 1 — grilla 32 × 18
+## 2. Layout de placeholders — grilla 32 × 18
+
+> ⚠️ **Este ya no es el Nivel 1 que se juega.** Desde que llegó el arte de
+> Melanie, el Nivel 1 se construye de su composición (**§2.bis**). Esta sección
+> sigue vigente como el nivel de respaldo sin arte: se recupera apagando
+> `LevelBuilder > Use Art Composition`, y es la base del nivel de Enzo.
 
 El mapa vive en `Level01Data.MapTopDown` y `LevelBuilder` lo construye. **Este
 diagrama es literalmente el código**: si se edita el mapa, cambia el nivel.
@@ -220,6 +225,89 @@ ingredientes "nunca entran, solo chocan con su collider". El trigger es solo la
 
 Caer sobre los pinchos (columnas 11-14 o 19-21, fila 2) mata al huevo de un toque;
 la compuerta impide ganar sin pasar por el botón.
+
+---
+
+## 2.bis El Nivel 1 ahora sale del arte de Melanie
+
+Desde que llegó el arte, **el Nivel 1 ya no se construye del mapa ASCII**: se
+construye de la composición que dibujó Melanie. El interruptor está en
+`LevelBuilder > Use Art Composition` (ON por defecto). Si se apaga, vuelve el
+nivel de placeholders del §2, que sigue intacto.
+
+### Cómo viene el arte
+
+Cada PNG es el **lienzo completo de 3840 × 2160** con el elemento dibujado en su
+sitio y el resto transparente, ya recortado en el Sprite Editor (Sprite Mode
+Multiple, un recorte por archivo). A 240 PPU ese lienzo son exactamente los
+16 × 9 u de pantalla, así que **colocando cada recorte en el centro del rectángulo
+donde fue dibujado, la escena queda idéntica al PNG**. No hay que posicionar nada
+a mano.
+
+Las constantes están en `Level01Art.cs`, calculadas del `rect` de cada sprite:
+
+```
+centro.x = (rect.x + rect.ancho/2 - 1920) / 240
+centro.y = (rect.y + rect.alto/2  - 1080) / 240
+```
+
+### Import que se les puso
+
+| Ajuste | Valor | Por qué |
+|---|---|---|
+| Pixels Per Unit | **240** | venían a 100 |
+| Max Size | **4096** | a 2048 el lienzo de 3840 se reescalaba y se perdía la nitidez |
+| Filter Mode | Bilinear | el arte se ve al 50 %, no es pixel art |
+| Mipmaps | **activados** | ídem |
+| Pivot | Center | ya venía así |
+
+### Piezas y colliders
+
+El collider sale de **dónde está dibujada** la pieza, no al revés:
+
+| Pieza | Centro (u) | Collider |
+|---|---|---|
+| `Pared_grande` | (−0.942, −0.888) | caja 5.13 × 1.01, sólida |
+| `Pared_mediana` | (−2.704, 1.502) | caja 2.09 × 1.01, sólida |
+| `Pared_pequeña` | (0.288, 0.958) | caja 1.08 × 1.02, sólida |
+| `Vela_1` | (1.188, 0.352) | cera sólida + **llama trigger** |
+| `Vela_2` | (−4.908, −2.531) | cera sólida + **llama trigger** |
+| `Caldero` | (4.846, −2.394) | **boca** trigger de 1.2 × 0.35 |
+| `Huevo` | (−1.194, 0.096) | círculo de **0.8 u** |
+| Zona jugable | x −5.875…6.371, y −3.271…2.821 | 4 bordes, medidos del hueco del marco |
+
+Tres detalles que no son obvios:
+
+- **La llama quema, la cera no.** La vela lleva dos colliders: la cera es sólida
+  (el huevo se puede apoyar al lado) y solo la llama, de 0.346 × 0.583 u, es el
+  trigger que destruye. Medida por color sobre el propio PNG.
+- **El collider del huevo no es su sprite.** El dibujo mide 1.14 × 1.38 u porque
+  incluye el resplandor amarillo; el huevo de verdad son los 0.8 u del documento.
+- **`Vela_1` y `Vela_2` son el mismo dibujo**, idéntico pixel a pixel, colocado en
+  dos sitios. O sea: **dos velas en el nivel**, no dos frames de animación. Si la
+  idea era animar la llama, hay que pedirle a Melanie un segundo frame con la
+  llama distinta.
+
+### Orden de dibujo
+
+```
+Background.JPG  →  Tablero_fondo  →  plataformas  →  velas / caldero
+                →  Tablero_encima (el marco, por delante)  →  Kira + varita
+```
+
+Kira va sobre el marco, como en el mockup, y no hay piezas jugables debajo.
+
+### Qué mecánicas quedaron fuera
+
+La composición de Melanie tiene **plataformas, velas, caldero y un ingrediente**.
+No tiene portales, botón, compuerta, corriente de aire ni el segundo ingrediente,
+así que el Nivel 1 jugable ahora es más simple: coger el huevo, subir esquivando
+la vela de la repisa y soltarlo en la boca del caldero.
+
+El código de esos obstáculos **no se borró** (`Portal`, `PressurePlate`, `Gate`,
+`AirCurrent`, `Lever` siguen ahí y el nivel del §2 los usa). Para recuperarlos hay
+dos caminos: pedirle arte a Melanie y añadirlos a `Level01Art`, o apagar
+`Use Art Composition` y volver al mapa ASCII.
 
 ---
 
