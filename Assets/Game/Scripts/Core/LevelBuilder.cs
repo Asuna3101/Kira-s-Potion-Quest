@@ -63,6 +63,14 @@ namespace Chocoflan.KiraPotionQuest
     /// </summary>
     public class LevelBuilder : MonoBehaviour
     {
+        // Elegir un layout por escena. El valor 0 es el Nivel 1 original.
+        public enum LevelLayout { Level01 = 0, Level02Enzo = 1 }
+        [Header("Escena / Mapa")]
+        public LevelLayout levelLayout = LevelLayout.Level01;
+
+        public string CurrentDisplayName => levelLayout == LevelLayout.Level02Enzo
+            ? Level02EnzoData.DisplayName : Level01Data.DisplayName;
+
         [Header("Construccion")]
         public bool buildOnAwake = true;
         public bool createBackground = true;
@@ -114,13 +122,14 @@ namespace Chocoflan.KiraPotionQuest
             }
         }
 
-        const string RootName = "Nivel01";
+        string RootName => levelLayout == LevelLayout.Level02Enzo ? "Nivel02_Enzo" : "Nivel01";
 
         // ------------------------------------------------------------------
 
         void Build()
         {
-            char[,] grid = ParseMap(Level01Data.MapTopDown);
+            char[,] grid = ParseMap(levelLayout == LevelLayout.Level02Enzo
+                ? Level02EnzoData.MapTopDown : Level01Data.MapTopDown);
 
             var rootGo = new GameObject(RootName);
             rootGo.transform.SetParent(transform, false);

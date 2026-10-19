@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Game/Scenes/Level01.unity
+    guid: 4b17f0c92ad3419ab6c1fe0d7a51c8e3
+  - enabled: 1
+    path: Assets/Game/Scenes/Level02_Enzo.unity
+    guid: 5ae9b24561664eeb9800279b9af6819a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

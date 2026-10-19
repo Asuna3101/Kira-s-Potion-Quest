@@ -94,7 +94,9 @@ namespace Chocoflan.KiraPotionQuest
             if (m_TitleText == null) return;
             int done = m_Game != null ? m_Game.DeliveredIngredients : 0;
             int total = m_Game != null ? m_Game.TotalIngredients : 0;
-            m_TitleText.text = Level01Data.DisplayName + "   Ingredientes " + done + " / " + total;
+            var builder = m_Game != null ? m_Game.builder : null;
+            string title = builder != null ? builder.CurrentDisplayName : Level01Data.DisplayName;
+            m_TitleText.text = title + "   Ingredientes " + done + " / " + total;
         }
 
         void ShowResult(bool visible, string message)

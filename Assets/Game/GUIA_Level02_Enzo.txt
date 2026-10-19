@@ -1,0 +1,42 @@
+KIRA'S POTION QUEST — NIVEL 2 / ENZO
+=====================================
+
+ESCENA NUEVA:
+  Assets/Game/Scenes/Level02_Enzo.unity
+
+ABRIR / JUGAR:
+  1. Unity Hub: abrir la carpeta raiz del proyecto (Unity 6000.3.13f1).
+  2. Esperar a que Unity importe los scripts.
+  3. En Project: Assets > Game > Scenes > doble clic en Level02_Enzo.
+  4. Presionar Play. Hacer clic en Game para darle el foco.
+
+CONTROLES (compatibles con Nivel01):
+  - Click sobre ingrediente: seleccionar.
+  - ESPACIO o Ctrl + flechas: levitar el ingrediente seleccionado.
+  - Click y arrastrar HACIA ATRAS el ingrediente: apuntar/lanzar.
+  - Tab: cambiar de ingrediente.
+  - Click y MANTENER sobre la palanca: abrir/cerrar compuerta.
+  - Acercar un ingrediente al boton de presion: abrir compuerta.
+  - R: reiniciar.
+
+RETO DEL NIVEL 2: EL JARDIN DEL VIENTO
+  Entregar 3 ingredientes: 1 huevo fragil y 2 hongos.
+  Debes superar una corriente de aire central, evitar pinchos y fuego,
+  descubrir el atajo de los portales y abrir la compuerta para alcanzar
+  el caldero ELEVADO en una plataforma del extremo derecho.
+  La palanca en la zona superior derecha puede abrir la compuerta sin arriesgar
+  un ingrediente en los pinchos del suelo. El huevo se rompe por impactos fuertes.
+
+CODIGO / CONFIGURACION:
+  Assets/Game/Scripts/Core/Level02EnzoData.cs: mapa exclusivo del nivel 2.
+  LevelBuilder.cs: selector 'levelLayout' para escoger mapa por escena;
+                   Level01 conserva valor por defecto = 0.
+  HudController.cs: muestra el titulo segun el mapa elegido.
+  El resto de los scripts, escenas y recursos originales siguen incluidos.
+
+IMPORTANTE:
+  - Level01.unity y SashasScene.unity NO han sido sustituidos ni editados.
+  - El mapa del nivel 2 se genera al entrar en PLAY, como en Level01.
+    Antes de PLAY se ve solo Main Camera, Global Light 2D y --- GAME ---.
+  - Este archivo ZIP incluye exactamente Assets, ProjectSettings y Packages.
+  - No se ha ejecutado Unity en este entorno: probar en Unity antes de entregar.
