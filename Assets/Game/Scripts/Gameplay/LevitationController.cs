@@ -4,37 +4,30 @@ using UnityEngine.InputSystem;
 namespace Chocoflan.KiraPotionQuest
 {
     /// <summary>
-    /// MECANICA PRINCIPAL DEL GDD - "Levitar: control del ingrediente en el aire".
-    ///
-    /// El GDD dice Ctrl + flechas; se usa ESPACIO + flechas porque Ctrl + flechas
-    /// choca con atajos del sistema (en macOS Ctrl+flecha cambia de escritorio) y
-    /// porque espacio es mas comodo de mantener con el pulgar mientras la otra mano
-    /// esta en las flechas. Cambiarlo es cambiar levitateKey en el inspector.
-    ///
-    /// Tambien resuelve los otros dos controles del GDD:
-    ///   - Seleccionar ingrediente: click izquierdo sobre el.
-    ///   - Interactuar: click y mantener sobre elementos del tablero (IClickHoldInteractable).
-    ///
-    /// Reglas:
-    ///   - Mantener espacio levita el ingrediente seleccionado: se le anula la
-    ///     gravedad y las flechas lo mueven. Espacio sin flechas = flotar quieto.
-    ///   - Levitar consume mana. Al quedarse a cero el ingrediente cae.
-    ///   - El mana se recupera cuando no se levita.
+    /// Levitacion fluida: mantener ESPACIO hace subir al ingrediente seleccionado.
+    /// Mientras flota, IZQUIERDA y DERECHA lo dirigen horizontalmente.
+    /// Al soltar ESPACIO, vuelve la gravedad y el ingrediente cae.
+    /// El mana se consume mientras levita y se regenera cuando no levita.
+    /// Click selecciona un ingrediente; Tab cambia al siguiente.
     /// </summary>
     public class LevitationController : MonoBehaviour
     {
-        [Header("Levitar")]
-        [Tooltip("Tecla que hay que mantener para levitar. Por defecto Espacio.")]
+        [Header("Levitar - controles")]
+        [Tooltip("Tecla a mantener para subir: ESPACIO.")]
         public Key levitateKey = Key.Space;
 
-        [Tooltip("Si tambien se acepta Ctrl, como dice literalmente el GDD.")]
-        public bool alsoAcceptCtrl = true;
+        [Header("Movimiento suave")]
+        [Tooltip("Velocidad de subida automatica al mantener ESPACIO (u/s).")]
+        public float riseSpeed = 2.4f;
 
-        [Tooltip("Velocidad objetivo mientras se levita, en unidades por segundo.")]
-        public float levitateSpeed = 4f;
+        [Tooltip("Velocidad horizontal maxima al usar las flechas (u/s).")]
+        public float horizontalSpeed = 3.6f;
 
-        [Tooltip("Aceleracion con la que se alcanza la velocidad objetivo (u/s^2).")]
-        public float levitateAcceleration = 26f;
+        [Tooltip("Aceleracion y frenado horizontal (u/s^2). Cuanto menor, mas suave.")]
+        public float horizontalAcceleration = 12f;
+
+        [Tooltip("Aceleracion vertical mientras se mantiene ESPACIO (u/s^2).")]
+        public float riseAcceleration = 8f;
 
         [Header("Seleccion")]
         [Tooltip("Radio extra de tolerancia al hacer click sobre un ingrediente, en unidades.")]
@@ -48,7 +41,7 @@ namespace Chocoflan.KiraPotionQuest
 
         // estado leido en Update y aplicado en FixedUpdate
         bool m_LevitateHeld;
-        Vector2 m_MoveInput;
+        float m_HorizontalInput;
 
         // click y mantener
         IClickHoldInteractable m_HoldTarget;
@@ -82,19 +75,18 @@ namespace Chocoflan.KiraPotionQuest
             if (kb == null)
             {
                 m_LevitateHeld = false;
-                m_MoveInput = Vector2.zero;
+                m_HorizontalInput = 0f;
                 return;
             }
 
-            m_LevitateHeld = kb[levitateKey].isPressed ||
-                             (alsoAcceptCtrl && (kb.leftCtrlKey.isPressed || kb.rightCtrlKey.isPressed));
+            // ESPACIO levanta por si solo: no hace falta usar flecha ARRIBA.
+            m_LevitateHeld = kb[levitateKey].isPressed;
 
-            float x = 0f, y = 0f;
+            // Las flechas solo dirigen el movimiento horizontal.
+            float x = 0f;
             if (kb.leftArrowKey.isPressed) x -= 1f;
             if (kb.rightArrowKey.isPressed) x += 1f;
-            if (kb.downArrowKey.isPressed) y -= 1f;
-            if (kb.upArrowKey.isPressed) y += 1f;
-            m_MoveInput = new Vector2(x, y);
+            m_HorizontalInput = x;
 
             // Tab cambia de ingrediente seleccionado.
             if (kb.tabKey.wasPressedThisFrame) SelectNext();
@@ -261,11 +253,16 @@ namespace Chocoflan.KiraPotionQuest
             Rigidbody2D rb = Selected.Body;
             if (rb == null) return;
 
-            Vector2 dir = m_MoveInput.sqrMagnitude > 1f ? m_MoveInput.normalized : m_MoveInput;
-            Vector2 target = dir * levitateSpeed;
-
-            rb.linearVelocity = Vector2.MoveTowards(
-                rb.linearVelocity, target, levitateAcceleration * Time.fixedDeltaTime);
+            // Aproximacion progresiva de ambas velocidades: el control no pega tirones.
+            // Sin flecha horizontal, se frena suavemente; al mantener ESPACIO, sube solo.
+            Vector2 velocity = rb.linearVelocity;
+            velocity.x = Mathf.MoveTowards(
+                velocity.x, m_HorizontalInput * horizontalSpeed,
+                horizontalAcceleration * Time.fixedDeltaTime);
+            velocity.y = Mathf.MoveTowards(
+                velocity.y, riseSpeed,
+                riseAcceleration * Time.fixedDeltaTime);
+            rb.linearVelocity = velocity;
         }
     }
 }

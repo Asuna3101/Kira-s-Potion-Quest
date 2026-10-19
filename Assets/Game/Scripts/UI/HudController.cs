@@ -155,7 +155,8 @@ namespace Chocoflan.KiraPotionQuest
             // --- controles
             m_ControlsText = MakeText(canvasGo.transform, "Txt_Controles", font, Sz(10), TextAnchor.LowerLeft,
                 new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, 4f), V(468f, 16f));
-            m_ControlsText.text = "Click = elegir ingrediente   |   ESPACIO (o Ctrl) + flechas = LEVITAR   |   " +
+            m_ControlsText.text = "Click = elegir ingrediente   |   Mantener ESPACIO = SUBIR   |   " +
+                                  "Flechas IZQ/DER = MOVER   |   Soltar ESPACIO = CAER   |   " +
                                   "Click y mantener = interactuar   |   Tab = cambiar   |   R = reiniciar";
 
             // --- panel de resultado
