@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Chocoflan.KiraPotionQuest
@@ -18,12 +19,38 @@ namespace Chocoflan.KiraPotionQuest
         public int referenceWidth = GridSettings.ReferenceWidthPx;
         public int referenceHeight = GridSettings.ReferenceHeightPx;
 
+        [Header("Ayuda (boton ?)")]
+        [Tooltip("Mostrar las indicaciones de control desde el inicio. Por defecto estan ocultas.")]
+        public bool controlsStartOpen = false;
+
+        [Header("Kira habla")]
+        public string halfManaMessage = "Oh no, solo te queda la mitad de mana!! T.T";
+        public string emptyManaMessage = "Te quedaste sin maná, espera un poco :c";
+
+        [Tooltip("Segundos que se queda el globo de dialogo en pantalla.")]
+        public float dialogueSeconds = 3.4f;
+
         Text m_TitleText;
         Text m_HintText;
         Text m_ControlsText;
         Text m_ResultText;
         Image m_ManaFill;
         Image m_ResultPanel;
+
+        // boton ? y panel de controles
+        RectTransform m_HelpRect;
+        Image m_HelpGlow;
+        GameObject m_ControlsPanel;
+        bool m_ControlsOpen;
+
+        // globo de dialogo de Kira
+        RectTransform m_BubbleRect;
+        CanvasGroup m_BubbleGroup;
+        Text m_BubbleText;
+        bool m_BubbleActive;
+        float m_BubbleAge;
+        bool m_HalfArmed = true;     // vuelve a avisar al bajar de la mitad, tras recuperar >= 60%
+        bool m_EmptyArmed = true;    // vuelve a avisar al quedarse sin mana, tras recuperar >= 25%
 
         GameManager m_Game;
         float m_HintTimer;
@@ -54,13 +81,127 @@ namespace Chocoflan.KiraPotionQuest
         {
             if (m_Game == null) m_Game = GameManager.Instance;
             if (m_Game != null && m_ManaFill != null)
-                m_ManaFill.rectTransform.localScale = new Vector3(m_Game.ManaNormalized, 1f, 1f);
+            {
+                // La barra es vertical: se llena de abajo hacia arriba.
+                float mana = m_Game.ManaNormalized;
+                m_ManaFill.rectTransform.localScale = new Vector3(1f, mana, 1f);
+                // Con poco mana vira al rojo para avisar que se acaba.
+                m_ManaFill.color = Color.Lerp(PlaceholderArt.PortalACol, PlaceholderArt.Danger,
+                    Mathf.InverseLerp(0.3f, 0.1f, mana));
+            }
 
             if (m_HintTimer > 0f)
             {
                 m_HintTimer -= Time.deltaTime;
                 if (m_HintTimer <= 0f && m_HintText != null) m_HintText.text = "";
             }
+
+            HandleHelpButton();
+            UpdateKiraDialogue();
+            TickBubble();
+        }
+
+        // ---------------- boton ? (controles desplegables) -------------------
+
+        void HandleHelpButton()
+        {
+            if (m_HelpRect == null) return;
+
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame &&
+                RectTransformUtility.RectangleContainsScreenPoint(m_HelpRect, mouse.position.ReadValue(), null))
+            {
+                SetControlsOpen(!m_ControlsOpen);
+            }
+
+            // El brillo late mientras las indicaciones estan cerradas, para que el boton se note.
+            if (m_HelpGlow != null)
+            {
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * 3f);
+                float alpha = m_ControlsOpen ? 0.25f : 0.25f + 0.35f * pulse;
+                m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, alpha);
+            }
+        }
+
+        void SetControlsOpen(bool open)
+        {
+            m_ControlsOpen = open;
+            if (m_ControlsPanel != null) m_ControlsPanel.SetActive(open);
+        }
+
+        // ---------------- Kira habla ----------------------------------------
+
+        void UpdateKiraDialogue()
+        {
+            if (m_Game == null || m_BubbleRect == null) return;
+
+            if (m_Game.State != LevelState.Playing)
+            {
+                HideBubble();
+                return;
+            }
+
+            float mana = m_Game.ManaNormalized;
+            if (mana >= 0.6f) m_HalfArmed = true;
+            if (mana >= 0.25f) m_EmptyArmed = true;
+
+            if (mana <= 0.001f && m_EmptyArmed)
+            {
+                m_EmptyArmed = false;
+                m_HalfArmed = false;   // ya hablo del mana: no repite el de la mitad hasta recuperarse
+                ShowBubble(emptyManaMessage);
+            }
+            else if (mana <= 0.5f && mana > 0.001f && m_HalfArmed)
+            {
+                m_HalfArmed = false;
+                ShowBubble(halfManaMessage);
+            }
+        }
+
+        void ShowBubble(string message)
+        {
+            m_BubbleText.text = message;
+            m_BubbleAge = 0f;
+            m_BubbleActive = true;
+            m_BubbleRect.localScale = new Vector3(0.5f, 0.5f, 1f);
+            m_BubbleGroup.alpha = 0f;
+            m_BubbleRect.gameObject.SetActive(true);
+        }
+
+        void HideBubble()
+        {
+            if (!m_BubbleActive) return;
+            m_BubbleActive = false;
+            m_BubbleRect.gameObject.SetActive(false);
+        }
+
+        void TickBubble()
+        {
+            if (!m_BubbleActive) return;
+
+            m_BubbleAge += Time.deltaTime;
+            if (m_BubbleAge >= dialogueSeconds)
+            {
+                HideBubble();
+                return;
+            }
+
+            // aparece con un saltito (crece desde la colita) y se desvanece al final
+            float pop = Mathf.Clamp01(m_BubbleAge / 0.2f);
+            float s = Mathf.LerpUnclamped(0.5f, 1f, EaseOutBack(pop));
+            m_BubbleRect.localScale = new Vector3(s, s, 1f);
+
+            float fadeIn = Mathf.Clamp01(m_BubbleAge / 0.1f);
+            float fadeOut = Mathf.Clamp01((dialogueSeconds - m_BubbleAge) / 0.4f);
+            m_BubbleGroup.alpha = Mathf.Min(fadeIn, fadeOut);
+        }
+
+        static float EaseOutBack(float t)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1f;
+            float u = t - 1f;
+            return 1f + c3 * u * u * u + c1 * u * u;
         }
 
         // ---------------- eventos ------------------------------------------
@@ -137,27 +278,67 @@ namespace Chocoflan.KiraPotionQuest
                 new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(300f, 32f));
             m_HintText.color = PlaceholderArt.Highlight;
 
-            // --- barra de mana
-            var manaBg = MakeImage(canvasGo.transform, "ManaBar_Bg",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, 24f), V(96f, 8f));
-            manaBg.color = new Color(0f, 0f, 0f, 0.55f);
+            // --- barra de mana VERTICAL
+            // Va en el margen izquierdo (a la izquierda del marco de madera), debajo de
+            // Kira y por encima del texto de controles. En el espacio logico de 480 x 270
+            // ese margen mide ~37 de ancho.
+            const float manaW = 10f, manaH = 120f, manaX = 14f, manaY = 26f;
 
+            var manaBorder = MakeImage(canvasGo.transform, "ManaBar_Borde",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY - 1f), V(manaW + 2f, manaH + 2f));
+            manaBorder.color = new Color(1f, 1f, 1f, 0.35f);
+
+            var manaBg = MakeImage(manaBorder.transform, "ManaBar_Bg",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, 1f), V(manaW, manaH));
+            manaBg.color = new Color(0.05f, 0.03f, 0.1f, 0.8f);
+
+            // pivote abajo-izquierda: al escalar en Y crece hacia arriba
             m_ManaFill = MakeImage(manaBg.transform, "ManaBar_Fill",
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, V(96f, 8f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(manaW, manaH));
             m_ManaFill.color = PlaceholderArt.PortalACol;
-            m_ManaFill.rectTransform.pivot = new Vector2(0f, 0.5f);
-            m_ManaFill.rectTransform.anchoredPosition = Vector2.zero;
 
-            var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(10), TextAnchor.LowerLeft,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, 33f), V(120f, 12f));
-            manaLabel.text = "Mana de levitacion";
+            var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(8), TextAnchor.LowerLeft,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY + manaH + 4f), V(30f, 10f));
+            manaLabel.text = "MANA";
 
-            // --- controles
-            m_ControlsText = MakeText(canvasGo.transform, "Txt_Controles", font, Sz(10), TextAnchor.LowerLeft,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, 4f), V(468f, 16f));
+            // --- controles (desplegables con el boton ?)
+            m_ControlsPanel = MakeImage(canvasGo.transform, "Panel_Controles",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(34f, 3f), V(440f, 28f)).gameObject;
+            var controlsBg = m_ControlsPanel.GetComponent<Image>();
+            controlsBg.sprite = FxSprites.RoundedBox;
+            controlsBg.type = Image.Type.Sliced;
+            controlsBg.color = new Color(0.07f, 0.04f, 0.14f, 0.85f);
+
+            m_ControlsText = MakeText(m_ControlsPanel.transform, "Txt_Controles", font, Sz(10), TextAnchor.MiddleLeft,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(7f, 3f), V(428f, 22f));
             m_ControlsText.text = "Click = elegir ingrediente   |   Mantener ESPACIO = SUBIR   |   " +
                                   "Flechas IZQ/DER = MOVER   |   Soltar ESPACIO = CAER   |   " +
                                   "Click y mantener = interactuar   |   Tab = cambiar   |   R = reiniciar";
+
+            // --- boton ? magico: abajo a la izquierda, junto a la barra de mana
+            m_HelpGlow = MakeImage(canvasGo.transform, "Help_Brillo",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, -1f), V(26f, 26f));
+            m_HelpGlow.sprite = FxSprites.Glow;
+            m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.4f);
+            m_HelpRect = m_HelpGlow.rectTransform;   // esta es el area donde se hace click
+
+            var helpRing = MakeImage(canvasGo.transform, "Help_Aro",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(10f, 3f), V(18f, 18f));
+            helpRing.sprite = FxSprites.Disc;
+            helpRing.color = new Color(1f, 0.82f, 0.35f, 1f);
+
+            var helpDisc = MakeImage(helpRing.transform, "Help_Fondo",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1.3f, 1.3f), V(15.4f, 15.4f));
+            helpDisc.sprite = FxSprites.Disc;
+            helpDisc.color = new Color(0.3f, 0.16f, 0.5f, 1f);
+
+            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(13), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(18f, 18f));
+            helpMark.text = "?";
+            helpMark.fontStyle = FontStyle.Bold;
+            helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);
+
+            SetControlsOpen(controlsStartOpen);
 
             // --- panel de resultado
             m_ResultPanel = MakeImage(canvasGo.transform, "Panel_Resultado",
@@ -166,6 +347,73 @@ namespace Chocoflan.KiraPotionQuest
 
             m_ResultText = MakeText(m_ResultPanel.transform, "Txt_Resultado", font, Sz(14), TextAnchor.MiddleCenter,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(300f, 100f));
+
+            // --- globo de dialogo de Kira (arriba a la izquierda, a la derecha de ella)
+            // La colita apunta a Kira. Crece desde la colita (pivote a la izquierda).
+            var bubbleGo = new GameObject("Kira_Globo");
+            bubbleGo.transform.SetParent(canvasGo.transform, false);
+            m_BubbleRect = bubbleGo.AddComponent<RectTransform>();
+            m_BubbleRect.anchorMin = new Vector2(0f, 1f);
+            m_BubbleRect.anchorMax = new Vector2(0f, 1f);
+            m_BubbleRect.pivot = new Vector2(0f, 0.5f);
+            m_BubbleRect.sizeDelta = V(150f, 34f);
+            m_BubbleRect.anchoredPosition = V(100f, -48f);
+
+            m_BubbleGroup = bubbleGo.AddComponent<CanvasGroup>();
+            m_BubbleGroup.interactable = false;
+            m_BubbleGroup.blocksRaycasts = false;
+
+            Color bubbleOutline = new Color(0.32f, 0.17f, 0.5f, 1f);
+            Color bubbleFill = new Color(1f, 0.97f, 0.88f, 1f);
+
+            StretchImage(bubbleGo.transform, "Globo_Borde", FxSprites.RoundedBox, bubbleOutline, 0f);
+            MakeDiamond(bubbleGo.transform, "Colita_Borde", bubbleOutline, V(10.5f, 10.5f));
+            StretchImage(bubbleGo.transform, "Globo_Relleno", FxSprites.RoundedBox, bubbleFill, 1.3f * k);
+            MakeDiamond(bubbleGo.transform, "Colita_Relleno", bubbleFill, V(8f, 8f));
+
+            m_BubbleText = MakeText(bubbleGo.transform, "Txt_Dialogo", font, Sz(9), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(5f, 2f), V(140f, 30f));
+            m_BubbleText.color = new Color(0.25f, 0.12f, 0.35f, 1f);
+
+            bubbleGo.SetActive(false);
+        }
+
+        /// <summary>Imagen que ocupa todo el padre, con un margen en pixeles del canvas.</summary>
+        static Image StretchImage(Transform parent, string name, Sprite sprite, Color color, float insetPx)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var img = go.AddComponent<Image>();
+            img.raycastTarget = false;
+            img.sprite = sprite;
+            img.type = Image.Type.Sliced;
+            img.color = color;
+
+            RectTransform rt = img.rectTransform;
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = new Vector2(insetPx, insetPx);
+            rt.offsetMax = new Vector2(-insetPx, -insetPx);
+            return img;
+        }
+
+        /// <summary>Cuadrado girado 45 grados en el borde izquierdo del padre: la colita del globo.</summary>
+        static Image MakeDiamond(Transform parent, string name, Color color, Vector2 size)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var img = go.AddComponent<Image>();
+            img.raycastTarget = false;
+            img.color = color;
+
+            RectTransform rt = img.rectTransform;
+            rt.anchorMin = new Vector2(0f, 0.5f);
+            rt.anchorMax = new Vector2(0f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = size;
+            rt.anchoredPosition = Vector2.zero;
+            rt.localEulerAngles = new Vector3(0f, 0f, 45f);
+            return img;
         }
 
         static Font LoadFont()

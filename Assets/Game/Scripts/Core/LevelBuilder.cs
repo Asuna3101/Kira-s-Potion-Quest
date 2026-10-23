@@ -258,16 +258,18 @@ namespace Chocoflan.KiraPotionQuest
             BuildArtBounds(tablero);
 
             // --- plataformas
-            BuildArtPlatform(tablero, "Pared_Grande", melanieArt.paredGrande,
-                Level01Art.ParedGrandeCentro, Level01Art.ParedGrandeTamano);
-            BuildArtPlatform(tablero, "Pared_Mediana", melanieArt.paredMediana,
-                Level01Art.ParedMedianaCentro, Level01Art.ParedMedianaTamano);
-            BuildArtPlatform(tablero, "Pared_Pequena", melanieArt.paredPequena,
-                Level01Art.ParedPequenaCentro, Level01Art.ParedPequenaTamano);
+            for (int i = 0; i < Level01Art.Plataformas.Length; i++)
+            {
+                var pz = Level01Art.Plataformas[i];
+                int tipo = Level01Art.PlataformaTipo[i];
+                Sprite spr = tipo == 0 ? melanieArt.paredGrande
+                           : tipo == 1 ? melanieArt.paredMediana : melanieArt.paredPequena;
+                BuildArtPlatform(tablero, pz.nombre, spr, pz.centro, pz.tamano);
+            }
 
             // --- velas (la llama quema, la cera es solida)
-            BuildCandle(obstaculos, "Vela_1", melanieArt.vela1, Level01Art.Vela1Centro);
-            BuildCandle(obstaculos, "Vela_2", melanieArt.vela2, Level01Art.Vela2Centro);
+            foreach (var v in Level01Art.Velas)
+                BuildCandle(obstaculos, v.nombre, melanieArt.vela1, v.centro, v.escala);
 
             // --- caldero
             BuildArtCauldron(obstaculos);
@@ -292,10 +294,9 @@ namespace Chocoflan.KiraPotionQuest
             {
                 var varita = NewArtObject(decoracion, "Kira_Varita", melanieArt.kiraVarita, ArtKind.Kira,
                     Level01Art.VaritaCentro, Level01Art.VaritaTamano, "Character", 1);
-                var varitaAnim = varita.AddComponent<PlaceholderAnimator>();
-                varitaAnim.mode = PlaceholderAnimator.Mode.Pulse;
-                varitaAnim.speed = 2.2f;
-                varitaAnim.amplitude = 0.04f;
+                // Apunta al ingrediente mientras se levita; en reposo se balancea.
+                var wand = varita.AddComponent<WandFollower>();
+                wand.Configure(Level01Art.VaritaMango, Level01Art.VaritaPunta, Level01Art.VaritaAnguloReposo);
             }
 
             var gm = GameManager.Instance;
@@ -331,11 +332,17 @@ namespace Chocoflan.KiraPotionQuest
             var go = NewArtObject(parent, name, sprite, ArtKind.Shelf, center, size,
                 "Tablero", Level01Art.OrdenPlataformas);
             AddBoxSized(go, size, false);
+
+            // Desgaste visual de la madera: solo particulas, no afecta la fisica.
+            var decay = new GameObject(name + "_Desgaste");
+            decay.transform.SetParent(parent, false);
+            decay.transform.position = new Vector3(center.x, center.y, 0f);
+            decay.AddComponent<WoodDecayFx>().size = size;
         }
 
-        void BuildCandle(Transform parent, string name, Sprite sprite, Vector2 center)
+        void BuildCandle(Transform parent, string name, Sprite sprite, Vector2 center, float k = 1f)
         {
-            var go = NewArtObject(parent, name, sprite, ArtKind.Fire, center, Level01Art.VelaTamano,
+            var go = NewArtObject(parent, name, sprite, ArtKind.Fire, center, Level01Art.VelaTamano * k,
                 "Tablero", Level01Art.OrdenObstaculos);
 
             Vector3 s = go.transform.localScale;
@@ -344,21 +351,25 @@ namespace Chocoflan.KiraPotionQuest
 
             // La cera: solida, para poder apoyarse al lado de la vela sin quemarse.
             var cera = go.AddComponent<BoxCollider2D>();
-            cera.size = new Vector2(Level01Art.CeraTamano.x / sx, Level01Art.CeraTamano.y / sy);
-            cera.offset = new Vector2(0f, Level01Art.CeraOffsetY / sy);
+            cera.size = new Vector2(Level01Art.CeraTamano.x * k / sx, Level01Art.CeraTamano.y * k / sy);
+            cera.offset = new Vector2(0f, Level01Art.CeraOffsetY * k / sy);
 
             // La llama: trigger que destruye el ingrediente.
             var llama = go.AddComponent<BoxCollider2D>();
-            llama.size = new Vector2(Level01Art.LlamaTamano.x / sx, Level01Art.LlamaTamano.y / sy);
-            llama.offset = new Vector2(0f, Level01Art.LlamaOffsetY / sy);
+            llama.size = new Vector2(Level01Art.LlamaTamano.x * k / sx, Level01Art.LlamaTamano.y * k / sy);
+            llama.offset = new Vector2(0f, Level01Art.LlamaOffsetY * k / sy);
             llama.isTrigger = true;
 
             var hazard = go.AddComponent<Hazard>();
             hazard.type = Hazard.HazardType.Fire;
 
-            var anim = go.AddComponent<PlaceholderAnimator>();
-            anim.mode = PlaceholderAnimator.Mode.Flicker;
-            anim.speed = 3f;
+            // Animacion solo de la llama (resplandor + brasas). Ya no se usa Flicker
+            // sobre la vela porque oscurecia tambien la cera.
+            var flame = new GameObject(name + "_LlamaFx");
+            flame.transform.SetParent(parent, false);
+            flame.transform.position = new Vector3(center.x, center.y + Level01Art.LlamaOffsetY * k, 0f);
+            flame.transform.localScale = new Vector3(k, k, 1f);
+            flame.AddComponent<CandleFlame>();
         }
 
         void BuildArtCauldron(Transform parent)
@@ -383,6 +394,14 @@ namespace Chocoflan.KiraPotionQuest
             anim.mode = PlaceholderAnimator.Mode.Pulse;
             anim.speed = 2f;
             anim.amplitude = 0.02f;
+
+            // Aura verde, pocion brillante y humo saliendo de la apertura de la olla.
+            var fx = new GameObject("Caldero_Fx");
+            fx.transform.SetParent(parent, false);
+            fx.transform.position = new Vector3(
+                Level01Art.CalderoCentro.x,
+                Level01Art.CalderoCentro.y + Level01Art.CalderoAperturaOffsetY, 0f);
+            fx.AddComponent<CauldronFx>();
         }
 
         Ingredient BuildArtIngredient(Transform parent)
@@ -403,7 +422,12 @@ namespace Chocoflan.KiraPotionQuest
             var ing = go.AddComponent<Ingredient>();
             ing.ingredientName = "El huevo";
             ing.fragile = true;
-            ing.breakImpactSpeed = 10f;
+            // Velocidad de impacto (u/s) a partir de la que se rompe. Con la gravedad
+            // del huevo, 5.5 equivale a caer unos 2.5 u (mas de la mitad del tablero,
+            // que mide ~6 u de alto) y tambien a chocar a toda velocidad tras un
+            // lanzamiento. Levitando va a menos de 3 u/s, asi que nunca se rompe
+            // por moverse. Subir el numero = mas resistente; bajarlo = mas fragil.
+            ing.breakImpactSpeed = 5.5f;
             return ing;
         }
 
@@ -746,6 +770,7 @@ namespace Chocoflan.KiraPotionQuest
             var ing = go.AddComponent<Ingredient>();
             ing.ingredientName = isEgg ? "El huevo" : "El hongo";
             ing.fragile = isEgg;                 // el huevo es el fragil del GDD
+            ing.shellShards = isEgg;             // el hongo estalla en polvo, no en cascarones
             // 10 u/s equivale a una caida libre de ~8.5 u: solo se rompe con caidas
             // casi de pantalla completa, para que el tutorial no castigue de gratis.
             ing.breakImpactSpeed = isEgg ? 10f : 999f;

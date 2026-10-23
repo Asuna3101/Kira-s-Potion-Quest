@@ -16,18 +16,36 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Tecla a mantener para subir: ESPACIO.")]
         public Key levitateKey = Key.Space;
 
-        [Header("Movimiento suave")]
-        [Tooltip("Velocidad de subida automatica al mantener ESPACIO (u/s).")]
-        public float riseSpeed = 2.4f;
+        [Header("Movimiento con peso (lag)")]
+        [Tooltip("Velocidad de subida automatica al mantener ESPACIO (u/s). Antes 2.4.")]
+        public float riseSpeed = 2f;
 
-        [Tooltip("Velocidad horizontal maxima al usar las flechas (u/s).")]
-        public float horizontalSpeed = 3.6f;
+        [Tooltip("Velocidad horizontal maxima al usar las flechas (u/s). Antes 3.6.")]
+        public float horizontalSpeed = 2.8f;
 
-        [Tooltip("Aceleracion y frenado horizontal (u/s^2). Cuanto menor, mas suave.")]
-        public float horizontalAcceleration = 12f;
+        [Tooltip("Aceleracion horizontal (u/s^2). Tiempo en llegar a tope = velocidad / aceleracion. " +
+                 "Mas baja = el huevo tarda mas en responder. Antes 12.")]
+        public float horizontalAcceleration = 5f;
 
-        [Tooltip("Aceleracion vertical mientras se mantiene ESPACIO (u/s^2).")]
-        public float riseAcceleration = 8f;
+        [Tooltip("Frenado horizontal al soltar las flechas (u/s^2). Mas bajo que la aceleracion = " +
+                 "el huevo sigue deslizando un poco (el lag). Antes era igual a la aceleracion.")]
+        public float horizontalBrake = 3f;
+
+        [Tooltip("Aceleracion vertical mientras se mantiene ESPACIO (u/s^2). Antes 8.")]
+        public float riseAcceleration = 3.5f;
+
+        [Header("Sensacion de flotar")]
+        [Tooltip("Vaiven vertical al levitar, como oleaje (u/s extra sobre la subida). 0 = sin vaiven.")]
+        public float bobAmplitude = 0.45f;
+
+        [Tooltip("Cuantas veces por segundo se repite el vaiven.")]
+        public float bobFrequency = 1.3f;
+
+        [Tooltip("Inclinacion maxima del ingrediente segun va a un lado (grados). 0 = no se inclina.")]
+        public float tiltDegrees = 10f;
+
+        [Tooltip("Que tan rapido se inclina (mayor = mas rapido).")]
+        public float tiltSmoothing = 6f;
 
         [Header("Seleccion")]
         [Tooltip("Radio extra de tolerancia al hacer click sobre un ingrediente, en unidades.")]
@@ -42,6 +60,7 @@ namespace Chocoflan.KiraPotionQuest
         // estado leido en Update y aplicado en FixedUpdate
         bool m_LevitateHeld;
         float m_HorizontalInput;
+        float m_LevitateTime;
 
         // click y mantener
         IClickHoldInteractable m_HoldTarget;
@@ -224,6 +243,7 @@ namespace Chocoflan.KiraPotionQuest
                     if (!IsLevitating)
                     {
                         IsLevitating = true;
+                        m_LevitateTime = 0f;
                         Selected.BeginLevitate();
                     }
                 }
@@ -253,16 +273,36 @@ namespace Chocoflan.KiraPotionQuest
             Rigidbody2D rb = Selected.Body;
             if (rb == null) return;
 
+            m_LevitateTime += Time.fixedDeltaTime;
+
             // Aproximacion progresiva de ambas velocidades: el control no pega tirones.
-            // Sin flecha horizontal, se frena suavemente; al mantener ESPACIO, sube solo.
+            // Acelerar y frenar tienen ritmos distintos: arranca con pereza y, al soltar
+            // las flechas, sigue deslizando un poco. Esa diferencia es el "lag".
             Vector2 velocity = rb.linearVelocity;
-            velocity.x = Mathf.MoveTowards(
-                velocity.x, m_HorizontalInput * horizontalSpeed,
-                horizontalAcceleration * Time.fixedDeltaTime);
+
+            float targetX = m_HorizontalInput * horizontalSpeed;
+            bool reversing = targetX != 0f && velocity.x != 0f &&
+                             Mathf.Sign(targetX) != Mathf.Sign(velocity.x);
+            float rateX = targetX == 0f
+                ? horizontalBrake
+                : (reversing ? horizontalAcceleration + horizontalBrake : horizontalAcceleration);
+            velocity.x = Mathf.MoveTowards(velocity.x, targetX, rateX * Time.fixedDeltaTime);
+
+            // Al mantener ESPACIO sube solo, con un vaiven suave encima.
+            float bob = Mathf.Sin(m_LevitateTime * bobFrequency * Mathf.PI * 2f) * bobAmplitude;
             velocity.y = Mathf.MoveTowards(
-                velocity.y, riseSpeed,
+                velocity.y, riseSpeed + bob,
                 riseAcceleration * Time.fixedDeltaTime);
             rb.linearVelocity = velocity;
+
+            // Se inclina un poco hacia donde va.
+            if (tiltDegrees > 0f)
+            {
+                float lean = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, horizontalSpeed), -1f, 1f);
+                float targetAngle = -lean * tiltDegrees;
+                float blend = 1f - Mathf.Exp(-tiltSmoothing * Time.fixedDeltaTime);
+                rb.MoveRotation(Mathf.LerpAngle(rb.rotation, targetAngle, blend));
+            }
         }
     }
 }

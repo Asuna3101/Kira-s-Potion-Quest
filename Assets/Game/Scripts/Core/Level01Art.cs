@@ -92,6 +92,49 @@ namespace Chocoflan.KiraPotionQuest
         public static readonly Vector2 ParedPequenaCentro = new Vector2(0.2875f, 0.9583f);
         public static readonly Vector2 ParedPequenaTamano = new Vector2(1.0833f, 1.0167f);
 
+
+        // ---- DISEÑO DEL NIVEL 1 (layout propio, medido de la escena editada) ----
+        //
+        // Aqui se cambia la colocacion. Cada plataforma es (centro, tamano): el sprite
+        // se estira a ese tamano y el collider lo sigue. Cada vela es (centro, escala).
+
+        public struct Pieza
+        {
+            public string nombre;
+            public Vector2 centro;
+            public Vector2 tamano;
+            public Pieza(string n, float x, float y, float w, float h)
+            { nombre = n; centro = new Vector2(x, y); tamano = new Vector2(w, h); }
+        }
+
+        public struct VelaPos
+        {
+            public string nombre;
+            public Vector2 centro;
+            public float escala;
+            public VelaPos(string n, float x, float y, float e)
+            { nombre = n; centro = new Vector2(x, y); escala = e; }
+        }
+
+        /// <summary>tipo: 0 = grande, 1 = mediana, 2 = pequena (decide que sprite usa).</summary>
+        public static readonly int[] PlataformaTipo = { 1, 2, 0, 2, 2 };
+        public static readonly Pieza[] Plataformas =
+        {
+            new Pieza("Pared_Mediana_Salida", -5.11f, -1.29f, 1.48f, 0.43f),
+            new Pieza("Pared_Pequena_Alta",   -2.59f,  0.67f, 0.83f, 0.71f),
+            new Pieza("Pared_Grande_Centro",   0.80f, -0.76f, 4.76f, 0.56f),
+            new Pieza("Pared_Pequena_Baja",   -3.06f, -2.88f, 0.93f, 0.78f),
+            new Pieza("Pared_Pequena_Vela",   -0.01f,  1.26f, 0.71f, 0.62f),
+        };
+
+        public static readonly VelaPos[] Velas =
+        {
+            new VelaPos("Vela_1",  2.45f,  0.27f, 1.00f),
+            new VelaPos("Vela_2", -3.03f, -1.74f, 0.98f),
+            new VelaPos("Vela_3",  3.21f, -2.60f, 0.77f),
+            new VelaPos("Vela_4", -0.01f,  2.07f, 0.67f),
+        };
+
         // ---- velas ----------------------------------------------------------
         //
         // Vela_1 y Vela_2 son el MISMO dibujo (identico pixel a pixel) colocado en
@@ -132,10 +175,19 @@ namespace Chocoflan.KiraPotionQuest
         /// <summary>Desplazamiento de la boca respecto al centro del caldero.</summary>
         public const float BocaOffsetY = 0.619f;
 
+        /// <summary>
+        /// La apertura visible de la olla (el ovalo del borde), medida sobre Caldero.PNG:
+        /// centro 0.681 u por encima del centro del sprite, 1.75 u de ancho y 0.26 de alto.
+        /// De ahi sale el humo y el brillo verde (CauldronFx).
+        /// </summary>
+        public const float CalderoAperturaOffsetY = 0.681f;
+        public const float CalderoAperturaAncho = 1.75f;
+        public const float CalderoAperturaAlto = 0.26f;
+
         // ---- ingrediente -----------------------------------------------------
 
         /// <summary>Centro del huevo tal como esta dibujado (el sprite incluye el brillo).</summary>
-        public static readonly Vector2 HuevoCentro = new Vector2(-1.1938f, 0.0958f);
+        public static readonly Vector2 HuevoCentro = new Vector2(-5.14f, -0.62f);
         public static readonly Vector2 HuevoTamano = new Vector2(1.1375f, 1.375f);
 
         /// <summary>
@@ -151,6 +203,16 @@ namespace Chocoflan.KiraPotionQuest
 
         public static readonly Vector2 VaritaCentro = new Vector2(-5.7542f, 1.7437f);
         public static readonly Vector2 VaritaTamano = new Vector2(1.4917f, 1.1875f);
+
+        /// <summary>
+        /// Medidos sobre Kira_varita.PNG (relativos al centro del sprite, en unidades).
+        /// Mango = extremo del palo que sostiene Kira: es el pivote al girar.
+        /// Punta = centro del brillo, de donde salen las chispas.
+        /// Angulo = direccion mango -> punta del palo con el sprite sin girar.
+        /// </summary>
+        public static readonly Vector2 VaritaMango = new Vector2(-0.641f, 0.508f);
+        public static readonly Vector2 VaritaPunta = new Vector2(0.316f, -0.148f);
+        public const float VaritaAnguloReposo = -32.2f;
 
         // ---- orden de dibujo --------------------------------------------------
 
