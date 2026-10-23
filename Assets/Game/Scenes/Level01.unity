@@ -466,6 +466,24 @@ MonoBehaviour:
     huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
     kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
     kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
+  placeholders:
+    wall: {fileID: 21300000, guid: ebad67a8265cf247a97fef674c8a18b1, type: 3}
+    shelf: {fileID: 21300000, guid: ebbd64c2c87ac1877b11ab5091682565, type: 3}
+    gate: {fileID: 21300000, guid: 1531a5f48dac689bbdc24002b265d594, type: 3}
+    spikes: {fileID: 21300000, guid: 582371ca897a303c35236b07c5a73d31, type: 3}
+    fire: {fileID: 21300000, guid: fec910522e32b9ed78f7f1a958cc5ad7, type: 3}
+    airCurrent: {fileID: 21300000, guid: 352f4b03c8df768abfc45307cabb2947, type: 3}
+    portalA: {fileID: 21300000, guid: 698b1178575565f0b1ef2d2b6e7233af, type: 3}
+    portalB: {fileID: 21300000, guid: 26b51534926dc8367530a9a9c0fef290, type: 3}
+    button: {fileID: 21300000, guid: 4ab2d3b92e3fac8fed4f39153027b2f9, type: 3}
+    lever: {fileID: 21300000, guid: 7911b3c0a4261bc429b6f4fc76c7a4f9, type: 3}
+    cauldron: {fileID: 21300000, guid: c54e8349c3ac7fe647e443eae040eee8, type: 3}
+    ingredientEgg: {fileID: 21300000, guid: 533801ddbd8034eaf51f5b03ca98f2a9, type: 3}
+    ingredientMushroom: {fileID: 21300000, guid: bbce22c23ea530e98b5eb25dab2b7572, type: 3}
+    kira: {fileID: 21300000, guid: c150d4e9278799999b84f16bd2f157bf, type: 3}
+    selectionRing: {fileID: 21300000, guid: a1be3dfc65c4dc193c7c3831f5543cdc, type: 3}
+    aimDot: {fileID: 21300000, guid: 60dbe6b47869d994dbcabd2aa6de4455, type: 3}
+    background: {fileID: 21300000, guid: 7920443863c71ee020bc814fcd809374, type: 3}
   art:
     wall: {fileID: 0}
     shelf: {fileID: 0}

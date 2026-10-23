@@ -64,7 +64,7 @@ namespace Chocoflan.KiraPotionQuest
                 var dot = new GameObject("AimDot_" + i);
                 dot.transform.SetParent(m_DotsRoot, false);
                 var sr = dot.AddComponent<SpriteRenderer>();
-                sr.sprite = PlaceholderArt.Get(ArtKind.AimDot, 1, 1);
+                sr.sprite = PlaceholderLibrary.Get(ArtKind.AimDot, 1, 1);
                 sr.sortingLayerName = "FX";
                 sr.sortingOrder = 10;
 

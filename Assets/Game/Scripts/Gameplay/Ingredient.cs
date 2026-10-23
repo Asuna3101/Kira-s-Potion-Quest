@@ -83,7 +83,7 @@ namespace Chocoflan.KiraPotionQuest
             var ring = new GameObject("SelectionRing");
             ring.transform.SetParent(transform, false);
             var sr = ring.AddComponent<SpriteRenderer>();
-            sr.sprite = PlaceholderArt.Get(ArtKind.SelectionRing, 2, 2);
+            sr.sprite = PlaceholderLibrary.Get(ArtKind.SelectionRing, 2, 2);
             sr.sortingLayerName = "FX";
             sr.sortingOrder = -1;
             Material mat = PlaceholderArt.UnlitSpriteMaterial();

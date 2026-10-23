@@ -100,10 +100,113 @@ namespace Chocoflan.KiraPotionQuest
             (m_PanelCreditos != null && m_PanelCreditos.gameObject.activeSelf) ||
             (m_PanelAjustes != null && m_PanelAjustes.gameObject.activeSelf);
 
+        /// <summary>Nombre del canvas del menu, tanto horneado como creado en Play.</summary>
+        public const string NombreCanvas = "Menu_Canvas";
+
         void Start()
         {
             m_Font = CargarFuente();
+
+            // Si el menu ya esta HORNEADO en la escena (se ve en la Hierarchy), se
+            // reutiliza tal cual y solo se le enganchan las acciones a los botones.
+            // Si no esta, se construye en caliente como antes.
+            Canvas horneado = BuscarCanvasHorneado();
+            if (horneado != null) EngancharCanvasHorneado(horneado);
+            else Construir();
+
+            // Los paneles de creditos y ajustes siempre se arman en caliente: son
+            // dialogos, no algo que se retoque en la Hierarchy.
+            ConstruirPaneles();
+            CerrarPaneles();
+
+            Debug.Log("[Menu] Listo (" + (horneado != null ? "horneado en la escena" : "construido en Play") +
+                      "). Botones: " + m_Botones.Count +
+                      " | fondo=" + (art.fondo != null) +
+                      " titulo=" + (art.titulo != null) +
+                      " play=" + (art.botonPlay != null) +
+                      " | fuente=" + (m_Font != null ? m_Font.name : "NINGUNA") +
+                      " | canvas hijos=" + (m_Canvas != null ? m_Canvas.transform.childCount : -1), this);
+        }
+
+        Canvas BuscarCanvasHorneado()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform hijo = transform.GetChild(i);
+                if (hijo.name != NombreCanvas) continue;
+                var c = hijo.GetComponent<Canvas>();
+                if (c != null) return c;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Reutiliza los objetos ya presentes en la escena: busca los botones por
+        /// nombre y les engancha su accion. No crea ni mueve nada, asi que lo que
+        /// se vea en la Hierarchy es exactamente lo que se juega.
+        /// </summary>
+        void EngancharCanvasHorneado(Canvas canvas)
+        {
+            m_Canvas = canvas;
+            m_Botones.Clear();
+
+            EngancharBoton(canvas.transform, "Boton_Creditos", AbrirCreditos);
+            EngancharBoton(canvas.transform, "Boton_Play", Jugar);
+            EngancharBoton(canvas.transform, "Boton_Settings", AbrirAjustes);
+        }
+
+        void EngancharBoton(Transform canvas, string nombre, Action onClick)
+        {
+            Transform t = canvas.Find(nombre);
+            if (t == null)
+            {
+                Debug.LogWarning("[Menu] No encontre el boton '" + nombre + "' dentro de " +
+                                 NombreCanvas + ". Vuelve a hornear el menu desde " +
+                                 "Chocoflan > 7 - Hornear menu en la escena.", this);
+                return;
+            }
+
+            var rt = t as RectTransform;
+            if (rt == null) return;
+
+            m_Botones.Add(new Boton
+            {
+                rect = rt,
+                image = t.GetComponent<Image>(),
+                onClick = onClick,
+                baseScale = rt.localScale
+            });
+        }
+
+        // ------------------------------------------------- horneado (Editor)
+
+        /// <summary>
+        /// Crea el menu como GameObjects de verdad en la escena, para poder verlo y
+        /// retocarlo en la Hierarchy sin entrar en Play. Lo llama el item de menu
+        /// Chocoflan > 7.
+        /// </summary>
+        public void HornearEnEscena()
+        {
+            LimpiarDeEscena();
+            m_Font = CargarFuente();
             Construir();
+        }
+
+        /// <summary>Borra el canvas horneado de la escena.</summary>
+        public void LimpiarDeEscena()
+        {
+            m_Botones.Clear();
+            m_PanelCreditos = null;
+            m_PanelAjustes = null;
+            m_Canvas = null;
+
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Transform hijo = transform.GetChild(i);
+                if (hijo.name != NombreCanvas) continue;
+                if (Application.isPlaying) Destroy(hijo.gameObject);
+                else DestroyImmediate(hijo.gameObject);
+            }
         }
 
         // ------------------------------------------------------------ input
@@ -178,11 +281,16 @@ namespace Chocoflan.KiraPotionQuest
 
         void Construir()
         {
-            var canvasGo = new GameObject("Menu_Canvas");
+            m_Botones.Clear();
+
+            // El canvas tambien se crea ya con RectTransform, por lo mismo.
+            var canvasGo = new GameObject(NombreCanvas, typeof(RectTransform));
+            canvasGo.layer = LayerMask.NameToLayer("UI");
             canvasGo.transform.SetParent(transform, false);
 
             m_Canvas = canvasGo.AddComponent<Canvas>();
             m_Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            m_Canvas.sortingOrder = 100;   // por delante de cualquier otro canvas
 
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -220,11 +328,17 @@ namespace Chocoflan.KiraPotionQuest
                 PlayPos, Jugar);
             CrearBoton(canvasGo.transform, "Boton_Settings", art.botonSettings, "settings",
                 SettingsPos, AbrirAjustes);
+        }
 
-            // --- paneles
-            m_PanelCreditos = ConstruirCreditos(canvasGo.transform);
-            m_PanelAjustes = ConstruirAjustes(canvasGo.transform);
-            CerrarPaneles();
+        /// <summary>
+        /// Los paneles de creditos y ajustes se arman siempre en caliente, cuelguen
+        /// de un canvas horneado o de uno recien creado.
+        /// </summary>
+        void ConstruirPaneles()
+        {
+            if (m_Canvas == null) return;
+            m_PanelCreditos = ConstruirCreditos(m_Canvas.transform);
+            m_PanelAjustes = ConstruirAjustes(m_Canvas.transform);
         }
 
         void CrearBoton(Transform parent, string nombre, Sprite sprite, string etiqueta,
@@ -319,8 +433,7 @@ namespace Chocoflan.KiraPotionQuest
 
         GameObject NuevoPanel(Transform parent, string nombre, Vector2 size)
         {
-            var go = new GameObject(nombre);
-            go.transform.SetParent(parent, false);
+            var go = NuevoUI(parent, nombre);
             var img = go.AddComponent<Image>();
             img.color = new Color(0.07f, 0.05f, 0.12f, 0.93f);
             Colocar(img.rectTransform, Vector2.zero, size);
@@ -330,8 +443,7 @@ namespace Chocoflan.KiraPotionQuest
         void BotonTexto(GameObject parent, string etiqueta, Vector2 pos, Action onClick,
                         Vector2? size = null)
         {
-            var go = new GameObject("Btn_" + etiqueta);
-            go.transform.SetParent(parent.transform, false);
+            var go = NuevoUI(parent.transform, "Btn_" + etiqueta);
             var img = go.AddComponent<Image>();
             img.color = new Color32(0x6B, 0x4A, 0x33, 0xFF);
             Colocar(img.rectTransform, pos, size ?? new Vector2(300f, 90f));
@@ -349,10 +461,23 @@ namespace Chocoflan.KiraPotionQuest
             });
         }
 
+        /// <summary>
+        /// Crea el GameObject YA con RectTransform. Importante: si se crea con un
+        /// Transform normal y despues se le anade un Image, Unity tiene que
+        /// convertir el Transform en RectTransform sobre la marcha, que es una
+        /// fuente clasica de UI que no aparece.
+        /// </summary>
+        static GameObject NuevoUI(Transform parent, string nombre)
+        {
+            var go = new GameObject(nombre, typeof(RectTransform));
+            go.layer = LayerMask.NameToLayer("UI");
+            go.transform.SetParent(parent, false);
+            return go;
+        }
+
         Image NuevaImagen(Transform parent, string nombre, Sprite sprite)
         {
-            var go = new GameObject(nombre);
-            go.transform.SetParent(parent, false);
+            var go = NuevoUI(parent, nombre);
             var img = go.AddComponent<Image>();
             img.sprite = sprite;
             img.raycastTarget = false;
@@ -361,8 +486,7 @@ namespace Chocoflan.KiraPotionQuest
 
         Text NuevoTexto(Transform parent, string nombre, string contenido, int size, TextAnchor anchor)
         {
-            var go = new GameObject(nombre);
-            go.transform.SetParent(parent, false);
+            var go = NuevoUI(parent, nombre);
             var txt = go.AddComponent<Text>();
             txt.font = m_Font;
             txt.fontSize = size;

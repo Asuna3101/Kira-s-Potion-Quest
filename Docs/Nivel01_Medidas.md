@@ -311,6 +311,64 @@ dos caminos: pedirle arte a Melanie y añadirlos a `Level01Art`, o apagar
 
 ---
 
+## 2.ter Reemplazar arte sin tocar código
+
+Regla del proyecto: **cambiar un sprite = arrastrarlo a un hueco del Inspector.**
+Ni el código ni la escena se editan.
+
+### Los placeholders son PNG de verdad
+
+Están en `Assets/Game/Sprites/PlaceHolders/Generados/` y se llaman `PH_<Tipo>.png`.
+Todos dibujados a **240 PPU con las medidas exactas del documento de arte**, así
+que el arte final entra con el mismo tamaño:
+
+| Archivo | Medida | Archivo | Medida |
+|---|---|---|---|
+| `PH_Wall` | 1 × 1 u | `PH_Cauldron` | 2 × 1.6 u |
+| `PH_Shelf` | 1 × 1 u | `PH_IngredientEgg` | 0.8 u |
+| `PH_Gate` | 1 × 1 u | `PH_IngredientMushroom` | 0.8 u |
+| `PH_Spikes` | 1 × 0.5 u | `PH_PortalA` / `PH_PortalB` | 1 × 1.5 u |
+| `PH_Fire` | 0.5 × 1.5 u | `PH_Kira` | 1.5 × 2 u |
+| `PH_Button` | 1 × 0.3 u | `PH_SelectionRing` | 1 × 1 u |
+| `PH_Lever` | 1 × 1 u | `PH_AimDot` | 0.15 u |
+| `PH_AirCurrent` | 1 × 1 u (tileable) | `PH_Background` | 16 × 9 u |
+
+Antes estos dibujos se generaban por código al arrancar: no se podían ver en el
+Editor y reemplazarlos obligaba a tocar `PlaceholderArt.cs`. Ya no.
+
+### Dónde están los huecos
+
+En el Inspector de `--- GAME --- > Level Builder`, tres bloques:
+
+1. **`Melanie Art`** — el arte final del Nivel 1. Es el que manda.
+2. **`Placeholders`** — los `PH_*.png`. Se usan cuando el hueco de arriba está vacío.
+3. **`Art`** — arte final por tipo, para el nivel de mapa ASCII (el de Enzo).
+
+El orden es: *arte final → placeholder → dibujo por código*. Ese último escalón
+ya solo salta si alguien vacía un hueco a mano.
+
+`Ingredient` y `ThrowController` también tiran de los mismos placeholders (aro de
+selección y puntos de trayectoria), así que no hay que arrastrarlos en cada objeto.
+
+### Tener los objetos en la Hierarchy
+
+**`Chocoflan > 3 - Hornear Nivel 1 en la escena`** → crea los GameObjects de
+verdad, para moverlos y retocarlos a mano. Después **guardar con `Cmd+S`**.
+
+Dos cosas que hace ese botón además de crear los objetos:
+
+- Los marca como **permanentes**. La vista previa automática
+  (`LevelEditPreview`) los crea como temporales, y los temporales no se guardan
+  en el `.unity`.
+- Desactiva **`Build On Awake`**. Si no, al entrar en Play el builder llamaría a
+  `Rebuild()`, borraría la jerarquía y **perdería todo lo que hubieras movido a
+  mano**. Con el nivel horneado, `R` recarga la escena en vez de reconstruir.
+
+Para volver al modo generado por código: `Chocoflan > 4 - Limpiar Nivel 1` y
+marcar otra vez `Build On Awake`.
+
+---
+
 ## 3. Controles
 
 | Acción | Control | Estado |

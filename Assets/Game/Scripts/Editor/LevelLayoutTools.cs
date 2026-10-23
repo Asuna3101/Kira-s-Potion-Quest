@@ -22,9 +22,46 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
             if (builder == null) return;
 
             builder.Rebuild();
+
+            Transform root = builder.transform.Find(
+                builder.levelLayout == LevelBuilder.LevelLayout.Level02Enzo ? "Nivel02_Enzo" : "Nivel01");
+            if (root == null)
+            {
+                Debug.LogError("[Chocoflan] El builder no genero ninguna raiz de nivel.");
+                return;
+            }
+
+            // 1) Permanente: la vista previa automatica marca los objetos como
+            //    temporales (no se guardan). Al hornear a mano los queremos en el
+            //    .unity de verdad.
+            MarcarPermanente(root);
+
+            // 2) Y que NO se reconstruya al entrar en Play: si no, Awake llamaria a
+            //    Rebuild(), borraria esta jerarquia y con ella cualquier cosa que el
+            //    equipo haya movido a mano en el Inspector.
+            builder.buildOnAwake = false;
+
+            EditorUtility.SetDirty(builder);
             EditorSceneManager.MarkSceneDirty(builder.gameObject.scene);
-            Debug.Log("[Chocoflan] Nivel 1 horneado en la escena. " +
-                      builder.Ingredients.Count + " ingredientes.");
+
+            Debug.Log("[Chocoflan] Nivel horneado como objetos permanentes (" +
+                      ContarHijos(root) + " objetos, " + builder.Ingredients.Count +
+                      " ingredientes). 'Build On Awake' quedo DESACTIVADO para que lo que " +
+                      "edites a mano no se pierda al darle Play. Guarda la escena con Cmd+S.",
+                      builder);
+        }
+
+        static void MarcarPermanente(Transform t)
+        {
+            t.gameObject.hideFlags = HideFlags.None;
+            for (int i = 0; i < t.childCount; i++) MarcarPermanente(t.GetChild(i));
+        }
+
+        static int ContarHijos(Transform t)
+        {
+            int n = 1;
+            for (int i = 0; i < t.childCount; i++) n += ContarHijos(t.GetChild(i));
+            return n;
         }
 
         [MenuItem("Chocoflan/4 - Limpiar Nivel 1 de la escena", false, 13)]

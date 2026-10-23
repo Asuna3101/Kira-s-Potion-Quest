@@ -34,6 +34,42 @@ Editor y se recalculan esas constantes en `MainMenuController`.
 
 ---
 
+## Ver el menú en la Hierarchy ("hornearlo")
+
+Por defecto el menú se construye por código al entrar en Play, así que antes de
+darle Play la escena se ve vacía. Para tenerlo como las demás escenas, con sus
+elementos visibles en el panel de la izquierda:
+
+**`Chocoflan > 7 - Hornear menu en la escena`** → crea el canvas y sus hijos como
+GameObjects de verdad. Después hay que **guardar la escena** (`Cmd+S`).
+
+Queda así en la Hierarchy:
+
+```
+Main Camera
+--- MENU ---
+  Menu_Canvas          (Canvas + Canvas Scaler)
+    Fondo
+    Titulo
+    Boton_Creditos
+    Boton_Play
+    Boton_Settings
+```
+
+A partir de ahí se puede mover, escalar y cambiar cualquier cosa en el Inspector:
+**al entrar en Play el script detecta que el canvas ya existe y lo reutiliza tal
+cual**, solo le engancha la acción a cada botón. Lo que se ve en la Hierarchy es
+exactamente lo que se juega.
+
+`Chocoflan > 8 - Limpiar menu de la escena` lo borra y se vuelve al modo de
+construir en caliente.
+
+Los paneles de **créditos** y **ajustes** se siguen armando al vuelo, estén o no
+horneados los demás elementos: son diálogos que aparecen y desaparecen, no algo
+que se retoque en la Hierarchy.
+
+---
+
 ## Input: sin EventSystem
 
 El proyecto usa **solo el Input System nuevo** (`activeInputHandler: 1`). El

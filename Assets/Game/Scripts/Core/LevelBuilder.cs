@@ -80,8 +80,13 @@ namespace Chocoflan.KiraPotionQuest
                  "OFF: el nivel es el mapa ASCII de Level01Data, con placeholders.")]
         public bool useArtComposition = true;
 
-        [Tooltip("Sprites de Melanie. Los que queden vacios caen en el placeholder generado por codigo.")]
+        [Tooltip("Sprites de Melanie. Los que queden vacios caen en el placeholder.")]
         public MelanieArt melanieArt = new MelanieArt();
+
+        [Header("Placeholders (PNG en Sprites/PlaceHolders/Generados)")]
+        [Tooltip("Se usan cuando el hueco del arte final esta vacio. Para reemplazar arte, " +
+                 "arrastra el sprite nuevo aqui o al bloque de arriba: no hay que tocar codigo.")]
+        public PlaceholderSprites placeholders = new PlaceholderSprites();
 
         [Header("Arte final (opcional, deja vacio para usar placeholders)")]
         public ArtOverrides art = new ArtOverrides();
@@ -136,6 +141,10 @@ namespace Chocoflan.KiraPotionQuest
 
         void Build()
         {
+            // Lo primero: publicar los placeholders para que Ingredient y
+            // ThrowController usen los mismos assets.
+            PlaceholderLibrary.Current = placeholders;
+
             // El Nivel 1 ya tiene arte: se construye de la composicion de Melanie.
             // El de Enzo sigue con su mapa ASCII y placeholders.
             if (useArtComposition && levelLayout == LevelLayout.Level01)
@@ -460,7 +469,7 @@ namespace Chocoflan.KiraPotionQuest
             {
                 int wTiles = Mathf.Max(1, Mathf.RoundToInt(size.x / GridSettings.TileSize));
                 int hTiles = Mathf.Max(1, Mathf.RoundToInt(size.y / GridSettings.TileSize));
-                sr.sprite = PlaceholderArt.Get(fallback, wTiles, hTiles);
+                sr.sprite = PlaceholderLibrary.Get(fallback, wTiles, hTiles);
                 Vector2 native = sr.sprite.bounds.size;
                 go.transform.localScale = new Vector3(
                     native.x > 0.0001f ? size.x / native.x : 1f,
@@ -591,7 +600,7 @@ namespace Chocoflan.KiraPotionQuest
                 // (el boton mide 0.3 u = 0.6 tiles).
                 int wTiles = Mathf.Max(1, Mathf.RoundToInt(target.x / GridSettings.TileSize));
                 int hTiles = Mathf.Max(1, Mathf.RoundToInt(target.y / GridSettings.TileSize));
-                sr.sprite = PlaceholderArt.Get(kind, wTiles, hTiles);
+                sr.sprite = PlaceholderLibrary.Get(kind, wTiles, hTiles);
 
                 // Y se estira al tamano real pedido, que puede no ser multiplo de tile.
                 Vector2 phNative = sr.sprite.bounds.size;

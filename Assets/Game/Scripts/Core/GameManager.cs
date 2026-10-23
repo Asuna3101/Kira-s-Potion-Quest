@@ -59,10 +59,27 @@ namespace Chocoflan.KiraPotionQuest
             if (builder == null) builder = GetComponent<LevelBuilder>();
         }
 
+        void Start()
+        {
+            // Si el nivel esta HORNEADO en la escena, nadie llamo a
+            // RegisterIngredient (el builder no construyo nada). Los buscamos.
+            if (m_Ingredients.Count == 0)
+            {
+                foreach (var ing in FindObjectsByType<Ingredient>(FindObjectsSortMode.None))
+                    RegisterIngredient(ing);
+
+                if (m_Ingredients.Count > 0)
+                    IngredientsChanged?.Invoke();
+            }
+        }
+
         void OnDestroy()
         {
             if (Instance == this) Instance = null;
         }
+
+        /// <summary>El nivel esta horneado a mano en la escena, no lo genera el builder.</summary>
+        bool NivelHorneado => builder != null && !builder.buildOnAwake;
 
         void Update()
         {
@@ -141,6 +158,17 @@ namespace Chocoflan.KiraPotionQuest
         /// </summary>
         public void RestartLevel()
         {
+            // Con el nivel horneado NO se puede reconstruir en caliente: eso
+            // borraria los objetos de la escena y con ellos lo que el equipo haya
+            // movido a mano. Se recarga la escena.
+            if (NivelHorneado)
+            {
+                Scene actual = SceneManager.GetActiveScene();
+                if (actual.buildIndex >= 0) SceneManager.LoadScene(actual.buildIndex);
+                else SceneManager.LoadScene(actual.name);
+                return;
+            }
+
             if (builder != null)
             {
                 // Suelta el ingrediente seleccionado antes de destruirlo.
