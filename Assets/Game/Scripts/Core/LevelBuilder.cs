@@ -299,6 +299,9 @@ namespace Chocoflan.KiraPotionQuest
             kiraAnim.speed = 1.6f;
             kiraAnim.amplitude = 0.03f;
 
+            // Reemplaza TODO el sprite de Kira (solo en Level01).
+            kira.AddComponent<KiraManaReaction>();
+
             if (melanieArt.kiraVarita != null)
             {
                 var varita = NewArtObject(decoracion, "Kira_Varita", melanieArt.kiraVarita, ArtKind.Kira,
@@ -798,6 +801,9 @@ namespace Chocoflan.KiraPotionQuest
             anim.mode = PlaceholderAnimator.Mode.Bob;
             anim.speed = 1.6f;
             anim.amplitude = 0.03f;
+
+            if (levelLayout == LevelLayout.Level01)
+                go.AddComponent<KiraManaReaction>();
         }
 
         void BuildBackground(Transform parent)
