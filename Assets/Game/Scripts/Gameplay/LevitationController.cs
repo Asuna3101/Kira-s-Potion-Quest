@@ -47,6 +47,25 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Que tan rapido se inclina (mayor = mas rapido).")]
         public float tiltSmoothing = 6f;
 
+        [Header("Temblor (levitacion nerviosa)")]
+        [Tooltip("Fuerza del temblor continuo (u/s). 0 = sin temblor. 0.2 = sutil, 0.3 = nervioso, 0.6 = muy erratico.")]
+        public float tremorStrength = 0.3f;
+
+        [Tooltip("Que tan rapido vibra el temblor (mayor = mas rapido y mas nervioso).")]
+        public float tremorSpeed = 7f;
+
+        [Tooltip("Respingos: veces por segundo, en promedio, que el ingrediente da un tiron corto. 0 = sin respingos.")]
+        public float twitchChance = 0.6f;
+
+        [Tooltip("Fuerza de cada respingo (u/s).")]
+        public float twitchStrength = 0.9f;
+
+        [Tooltip("Cuanto tiembla de lado el ingrediente (grados). 0 = sin vibracion de giro.")]
+        public float tremorTiltDegrees = 5f;
+
+        [Tooltip("Cuanto MAS tiembla cuando se acaba el mana. 0 = igual siempre. 0.5 = hasta 50% mas con el mana en cero.")]
+        public float tremorExtraAtLowMana = 0.5f;
+
         [Header("Seleccion")]
         [Tooltip("Radio extra de tolerancia al hacer click sobre un ingrediente, en unidades.")]
         public float clickTolerance = 0.18f;
@@ -61,6 +80,7 @@ namespace Chocoflan.KiraPotionQuest
         bool m_LevitateHeld;
         float m_HorizontalInput;
         float m_LevitateTime;
+        float m_TremorSeed;
 
         // click y mantener
         IClickHoldInteractable m_HoldTarget;
@@ -71,6 +91,7 @@ namespace Chocoflan.KiraPotionQuest
         void Awake()
         {
             if (worldCamera == null) worldCamera = Camera.main;
+            m_TremorSeed = Random.Range(0f, 100f);
         }
 
         void Update()
@@ -280,7 +301,20 @@ namespace Chocoflan.KiraPotionQuest
             // las flechas, sigue deslizando un poco. Esa diferencia es el "lag".
             Vector2 velocity = rb.linearVelocity;
 
-            float targetX = m_HorizontalInput * horizontalSpeed;
+            // Temblor: ruido suave y distinto en cada eje, mas un respingo de vez en cuando.
+            // Crece un poco cuando el mana esta bajo.
+            float manaFactor = 1f;
+            if (Game != null) manaFactor = 1f + tremorExtraAtLowMana * (1f - Game.ManaNormalized);
+            float tremorX = 0f, tremorY = 0f, tremorAngle = 0f;
+            if (tremorStrength > 0f || tremorTiltDegrees > 0f)
+            {
+                float t = m_LevitateTime * tremorSpeed;
+                tremorX = (Mathf.PerlinNoise(t, m_TremorSeed) - 0.5f) * 2f;
+                tremorY = (Mathf.PerlinNoise(t * 1.3f, m_TremorSeed + 17f) - 0.5f) * 2f;
+                tremorAngle = (Mathf.PerlinNoise(t * 0.9f, m_TremorSeed + 41f) - 0.5f) * 2f;
+            }
+
+            float targetX = m_HorizontalInput * horizontalSpeed + tremorX * tremorStrength * manaFactor;
             bool reversing = targetX != 0f && velocity.x != 0f &&
                              Mathf.Sign(targetX) != Mathf.Sign(velocity.x);
             float rateX = targetX == 0f
@@ -291,15 +325,22 @@ namespace Chocoflan.KiraPotionQuest
             // Al mantener ESPACIO sube solo, con un vaiven suave encima.
             float bob = Mathf.Sin(m_LevitateTime * bobFrequency * Mathf.PI * 2f) * bobAmplitude;
             velocity.y = Mathf.MoveTowards(
-                velocity.y, riseSpeed + bob,
+                velocity.y, riseSpeed + bob + tremorY * tremorStrength * manaFactor,
                 riseAcceleration * Time.fixedDeltaTime);
+
+            // Respingo: un tiron corto en una direccion al azar.
+            if (twitchChance > 0f && twitchStrength > 0f &&
+                Random.value < twitchChance * Time.fixedDeltaTime)
+            {
+                velocity += Random.insideUnitCircle.normalized * twitchStrength * manaFactor;
+            }
             rb.linearVelocity = velocity;
 
-            // Se inclina un poco hacia donde va.
-            if (tiltDegrees > 0f)
+            // Se inclina un poco hacia donde va, con una vibracion de giro encima.
+            if (tiltDegrees > 0f || tremorTiltDegrees > 0f)
             {
                 float lean = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, horizontalSpeed), -1f, 1f);
-                float targetAngle = -lean * tiltDegrees;
+                float targetAngle = -lean * tiltDegrees + tremorAngle * tremorTiltDegrees * manaFactor;
                 float blend = 1f - Mathf.Exp(-tiltSmoothing * Time.fixedDeltaTime);
                 rb.MoveRotation(Mathf.LerpAngle(rb.rotation, targetAngle, blend));
             }

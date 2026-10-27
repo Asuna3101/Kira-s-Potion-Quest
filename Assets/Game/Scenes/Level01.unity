@@ -182,8 +182,8 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.0614071
-    y: -1.9096487
+    x: -0.93533957
+    y: -1.9743447
     width: 3.1232207
     height: 4.81874
   near clip plane: 0.3
@@ -522,6 +522,12 @@ MonoBehaviour:
   bobFrequency: 1.3
   tiltDegrees: 10
   tiltSmoothing: 6
+  tremorStrength: 0.45
+  tremorSpeed: 7
+  twitchChance: 0.6
+  twitchStrength: 1.2
+  tremorTiltDegrees: 7
+  tremorExtraAtLowMana: 0.5
   clickTolerance: 0.18
   worldCamera: {fileID: 100002}
 --- !u!114 &300005
