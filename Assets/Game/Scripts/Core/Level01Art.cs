@@ -33,6 +33,15 @@ namespace Chocoflan.KiraPotionQuest
         public Sprite kira;             // Character/Kira.PNG
         public Sprite kiraVarita;       // Character/Kira_varita.PNG
 
+        [Header("Barra de mana")]
+        public Sprite barraMarco;       // UI/Marco_barra.png   (el hueco oscuro)
+        public Sprite barraRelleno;     // UI/Barra_Mana.png    (el color)
+
+        [Header("Caras de Kira segun el mana")]
+        public Sprite caraFeliz;        // Character/feliz.PNG     (mana alto)
+        public Sprite caraTriste;       // Character/triste.PNG    (mana medio)
+        public Sprite caraSinMana;      // Character/sinmana.PNG   (mana agotado)
+
         /// <summary>True si hay al menos una pieza de arte asignada.</summary>
         public bool HasAny =>
             tableroMarco != null || tableroFondo != null || paredGrande != null ||
@@ -213,6 +222,31 @@ namespace Chocoflan.KiraPotionQuest
         public static readonly Vector2 VaritaMango = new Vector2(-0.641f, 0.508f);
         public static readonly Vector2 VaritaPunta = new Vector2(0.316f, -0.148f);
         public const float VaritaAnguloReposo = -32.2f;
+
+        // ---- barra de mana ----------------------------------------------------
+        //
+        // Barra VERTICAL del lado izquierdo. Medidas sacadas del propio dibujo:
+        // el marco mide 0.89 x 5.14 u y su hueco interior 0.625 x 4.737 u.
+        //
+        // El relleno que entrego Melanie esta dibujado a media barra (2.73 u, el
+        // 58% del hueco). Aqui se estira al alto interior COMPLETO y es la escala
+        // la que marca cuanto mana queda, asi que al 100% llena el marco justo.
+
+        public static readonly Vector2 BarraMarcoCentro = new Vector2(-7.275f, -1.4354f);
+        public static readonly Vector2 BarraMarcoTamano = new Vector2(0.8917f, 5.1375f);
+
+        /// <summary>Hueco interior del marco, medido del alfa del dibujo.</summary>
+        public const float BarraInteriorAncho = 0.625f;
+        public const float BarraInteriorAlto = 4.737f;
+
+        /// <summary>Base del hueco: desde aqui crece el relleno hacia arriba.</summary>
+        public static readonly Vector2 BarraBase = new Vector2(-7.2755f, -3.792f);
+
+        /// <summary>Ancho del relleno tal como esta dibujado (un pelo mas que el hueco).</summary>
+        public const float BarraRellenoAncho = 0.6417f;
+
+        public const int OrdenBarraMarco = 0;
+        public const int OrdenBarraRelleno = 1;
 
         // ---- orden de dibujo --------------------------------------------------
 

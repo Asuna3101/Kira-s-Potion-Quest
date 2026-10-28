@@ -24,6 +24,9 @@ namespace Chocoflan.KiraPotionQuest
         public bool controlsStartOpen = false;
 
         [Header("Kira habla")]
+        [Tooltip("Globo de dialogo de Kira al bajar el mana. Desactivado: la barra de mana ya cuenta eso.")]
+        public bool mostrarDialogosDeKira = false;
+
         public string halfManaMessage = "Oh no, solo te queda la mitad de mana!! T.T";
         public string emptyManaMessage = "Te quedaste sin maná, espera un poco :c";
 
@@ -133,6 +136,12 @@ namespace Chocoflan.KiraPotionQuest
 
         void UpdateKiraDialogue()
         {
+            if (!mostrarDialogosDeKira)
+            {
+                HideBubble();
+                return;
+            }
+
             if (m_Game == null || m_BubbleRect == null) return;
 
             if (m_Game.State != LevelState.Playing)
@@ -284,22 +293,28 @@ namespace Chocoflan.KiraPotionQuest
             // ese margen mide ~37 de ancho.
             const float manaW = 10f, manaH = 120f, manaX = 14f, manaY = 26f;
 
-            var manaBorder = MakeImage(canvasGo.transform, "ManaBar_Borde",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY - 1f), V(manaW + 2f, manaH + 2f));
-            manaBorder.color = new Color(1f, 1f, 1f, 0.35f);
+            // Si el nivel ya trae la barra de mana con el arte de Melanie (ManaBar,
+            // sprites en el mundo), esta de placeholder no se dibuja: se verian las
+            // dos, una encima de la otra.
+            if (FindFirstObjectByType<ManaBar>() == null)
+            {
+                var manaBorder = MakeImage(canvasGo.transform, "ManaBar_Borde",
+                    new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY - 1f), V(manaW + 2f, manaH + 2f));
+                manaBorder.color = new Color(1f, 1f, 1f, 0.35f);
 
-            var manaBg = MakeImage(manaBorder.transform, "ManaBar_Bg",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, 1f), V(manaW, manaH));
-            manaBg.color = new Color(0.05f, 0.03f, 0.1f, 0.8f);
+                var manaBg = MakeImage(manaBorder.transform, "ManaBar_Bg",
+                    new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, 1f), V(manaW, manaH));
+                manaBg.color = new Color(0.05f, 0.03f, 0.1f, 0.8f);
 
-            // pivote abajo-izquierda: al escalar en Y crece hacia arriba
-            m_ManaFill = MakeImage(manaBg.transform, "ManaBar_Fill",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(manaW, manaH));
-            m_ManaFill.color = PlaceholderArt.PortalACol;
+                // pivote abajo-izquierda: al escalar en Y crece hacia arriba
+                m_ManaFill = MakeImage(manaBg.transform, "ManaBar_Fill",
+                    new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(manaW, manaH));
+                m_ManaFill.color = PlaceholderArt.PortalACol;
 
-            var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(8), TextAnchor.LowerLeft,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY + manaH + 4f), V(30f, 10f));
-            manaLabel.text = "MANA";
+                var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(8), TextAnchor.LowerLeft,
+                    new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY + manaH + 4f), V(30f, 10f));
+                manaLabel.text = "MANA";
+            }
 
             // --- controles (desplegables con el boton ?)
             m_ControlsPanel = MakeImage(canvasGo.transform, "Panel_Controles",

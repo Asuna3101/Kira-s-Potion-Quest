@@ -481,21 +481,21 @@ MonoBehaviour:
     aimDot: {fileID: 21300000, guid: 60dbe6b47869d994dbcabd2aa6de4455, type: 3}
     background: {fileID: 21300000, guid: 7920443863c71ee020bc814fcd809374, type: 3}
   art:
-    wall: {fileID: 0}
-    shelf: {fileID: 0}
+    wall: {fileID: -7259912736566094623, guid: 6ec0413ecbbb11149949f22e83971e77, type: 3}
+    shelf: {fileID: 7423148631968700404, guid: c3032a9a80e645b4e8b20a2d7f83fa35, type: 3}
     spikes: {fileID: 0}
-    fire: {fileID: 0}
+    fire: {fileID: 5339118113947545926, guid: bddda0c6bb3b8294f892f19a45139fc8, type: 3}
     airCurrent: {fileID: 0}
     portalA: {fileID: 0}
     portalB: {fileID: 0}
     button: {fileID: 0}
     lever: {fileID: 0}
     gate: {fileID: 0}
-    cauldron: {fileID: 0}
-    ingredientEgg: {fileID: 0}
+    cauldron: {fileID: -6919974857959850277, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+    ingredientEgg: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
     ingredientMushroom: {fileID: 0}
-    kira: {fileID: 0}
-    background: {fileID: 0}
+    kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
+    background: {fileID: -2612864455124819932, guid: df134d7f45a672047a3666eacce6bcd1, type: 3}
 --- !u!114 &300004
 MonoBehaviour:
   m_ObjectHideFlags: 0

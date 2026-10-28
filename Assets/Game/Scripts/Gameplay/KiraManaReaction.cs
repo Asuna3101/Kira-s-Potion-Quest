@@ -2,17 +2,25 @@ using UnityEngine;
 
 namespace Chocoflan.KiraPotionQuest
 {
-    /// <summary>
-    /// Cambia el sprite COMPLETO de Kira segun el mana (sin caritas superpuestas).
-    /// Tres variantes del arte original: feliz, cansada y agotada.
-    /// No altera la levitacion ni se utiliza en Nivel 2.
-    /// </summary>
     [DisallowMultipleComponent]
     public class KiraManaReaction : MonoBehaviour
     {
+        [Header("Caras (Assets/Game/Sprites/Character)")]
+        public Sprite caraFeliz;
+        public Sprite caraTriste;
+        public Sprite caraSinMana;
+
         [Header("Umbrales de mana")]
         [Range(0.05f, 0.95f)] public float tiredAt = 0.66f;
         [Range(0.01f, 0.70f)] public float exhaustedAt = 0.33f;
+
+        [Header("Resultado del nivel")]
+        [Tooltip("Al perder el nivel se queda con la cara triste, pase lo que pase con el mana.")]
+        public bool reaccionarAlResultado = true;
+
+        const int Feliz = 0;
+        const int Triste = 1;
+        const int SinMana = 2;
 
         SpriteRenderer m_Character;
         Sprite m_Original;
@@ -28,17 +36,23 @@ namespace Chocoflan.KiraPotionQuest
             if (m_Character == null) return;
 
             m_Original = m_Character.sprite;
-            m_Happy = Resources.Load<Sprite>("KiraMana/Kira_Feliz");
-            m_Tired = Resources.Load<Sprite>("KiraMana/Kira_Cansada");
-            m_Exhausted = Resources.Load<Sprite>("KiraMana/Kira_Agotada");
 
-            // En ausencia de assets no aparece una expresion flotante.
-            if (m_Happy == null || m_Tired == null || m_Exhausted == null)
+            m_Happy = caraFeliz != null ? caraFeliz : Resources.Load<Sprite>("KiraMana/Kira_Feliz");
+            m_Tired = caraTriste != null ? caraTriste : Resources.Load<Sprite>("KiraMana/Kira_Cansada");
+            m_Exhausted = caraSinMana != null ? caraSinMana : Resources.Load<Sprite>("KiraMana/Kira_Agotada");
+
+            Sprite cualquiera = m_Happy != null ? m_Happy : (m_Tired != null ? m_Tired : m_Exhausted);
+            if (cualquiera == null)
             {
-                Debug.LogWarning("KiraManaReaction: faltan sprites KiraMana en Resources.");
+                Debug.LogWarning("KiraManaReaction: no hay ninguna cara asignada " +
+                                 "(ni en el Inspector ni en Resources/KiraMana).", this);
                 enabled = false;
                 return;
             }
+            if (m_Happy == null) m_Happy = cualquiera;
+            if (m_Tired == null) m_Tired = cualquiera;
+            if (m_Exhausted == null) m_Exhausted = cualquiera;
+
             Refresh(force: true);
         }
 
@@ -49,16 +63,31 @@ namespace Chocoflan.KiraPotionQuest
 
         void Refresh(bool force)
         {
-            if (m_Character == null || GameManager.Instance == null) return;
+            if (m_Character == null) return;
 
-            float mana = GameManager.Instance.ManaNormalized;
-            float medio = Mathf.Max(tiredAt, exhaustedAt + 0.01f);
-            int mood = mana <= exhaustedAt ? 2 : mana <= medio ? 1 : 0;
+            var gm = GameManager.Instance;
+            if (gm == null) return;
+
+            int mood = MoodActual(gm);
             if (!force && mood == m_LastMood) return;
 
             m_LastMood = mood;
-            // Es Kira COMPLETA, no una segunda capa ni un icono sobre su cara.
-            m_Character.sprite = mood == 0 ? m_Happy : mood == 1 ? m_Tired : m_Exhausted;
+            m_Character.sprite = mood == Feliz ? m_Happy : mood == Triste ? m_Tired : m_Exhausted;
+        }
+
+        int MoodActual(GameManager gm)
+        {
+            if (reaccionarAlResultado)
+            {
+                if (gm.State == LevelState.Lost) return Triste;
+                if (gm.State == LevelState.Won) return Feliz;
+            }
+
+            float mana = gm.ManaNormalized;
+            float medio = Mathf.Max(tiredAt, exhaustedAt + 0.01f);
+            if (mana <= exhaustedAt) return SinMana;
+            if (mana <= medio) return Triste;
+            return Feliz;
         }
 
         void OnDestroy()

@@ -291,6 +291,9 @@ namespace Chocoflan.KiraPotionQuest
                 Level01Art.MarcoCentro, Level01Art.MarcoTamano,
                 "Tablero", Level01Art.OrdenMarco);
 
+            // --- barra de mana (va por delante del marco de madera)
+            BuildManaBar(NewGroup("HUD"));
+
             // --- Kira, decorativa, por delante del marco
             var kira = NewArtObject(decoracion, "Kira", melanieArt.kira, ArtKind.Kira,
                 Level01Art.KiraCentro, Level01Art.KiraTamano, "Character", 0);
@@ -298,6 +301,12 @@ namespace Chocoflan.KiraPotionQuest
             kiraAnim.mode = PlaceholderAnimator.Mode.Bob;
             kiraAnim.speed = 1.6f;
             kiraAnim.amplitude = 0.03f;
+
+            // Kira cambia de cara segun el mana que quede.
+            var reaccion = kira.AddComponent<KiraManaReaction>();
+            reaccion.caraFeliz = melanieArt.caraFeliz;
+            reaccion.caraTriste = melanieArt.caraTriste;
+            reaccion.caraSinMana = melanieArt.caraSinMana;
 
             // Reemplaza TODO el sprite de Kira (solo en Level01).
             kira.AddComponent<KiraManaReaction>();
@@ -314,6 +323,40 @@ namespace Chocoflan.KiraPotionQuest
             var gm = GameManager.Instance;
             if (gm != null)
                 foreach (var ing in Ingredients) gm.RegisterIngredient(ing);
+        }
+
+        /// <summary>
+        /// Barra de mana vertical con el arte de Melanie.
+        /// El relleno cuelga de un pivote puesto en la BASE del hueco del marco, y
+        /// lo que se anima es la escala en Y de ese pivote: asi la barra sube desde
+        /// abajo. Ver ManaBar.cs.
+        /// </summary>
+        void BuildManaBar(Transform parent)
+        {
+            var raiz = new GameObject("Barra_Mana");
+            raiz.transform.SetParent(parent, false);
+
+            // El marco, con su hueco oscuro.
+            var marco = NewArtObject(raiz.transform, "Barra_Marco", melanieArt.barraMarco, ArtKind.Wall,
+                Level01Art.BarraMarcoCentro, Level01Art.BarraMarcoTamano,
+                "UI", Level01Art.OrdenBarraMarco);
+
+            // Pivote en la base del hueco.
+            var pivote = new GameObject("Barra_Relleno_Pivote");
+            pivote.transform.SetParent(raiz.transform, false);
+            pivote.transform.position = Level01Art.BarraBase;
+
+            // El relleno, estirado al alto interior completo y apoyado en el pivote.
+            var relleno = NewArtObject(pivote.transform, "Barra_Relleno", melanieArt.barraRelleno, ArtKind.Background,
+                Vector2.zero,
+                new Vector2(Level01Art.BarraRellenoAncho, Level01Art.BarraInteriorAlto),
+                "UI", Level01Art.OrdenBarraRelleno);
+            relleno.transform.localPosition = new Vector3(0f, Level01Art.BarraInteriorAlto * 0.5f, 0f);
+
+            var barra = raiz.AddComponent<ManaBar>();
+            barra.marco = marco.GetComponent<SpriteRenderer>();
+            barra.relleno = relleno.GetComponent<SpriteRenderer>();
+            barra.pivoteRelleno = pivote.transform;
         }
 
         /// <summary>Cuatro colliders alrededor del hueco del marco. Sin sprite: el marco ya se ve.</summary>
@@ -565,10 +608,40 @@ namespace Chocoflan.KiraPotionQuest
                                  int col, int row, int width, int height,
                                  string sortingLayer, int sortingOrder)
         {
-            return NewSizedObject(parent, name, kind,
+            var go = NewSizedObject(parent, name, kind,
                 GridSettings.RectCenter(col, row, width, height),
                 GridSettings.RectSize(width, height),
                 sortingLayer, sortingOrder);
+
+            // Muros y estantes se REPITEN en vez de estirarse. Sin esto, el borde
+            // del nivel (16 u de ancho) saldria con un ladrillo deformado 16 veces.
+            if (SeRepite(kind)) Repetir(go, GridSettings.RectSize(width, height));
+            return go;
+        }
+
+        static bool SeRepite(ArtKind kind)
+        {
+            return kind == ArtKind.Wall || kind == ArtKind.Shelf;
+        }
+
+        /// <summary>
+        /// Dibuja el sprite en modo Tiled al tamano pedido. Requiere que el sprite
+        /// este importado con Mesh Type = Full Rect; si no lo esta, Unity avisa y se
+        /// deja el estirado de siempre.
+        /// </summary>
+        static void Repetir(GameObject go, Vector2 size)
+        {
+            var sr = go.GetComponent<SpriteRenderer>();
+            if (sr == null || sr.sprite == null) return;
+
+            Vector2 nativo = sr.sprite.bounds.size;
+            if (nativo.x <= 0.0001f || nativo.y <= 0.0001f) return;
+
+            // En modo Tiled manda sr.size, no la escala del transform.
+            go.transform.localScale = Vector3.one;
+            sr.drawMode = SpriteDrawMode.Tiled;
+            sr.tileMode = SpriteTileMode.Continuous;
+            sr.size = size;
         }
 
         /// <summary>

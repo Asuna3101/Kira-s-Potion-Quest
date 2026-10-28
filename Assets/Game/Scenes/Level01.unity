@@ -466,6 +466,11 @@ MonoBehaviour:
     huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
     kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
     kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
+    barraMarco: {fileID: 4945702371464865482, guid: a6fdf0ed43f8140b390e7997e1e3322f, type: 3}
+    barraRelleno: {fileID: -2504844221333570766, guid: 9c148d2afc823457c930eca696045b40, type: 3}
+    caraFeliz: {fileID: -607164113462501269, guid: 1bd96b68463d94f0f8268746fbe054fd, type: 3}
+    caraTriste: {fileID: -967893851632489434, guid: 6e6d56573c48c4ff7b896343eab93ee6, type: 3}
+    caraSinMana: {fileID: -1358149715297496961, guid: 93b0dabc4d3b348a985199fc4b22c696, type: 3}
   placeholders:
     wall: {fileID: 21300000, guid: ebad67a8265cf247a97fef674c8a18b1, type: 3}
     shelf: {fileID: 21300000, guid: ebbd64c2c87ac1877b11ab5091682565, type: 3}
@@ -563,6 +568,7 @@ MonoBehaviour:
   referenceWidth: 1920
   referenceHeight: 1080
   controlsStartOpen: 0
+  mostrarDialogosDeKira: 0
   halfManaMessage: Oh no, solo te queda la mitad de mana!! T.T
   emptyManaMessage: "Te quedaste sin man\xE1, espera un poco :c"
   dialogueSeconds: 3.4
