@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxMana: 100
-  manaDrainPerSecond: 33
+  manaDrainPerSecond: 28
   manaRegenPerSecond: 25
   builder: {fileID: 300003}
   enableThrow: 1
@@ -519,20 +519,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levitateKey: 1
   riseSpeed: 2
-  horizontalSpeed: 2.8
-  horizontalAcceleration: 5
-  horizontalBrake: 3
+  horizontalSpeed: 3.2
+  horizontalAcceleration: 3
+  horizontalBrake: 0.4
   riseAcceleration: 3.5
   bobAmplitude: 0.45
   bobFrequency: 1.3
   tiltDegrees: 10
   tiltSmoothing: 6
-  tremorStrength: 0.45
-  tremorSpeed: 7
-  twitchChance: 0.6
-  twitchStrength: 1.2
-  tremorTiltDegrees: 7
-  tremorExtraAtLowMana: 0.5
+  momentum: 1
+  momentumThrust: 4
+  momentumAirDamping: 0.1
   clickTolerance: 0.18
   worldCamera: {fileID: 100002}
 --- !u!114 &300005

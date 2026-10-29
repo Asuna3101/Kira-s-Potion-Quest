@@ -392,7 +392,9 @@ namespace Chocoflan.KiraPotionQuest
             var decay = new GameObject(name + "_Desgaste");
             decay.transform.SetParent(parent, false);
             decay.transform.position = new Vector3(center.x, center.y, 0f);
-            decay.AddComponent<WoodDecayFx>().size = size;
+            var decayFx = decay.AddComponent<WoodDecayFx>();
+            decayFx.size = size;
+            decayFx.target = go.transform;   // sigue a la plataforma si se mueve o cambia de tamano
         }
 
         void BuildCandle(Transform parent, string name, Sprite sprite, Vector2 center, float k = 1f)
@@ -425,6 +427,13 @@ namespace Chocoflan.KiraPotionQuest
             flame.transform.position = new Vector3(center.x, center.y + Level01Art.LlamaOffsetY * k, 0f);
             flame.transform.localScale = new Vector3(k, k, 1f);
             flame.AddComponent<CandleFlame>();
+
+            // Si la vela se mueve o se cambia de tamano, la llama va con ella.
+            var follow = flame.AddComponent<FxFollow>();
+            follow.target = go.transform;
+            follow.localOffset = new Vector2(0f, Level01Art.LlamaOffsetY * k / sy);
+            follow.referenceScale = go.transform.localScale;
+            follow.baseScale = k;
         }
 
         void BuildArtCauldron(Transform parent)
@@ -457,6 +466,12 @@ namespace Chocoflan.KiraPotionQuest
                 Level01Art.CalderoCentro.x,
                 Level01Art.CalderoCentro.y + Level01Art.CalderoAperturaOffsetY, 0f);
             fx.AddComponent<CauldronFx>();
+
+            var cauldronFollow = fx.AddComponent<FxFollow>();
+            cauldronFollow.target = go.transform;
+            cauldronFollow.localOffset = new Vector2(0f, Level01Art.CalderoAperturaOffsetY / sy);
+            cauldronFollow.referenceScale = go.transform.localScale;
+            cauldronFollow.baseScale = 1f;
         }
 
         Ingredient BuildArtIngredient(Transform parent)

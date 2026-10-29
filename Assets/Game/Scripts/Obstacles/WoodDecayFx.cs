@@ -10,6 +10,11 @@ namespace Chocoflan.KiraPotionQuest
     public class WoodDecayFx : MonoBehaviour
     {
         public Vector2 size = Vector2.one;
+
+        [Tooltip("Plataforma a la que pertenece. Si se mueve o cambia de tamano, el desgaste la sigue.")]
+        public Transform target;
+
+        BoxCollider2D m_Box;
         [Tooltip("Segundos medios entre particulas por cada 2 u de plataforma. Mayor = menos desgaste.")]
         public float interval = 1.1f;
         public Color woodColor = new Color32(0x8A, 0x5A, 0x34, 0xFF);
@@ -24,6 +29,16 @@ namespace Chocoflan.KiraPotionQuest
 
         void Update()
         {
+            if (target != null)
+            {
+                if (m_Box == null) m_Box = target.GetComponent<BoxCollider2D>();
+                if (m_Box != null)
+                {
+                    transform.position = m_Box.bounds.center;
+                    size = m_Box.bounds.size;
+                }
+            }
+
             float widthFactor = Mathf.Max(0.5f, size.x / 2f);
             m_Timer -= Time.deltaTime * widthFactor;
             if (m_Timer > 0f) return;
