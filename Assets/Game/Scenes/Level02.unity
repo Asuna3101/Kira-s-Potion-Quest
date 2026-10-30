@@ -1877,8 +1877,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: 1}
-  acceleration: 12
-  maxSpeed: 3.2
+  acceleration: 6.4
+  maxSpeed: 1.8
 --- !u!114 &736910570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3777,8 +3777,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: -1}
-  acceleration: 12
-  maxSpeed: 3.2
+  acceleration: 6.4
+  maxSpeed: 1.8
 --- !u!61 &1873557073
 BoxCollider2D:
   m_ObjectHideFlags: 0
