@@ -47,6 +47,7 @@ namespace Chocoflan.KiraPotionQuest
 
         // boton ? y panel de controles
         Canvas m_Canvas;
+        VictoryBook m_Libro;
         RectTransform m_MenuRect;
         Text m_MenuLabel;
         RectTransform m_HelpRect;
@@ -286,14 +287,27 @@ namespace Chocoflan.KiraPotionQuest
                     string pie = string.IsNullOrEmpty(siguiente)
                         ? "R = reiniciar"
                         : "Siguiente nivel...\nclick o ESPACIO para ir ya";
-                    ShowResult(true, "NIVEL SUPERADO\n" + message + "\n\n" + pie);
+
+                    // Con el arte del libro no hace falta el cartel de texto: la
+                    // frase ya esta escrita en el dibujo.
+                    if (m_Libro != null && m_Libro.TieneArte)
+                    {
+                        ShowResult(false, "");
+                        m_Libro.Mostrar();
+                    }
+                    else
+                    {
+                        ShowResult(true, "NIVEL SUPERADO\n" + message + "\n\n" + pie);
+                    }
                     break;
                 }
                 case LevelState.Lost:
+                    if (m_Libro != null) m_Libro.Ocultar();
                     ShowResult(true, "NIVEL FALLIDO\n" + message);
                     break;
                 default:
                     ShowResult(false, "");
+                    if (m_Libro != null) m_Libro.Ocultar();
                     break;
             }
             RefreshTitle();
@@ -436,6 +450,10 @@ namespace Chocoflan.KiraPotionQuest
             m_MenuLabel.rectTransform.offsetMax = Vector2.zero;
             m_MenuLabel.text = "MENU";
             m_MenuLabel.color = new Color(1f, 0.93f, 0.72f, 1f);
+
+            // --- libro de "nivel superado" (si hay arte asignado)
+            m_Libro = GetComponent<VictoryBook>();
+            if (m_Libro != null && m_Libro.TieneArte) m_Libro.Construir(canvasGo.transform, font);
 
             // --- panel de resultado
             m_ResultPanel = MakeImage(canvasGo.transform, "Panel_Resultado",

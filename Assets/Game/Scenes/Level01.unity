@@ -398,6 +398,7 @@ GameObject:
   - component: {fileID: 300004}
   - component: {fileID: 300005}
   - component: {fileID: 300006}
+  - component: {fileID: 950001}
   m_Layer: 0
   m_Name: --- GAME ---
   m_TagString: Untagged
@@ -4384,6 +4385,27 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &950001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  libroAbierto: {fileID: 21300000, guid: c01ae637502767b469c8479a35d71b3e, type: 3}
+  libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
+  anchoLibro: 1400
+  posicion: {x: 0, y: 20}
+  entrada: 0.25
+  apertura: 0.3
+  aparicionLetras: 0.4
+  pie: click o ESPACIO para continuar
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
