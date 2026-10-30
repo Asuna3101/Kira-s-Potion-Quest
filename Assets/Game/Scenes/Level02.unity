@@ -1485,10 +1485,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.6835617
-    y: -2.321168
-    width: 5.260274
-    height: 5.2554746
+    x: -1.0614071
+    y: -1.9096487
+    width: 3.1232207
+    height: 4.81874
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -3011,6 +3011,192 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 8.092}
   m_EdgeRadius: 0
+--- !u!1 &1416714896
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1416714902}
+  - component: {fileID: 1416714901}
+  - component: {fileID: 1416714900}
+  - component: {fileID: 1416714899}
+  - component: {fileID: 1416714898}
+  - component: {fileID: 1416714897}
+  m_Layer: 0
+  m_Name: --- GAME ---
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1416714897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 393d304f80dc182dc75c7bad73b58b68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  referenceWidth: 1920
+  referenceHeight: 1080
+  controlsStartOpen: 0
+  mostrarDialogosDeKira: 0
+  halfManaMessage: Oh no, solo te queda la mitad de mana!! T.T
+  emptyManaMessage: "Te quedaste sin man\xE1, espera un poco :c"
+  dialogueSeconds: 3.4
+--- !u!114 &1416714898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 766d262452a750efaa5209657d3702fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDrag: 0.35
+  maxDrag: 2.5
+  powerPerUnit: 4.2
+  previewDots: 14
+  previewStep: 0.08
+  previewDotSize: 0.15
+--- !u!114 &1416714899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1489eee336cb6d17faffd9e4989e1a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levitateKey: 1
+  riseSpeed: 2
+  horizontalSpeed: 3.2
+  horizontalAcceleration: 3
+  horizontalBrake: 0.4
+  riseAcceleration: 3.5
+  bobAmplitude: 0.45
+  bobFrequency: 1.3
+  tiltDegrees: 10
+  tiltSmoothing: 6
+  momentum: 1
+  momentumThrust: 4
+  momentumAirDamping: 0.1
+  clickTolerance: 0.18
+  worldCamera: {fileID: 0}
+--- !u!114 &1416714900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbfd500a5623cd81f0a3162a9c0890e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelLayout: 0
+  buildOnAwake: 0
+  createBackground: 1
+  useArtComposition: 1
+  melanieArt:
+    fondoCueva: {fileID: -2612864455124819932, guid: df134d7f45a672047a3666eacce6bcd1, type: 3}
+    tableroFondo: {fileID: 8462274883908310193, guid: c80efd5bc623eb44e8c332c9298ed749, type: 3}
+    tableroMarco: {fileID: 7909585728941913359, guid: b10d0604d50f13d42927bb04165116cb, type: 3}
+    paredGrande: {fileID: -396741644392594613, guid: d028c41aa44e9764f85dff2141c6d709, type: 3}
+    paredMediana: {fileID: 7423148631968700404, guid: c3032a9a80e645b4e8b20a2d7f83fa35, type: 3}
+    paredPequena: {fileID: -7259912736566094623, guid: 6ec0413ecbbb11149949f22e83971e77, type: 3}
+    vela1: {fileID: 5339118113947545926, guid: bddda0c6bb3b8294f892f19a45139fc8, type: 3}
+    vela2: {fileID: 4644114821656363341, guid: 1d33ea2afff2771468d2e2f3c60f7868, type: 3}
+    caldero: {fileID: -6919974857959850277, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+    huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
+    kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
+    kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
+    barraMarco: {fileID: 4945702371464865482, guid: a6fdf0ed43f8140b390e7997e1e3322f, type: 3}
+    barraRelleno: {fileID: -2504844221333570766, guid: 9c148d2afc823457c930eca696045b40, type: 3}
+    caraFeliz: {fileID: -607164113462501269, guid: 1bd96b68463d94f0f8268746fbe054fd, type: 3}
+    caraTriste: {fileID: -967893851632489434, guid: 6e6d56573c48c4ff7b896343eab93ee6, type: 3}
+    caraSinMana: {fileID: -1358149715297496961, guid: 93b0dabc4d3b348a985199fc4b22c696, type: 3}
+  spriteMaterial: {fileID: 2100000, guid: 5d1c7e0a9b3f4c2d8a6e4f10b7c93d25, type: 2}
+  placeholders:
+    wall: {fileID: 21300000, guid: ebad67a8265cf247a97fef674c8a18b1, type: 3}
+    shelf: {fileID: 21300000, guid: ebbd64c2c87ac1877b11ab5091682565, type: 3}
+    gate: {fileID: 21300000, guid: 1531a5f48dac689bbdc24002b265d594, type: 3}
+    spikes: {fileID: 21300000, guid: 582371ca897a303c35236b07c5a73d31, type: 3}
+    fire: {fileID: 21300000, guid: fec910522e32b9ed78f7f1a958cc5ad7, type: 3}
+    airCurrent: {fileID: 21300000, guid: 352f4b03c8df768abfc45307cabb2947, type: 3}
+    portalA: {fileID: 21300000, guid: 698b1178575565f0b1ef2d2b6e7233af, type: 3}
+    portalB: {fileID: 21300000, guid: 26b51534926dc8367530a9a9c0fef290, type: 3}
+    button: {fileID: 21300000, guid: 4ab2d3b92e3fac8fed4f39153027b2f9, type: 3}
+    lever: {fileID: 21300000, guid: 7911b3c0a4261bc429b6f4fc76c7a4f9, type: 3}
+    cauldron: {fileID: 21300000, guid: c54e8349c3ac7fe647e443eae040eee8, type: 3}
+    ingredientEgg: {fileID: 21300000, guid: 533801ddbd8034eaf51f5b03ca98f2a9, type: 3}
+    ingredientMushroom: {fileID: 21300000, guid: bbce22c23ea530e98b5eb25dab2b7572, type: 3}
+    kira: {fileID: 21300000, guid: c150d4e9278799999b84f16bd2f157bf, type: 3}
+    selectionRing: {fileID: 21300000, guid: a1be3dfc65c4dc193c7c3831f5543cdc, type: 3}
+    aimDot: {fileID: 21300000, guid: 60dbe6b47869d994dbcabd2aa6de4455, type: 3}
+    background: {fileID: 21300000, guid: 7920443863c71ee020bc814fcd809374, type: 3}
+  art:
+    wall: {fileID: 0}
+    shelf: {fileID: 0}
+    spikes: {fileID: 0}
+    fire: {fileID: 0}
+    airCurrent: {fileID: 0}
+    portalA: {fileID: 0}
+    portalB: {fileID: 0}
+    button: {fileID: 0}
+    lever: {fileID: 0}
+    gate: {fileID: 0}
+    cauldron: {fileID: 0}
+    ingredientEgg: {fileID: 0}
+    ingredientMushroom: {fileID: 0}
+    kira: {fileID: 0}
+    background: {fileID: 0}
+--- !u!114 &1416714901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9544e3949f0d0b6a5e52717c2b670f0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMana: 100
+  manaDrainPerSecond: 28
+  manaRegenPerSecond: 25
+  builder: {fileID: 1416714900}
+  enableThrow: 1
+--- !u!4 &1416714902
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1468152573
 GameObject:
   m_ObjectHideFlags: 0
@@ -4334,6 +4520,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 667710247}
   - {fileID: 913216501}
+  - {fileID: 1416714902}
   - {fileID: 794862212}
   - {fileID: 287648832}
   - {fileID: 1959193033}
