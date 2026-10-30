@@ -57,6 +57,9 @@ namespace Chocoflan.KiraPotionQuest
         public bool IsLevitating { get; private set; }
 
         Rigidbody2D m_Rb;
+        Collider2D m_Collider;
+        PhysicsMaterial2D m_NormalMaterial;
+        PhysicsMaterial2D m_SlideMaterial;
         SpriteRenderer m_Sr;
         Transform m_SelectionRing;
         float m_SparkTimer;
@@ -67,6 +70,8 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_Rb = GetComponent<Rigidbody2D>();
             m_Sr = GetComponent<SpriteRenderer>();
+            m_Collider = GetComponent<Collider2D>();
+            if (m_Collider != null) m_NormalMaterial = m_Collider.sharedMaterial;
 
             m_Rb.bodyType = RigidbodyType2D.Dynamic;
             m_Rb.gravityScale = normalGravityScale;
@@ -120,11 +125,21 @@ namespace Chocoflan.KiraPotionQuest
             m_Rb.linearDamping = levitationLinearDamping;
             m_Rb.angularVelocity = 0f;
             m_SparkTimer = 0f;
+
+            // Mientras levita no se agarra a nada: sin roce puede deslizarse por el techo
+            // o por una pared aunque una corriente de aire lo empuje contra ella.
+            if (m_Collider != null)
+            {
+                if (m_SlideMaterial == null)
+                    m_SlideMaterial = new PhysicsMaterial2D("LevitandoSinRoce") { friction = 0f, bounciness = 0.05f };
+                m_Collider.sharedMaterial = m_SlideMaterial;
+            }
         }
 
         public void EndLevitate()
         {
             IsLevitating = false;
+            if (m_Collider != null) m_Collider.sharedMaterial = m_NormalMaterial;
             if (IsBroken || IsDelivered) return;
             m_Rb.gravityScale = normalGravityScale;
             m_Rb.linearDamping = normalLinearDamping;

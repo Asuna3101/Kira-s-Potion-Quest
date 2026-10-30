@@ -1877,8 +1877,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: 1}
-  acceleration: 6.4
-  maxSpeed: 1.8
+  acceleration: 6.5
+  maxSpeed: 1.9
+  levitatingFactor: 0.4
 --- !u!114 &736910570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3046,6 +3047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
+  escenaDelMenu: MainMenu
   controlsStartOpen: 0
   mostrarDialogosDeKira: 0
   halfManaMessage: Oh no, solo te queda la mitad de mana!! T.T
@@ -3780,8 +3782,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: -1}
-  acceleration: 6.4
-  maxSpeed: 1.8
+  acceleration: 9
+  maxSpeed: 2.8
+  levitatingFactor: 0.4
 --- !u!61 &1873557073
 BoxCollider2D:
   m_ObjectHideFlags: 0

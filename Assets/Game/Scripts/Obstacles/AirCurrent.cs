@@ -18,6 +18,9 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Velocidad maxima que la corriente puede imprimir en su eje (u/s).")]
         public float maxSpeed = 3.2f;
 
+        [Tooltip("Fuerza de la corriente sobre un ingrediente que esta levitando (1 = igual, 0.4 = el jugador la vence con facilidad). Evita que el huevo quede atrapado en la columna.")]
+        [Range(0f, 1f)] public float levitatingFactor = 0.4f;
+
         void Reset()
         {
             var col = GetComponent<Collider2D>();
@@ -35,7 +38,8 @@ namespace Chocoflan.KiraPotionQuest
             Vector2 dir = direction.sqrMagnitude < 0.0001f ? Vector2.up : direction.normalized;
             float along = Vector2.Dot(rb.linearVelocity, dir);
             if (along < maxSpeed)
-                rb.AddForce(dir * acceleration * rb.mass, ForceMode2D.Force);
+                rb.AddForce(dir * acceleration * (ing.IsLevitating ? levitatingFactor : 1f) * rb.mass,
+                    ForceMode2D.Force);
         }
     }
 }
