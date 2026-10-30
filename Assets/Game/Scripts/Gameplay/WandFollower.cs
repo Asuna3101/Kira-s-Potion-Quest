@@ -12,6 +12,12 @@ namespace Chocoflan.KiraPotionQuest
     /// </summary>
     public class WandFollower : MonoBehaviour
     {
+        // Los valores por defecto son los de Level01Art (VaritaMango, VaritaPunta,
+        // VaritaAnguloReposo). Estan aqui como campos serializados a proposito: con
+        // el nivel HORNEADO en la escena el LevelBuilder no corre, asi que nadie
+        // llamaria a Configure() y la varita giraria sobre su centro en vez de
+        // sobre el mango.
+
         [Header("Seguimiento")]
         [Tooltip("Suavidad al girar (segundos). Mayor = mas lenta.")]
         public float smoothTime = 0.12f;
@@ -29,10 +35,20 @@ namespace Chocoflan.KiraPotionQuest
         [Header("Chispas en la punta mientras levita")]
         public float sparkInterval = 0.09f;
 
-        // Geometria, relativa al centro del sprite en reposo (unidades del mundo).
-        Vector2 m_HandleOffset;
-        Vector2 m_TipOffset;
-        float m_RestAngle;          // angulo del palo en reposo (grados)
+        [Header("Geometria de la varita")]
+        [Tooltip("Donde esta el mango respecto al centro del sprite. Es el pivote al girar.")]
+        public Vector2 handleOffset = new Vector2(-0.641f, 0.508f);
+
+        [Tooltip("Centro del brillo de la punta, de donde salen las chispas.")]
+        public Vector2 tipOffset = new Vector2(0.316f, -0.148f);
+
+        [Tooltip("Angulo del palo (mango hacia punta) con el sprite sin girar.")]
+        public float restAngleDegrees = -32.2f;
+
+        // Alias internos, para no tocar el resto del codigo.
+        Vector2 m_HandleOffset => handleOffset;
+        Vector2 m_TipOffset => tipOffset;
+        float m_RestAngle => restAngleDegrees;
 
         Vector3 m_RestCenter;       // posicion del sprite en reposo
         float m_Angle;              // giro actual respecto al reposo
@@ -53,11 +69,11 @@ namespace Chocoflan.KiraPotionQuest
         /// handleOffset: donde esta el mango; tipOffset: centro del brillo de la punta;
         /// restAngleDegrees: angulo del palo (mango hacia punta) con el sprite sin girar.
         /// </summary>
-        public void Configure(Vector2 handleOffset, Vector2 tipOffset, float restAngleDegrees)
+        public void Configure(Vector2 handle, Vector2 tip, float restAngle)
         {
-            m_HandleOffset = handleOffset;
-            m_TipOffset = tipOffset;
-            m_RestAngle = restAngleDegrees;
+            handleOffset = handle;
+            tipOffset = tip;
+            restAngleDegrees = restAngle;
             m_RestCenter = transform.position;
         }
 

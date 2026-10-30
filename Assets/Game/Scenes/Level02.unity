@@ -1279,6 +1279,9 @@ MonoBehaviour:
   idleSwayDegrees: 1.5
   idleSwaySpeed: 1.6
   sparkInterval: 0.1
+  handleOffset: {x: -0.641, y: 0.508}
+  tipOffset: {x: 0.316, y: -0.148}
+  restAngleDegrees: -32.2
 --- !u!212 &387725191
 SpriteRenderer:
   serializedVersion: 2
