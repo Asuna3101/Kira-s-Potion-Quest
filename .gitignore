@@ -76,3 +76,8 @@ mono_crash.*
 **/[Aa]ssets/Unity.VisualScripting.Generated/
 **/UIElementsSchema/
 **/[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Builds de WebGL para itch
+/Builds/
+/[Bb]uilds/
+*.zip
