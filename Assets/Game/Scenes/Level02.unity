@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: 65613664}
   - component: {fileID: 65613663}
   - component: {fileID: 65613662}
+  - component: {fileID: 900002}
   m_Layer: 0
   m_Name: Vela_2
   m_TagString: Untagged
@@ -708,6 +709,7 @@ GameObject:
   - component: {fileID: 186369674}
   - component: {fileID: 186369673}
   - component: {fileID: 186369672}
+  - component: {fileID: 900003}
   m_Layer: 0
   m_Name: Caldero
   m_TagString: Untagged
@@ -907,6 +909,7 @@ GameObject:
   - component: {fileID: 288647577}
   - component: {fileID: 288647579}
   - component: {fileID: 288647578}
+  - component: {fileID: 900001}
   m_Layer: 0
   m_Name: Pared_Pequena_Alta
   m_TagString: Untagged
@@ -1939,6 +1942,7 @@ GameObject:
   - component: {fileID: 858356517}
   - component: {fileID: 858356519}
   - component: {fileID: 858356518}
+  - component: {fileID: 900010}
   m_Layer: 0
   m_Name: Pared_Grande
   m_TagString: Untagged
@@ -4520,6 +4524,71 @@ MonoBehaviour:
   breakFrames: []
   breakFrameRate: 14
   lostDelay: 0.9
+--- !u!114 &900001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288647576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9d4c71f8ab4a05b6c30d927e14f8a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitud: 0.8
+  velocidad: 1.0
+  desfase: 0.0
+  horizontal: 0
+--- !u!114 &900002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65613660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9d4c71f8ab4a05b6c30d927e14f8a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitud: 0.8
+  velocidad: 1.0
+  desfase: 0.0
+  horizontal: 0
+--- !u!114 &900003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186369670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9d4c71f8ab4a05b6c30d927e14f8a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitud: 0.7
+  velocidad: 0.75
+  desfase: 0.35
+  horizontal: 0
+--- !u!114 &900010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858356516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9d4c71f8ab4a05b6c30d927e14f8a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitud: 0.7
+  velocidad: 0.75
+  desfase: 0.35
+  horizontal: 0
+
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
