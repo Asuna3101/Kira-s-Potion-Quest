@@ -25,7 +25,77 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
         {
             EditorSceneManager.sceneOpened += OnSceneOpened;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            Undo.postprocessModifications += OnModificacionManual;
             QueueRefresh(); // Cuando se importan scripts o se vuelve a abrir el proyecto.
+        }
+
+        /// <summary>
+        /// En cuanto el equipo toca a mano un objeto del preview (lo arrastra, le
+        /// cambia un sprite, lo que sea), el nivel deja de ser temporal y pasa a ser
+        /// parte de la escena.
+        ///
+        /// Sin esto, el preview esta marcado DontSaveInEditor: Unity no lo guarda y
+        /// al entrar en Play se borra y el builder lo regenera, asi que cualquier
+        /// cambio hecho a mano se pierde. Que es justo lo que pasaba.
+        /// </summary>
+        static UndoPropertyModification[] OnModificacionManual(UndoPropertyModification[] mods)
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return mods;
+
+            foreach (var mod in mods)
+            {
+                Object target = mod.currentValue != null ? mod.currentValue.target : null;
+                if (target == null) continue;
+
+                Transform t = target as Transform;
+                if (t == null)
+                {
+                    var comp = target as Component;
+                    if (comp != null) t = comp.transform;
+                    else
+                    {
+                        var go = target as GameObject;
+                        if (go != null) t = go.transform;
+                    }
+                }
+                if (t == null) continue;
+
+                if (HacerPermanente(t)) break;   // una vez por tanda basta
+            }
+            return mods;
+        }
+
+        /// <summary>
+        /// Si el transform esta dentro de un preview temporal, convierte TODO el
+        /// nivel en permanente y apaga la reconstruccion automatica.
+        /// Devuelve true si hizo el cambio.
+        /// </summary>
+        static bool HacerPermanente(Transform t)
+        {
+            LevelBuilder builder = FindBuilder(t.gameObject.scene);
+            if (builder == null) return false;
+
+            Transform raiz = FindGeneratedRoot(builder);
+            if (raiz == null || !IsTemporary(raiz)) return false;
+            if (!t.IsChildOf(raiz)) return false;
+
+            MarcarPermanenteRecursivo(raiz);
+            builder.buildOnAwake = false;
+
+            EditorUtility.SetDirty(builder);
+            EditorSceneManager.MarkSceneDirty(builder.gameObject.scene);
+
+            Debug.Log("[Chocoflan] Tocaste el nivel a mano, asi que deja de ser una vista previa " +
+                      "y pasa a formar parte de la escena. 'Build On Awake' se apago para que no " +
+                      "se regenere al darle Play. Guarda con Cmd+S.", builder);
+            return true;
+        }
+
+        static void MarcarPermanenteRecursivo(Transform t)
+        {
+            t.gameObject.hideFlags = HideFlags.None;
+            for (int i = 0; i < t.childCount; i++)
+                MarcarPermanenteRecursivo(t.GetChild(i));
         }
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)

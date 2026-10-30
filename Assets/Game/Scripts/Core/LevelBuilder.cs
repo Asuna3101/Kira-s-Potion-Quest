@@ -83,6 +83,11 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Sprites de Melanie. Los que queden vacios caen en el placeholder.")]
         public MelanieArt melanieArt = new MelanieArt();
 
+        [Header("Material de los sprites")]
+        [Tooltip("Assets/Game/Materials/Sprite_Unlit.mat. Tiene que ser un material del proyecto: " +
+                 "si se crea por codigo, al hornear el nivel la referencia se pierde y todo sale ROSA.")]
+        public Material spriteMaterial;
+
         [Header("Placeholders (PNG en Sprites/PlaceHolders/Generados)")]
         [Tooltip("Se usan cuando el hueco del arte final esta vacio. Para reemplazar arte, " +
                  "arrastra el sprite nuevo aqui o al bloque de arriba: no hay que tocar codigo.")]
@@ -144,6 +149,7 @@ namespace Chocoflan.KiraPotionQuest
             // Lo primero: publicar los placeholders para que Ingredient y
             // ThrowController usen los mismos assets.
             PlaceholderLibrary.Current = placeholders;
+            PlaceholderArt.ProjectSpriteMaterial = spriteMaterial;
 
             // El Nivel 1 ya tiene arte: se construye de la composicion de Melanie.
             // El de Enzo sigue con su mapa ASCII y placeholders.

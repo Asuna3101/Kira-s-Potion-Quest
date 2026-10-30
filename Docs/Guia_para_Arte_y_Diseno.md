@@ -158,6 +158,10 @@ El botón **▶ (Play)** arriba en el centro. Para salir, el mismo botón otra v
 > ⚠️ **Lo que cambies mientras está en Play se pierde al salir.** Es la trampa
 > clásica de Unity. Movelo con el Play apagado.
 
+Con el Play apagado sí se guarda: en cuanto movés algo, el nivel pasa de ser una
+vista previa a formar parte de la escena (sale un aviso en la consola). Guardá con
+**`Cmd + S`** y al darle Play vas a ver tus cambios.
+
 ---
 
 ## 5. Qué conviene no tocar

@@ -352,8 +352,15 @@ selección y puntos de trayectoria), así que no hay que arrastrarlos en cada ob
 
 ### Tener los objetos en la Hierarchy
 
-**`Chocoflan > 3 - Hornear Nivel 1 en la escena`** → crea los GameObjects de
-verdad, para moverlos y retocarlos a mano. Después **guardar con `Cmd+S`**.
+Hay dos formas, y la primera es automática:
+
+**1. Mover algo a mano.** En cuanto arrastrás un objeto del nivel (o le cambiás
+cualquier cosa en el Inspector), el nivel deja de ser una vista previa y pasa a
+formar parte de la escena. Aparece un mensaje en la consola avisando. Después,
+**`Cmd+S`**.
+
+**2. `Chocoflan > 3 - Hornear Nivel 1 en la escena`** → lo mismo pero a propósito,
+sin tener que tocar nada primero. Después, **`Cmd+S`**.
 
 Dos cosas que hace ese botón además de crear los objetos:
 

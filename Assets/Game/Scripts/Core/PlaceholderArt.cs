@@ -137,8 +137,20 @@ namespace Chocoflan.KiraPotionQuest
         /// Material unlit para que los placeholders se vean aunque la escena no
         /// tenga Light2D. Si el shader no se encuentra devuelve null (material por defecto).
         /// </summary>
+        /// <summary>
+        /// Material de proyecto que hay que usar siempre que se pueda:
+        /// Assets/Game/Materials/Sprite_Unlit.mat. Lo publica LevelBuilder.
+        ///
+        /// Es importante que sea un ASSET y no un material creado al vuelo: al
+        /// hornear el nivel en la escena, un material creado por codigo (con
+        /// hideFlags DontSave) no se puede guardar, la referencia queda vacia y
+        /// Unity pinta todo de ROSA al volver a cargar.
+        /// </summary>
+        public static Material ProjectSpriteMaterial { get; set; }
+
         public static Material UnlitSpriteMaterial()
         {
+            if (ProjectSpriteMaterial != null) return ProjectSpriteMaterial;
             if (s_Unlit != null) return s_Unlit;
             Shader sh = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
             if (sh == null) sh = Shader.Find("Sprites/Default");

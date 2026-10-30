@@ -462,6 +462,7 @@ MonoBehaviour:
   levelLayout: 1
   buildOnAwake: 1
   createBackground: 1
+  spriteMaterial: {fileID: 2100000, guid: 5d1c7e0a9b3f4c2d8a6e4f10b7c93d25, type: 2}
   placeholders:
     wall: {fileID: 21300000, guid: ebad67a8265cf247a97fef674c8a18b1, type: 3}
     shelf: {fileID: 21300000, guid: ebbd64c2c87ac1877b11ab5091682565, type: 3}
