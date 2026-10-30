@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.09178322
-    y: -1.2083334
-    width: 1.6783216
-    height: 2.5
+    x: -3.6921399
+    y: -3.6860466
+    width: 8.384279
+    height: 8.372093
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -2518,7 +2518,7 @@ Transform:
   m_GameObject: {fileID: 855835106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.007, y: -0.59, z: 0}
+  m_LocalPosition: {x: -1.64, y: -0.54, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4226,7 +4226,7 @@ Transform:
   m_GameObject: {fileID: 2140105750}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.14, y: -0.62, z: 0}
+  m_LocalPosition: {x: -5.08, y: -0.62, z: 0}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4246,7 +4246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
   ingredientName: El huevo
   fragile: 1
-  breakImpactSpeed: 5.5
+  breakImpactSpeed: 3
   normalGravityScale: 0.6
   normalLinearDamping: 0.35
   levitationLinearDamping: 0.8
@@ -4369,7 +4369,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
+  m_Sprite: {fileID: 1977875402080922389, guid: 7ce0031b5b7e242bca7f1ec271ec8a9a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
