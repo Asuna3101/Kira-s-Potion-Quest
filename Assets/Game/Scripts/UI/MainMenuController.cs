@@ -98,6 +98,16 @@ namespace Chocoflan.KiraPotionQuest
         RectTransform m_PanelAjustes;
         Font m_Font;
 
+        /// <summary>
+        /// Camara que hay que pasarle al hit-test de los botones. En Screen Space -
+        /// Overlay tiene que ser null; en Screen Space - Camera, la del canvas. Si
+        /// se equivoca, los clicks caen en el sitio que no es.
+        /// </summary>
+        Camera CamaraDelCanvas =>
+            m_Canvas == null || m_Canvas.renderMode == RenderMode.ScreenSpaceOverlay
+                ? null
+                : m_Canvas.worldCamera;
+
         bool HayPanelAbierto =>
             (m_PanelCreditos != null && m_PanelCreditos.gameObject.activeSelf) ||
             (m_PanelAjustes != null && m_PanelAjustes.gameObject.activeSelf);
@@ -232,7 +242,7 @@ namespace Chocoflan.KiraPotionQuest
                 bool activo = b.rect.gameObject.activeInHierarchy && (!bloqueado || b.esDePanel);
 
                 bool dentro = activo &&
-                              RectTransformUtility.RectangleContainsScreenPoint(b.rect, screen, null);
+                              RectTransformUtility.RectangleContainsScreenPoint(b.rect, screen, CamaraDelCanvas);
                 b.hover = dentro;
 
                 if (!b.animating)
@@ -367,7 +377,20 @@ namespace Chocoflan.KiraPotionQuest
             canvasGo.transform.SetParent(transform, false);
 
             m_Canvas = canvasGo.AddComponent<Canvas>();
-            m_Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            // Screen Space - Camera para que el canvas quede DENTRO del marco de la
+            // camara en la Scene view, igual que los niveles, y se pueda editar a
+            // mano sin pelearse con un rectangulo gigante fuera de cuadro.
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                m_Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                m_Canvas.worldCamera = cam;
+                m_Canvas.planeDistance = 10f;
+            }
+            else
+            {
+                m_Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            }
             m_Canvas.sortingOrder = 100;   // por delante de cualquier otro canvas
 
             var scaler = canvasGo.AddComponent<CanvasScaler>();

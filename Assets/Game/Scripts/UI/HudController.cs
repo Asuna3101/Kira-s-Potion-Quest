@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Chocoflan.KiraPotionQuest
@@ -18,6 +19,10 @@ namespace Chocoflan.KiraPotionQuest
         [Header("Apariencia")]
         public int referenceWidth = GridSettings.ReferenceWidthPx;
         public int referenceHeight = GridSettings.ReferenceHeightPx;
+
+        [Header("Volver al menu")]
+        [Tooltip("Escena que carga el boton MENU y la tecla Escape.")]
+        public string escenaDelMenu = "MainMenu";
 
         [Header("Ayuda (boton ?)")]
         [Tooltip("Mostrar las indicaciones de control desde el inicio. Por defecto estan ocultas.")]
@@ -41,6 +46,9 @@ namespace Chocoflan.KiraPotionQuest
         Image m_ResultPanel;
 
         // boton ? y panel de controles
+        Canvas m_Canvas;
+        RectTransform m_MenuRect;
+        Text m_MenuLabel;
         RectTransform m_HelpRect;
         Image m_HelpGlow;
         GameObject m_ControlsPanel;
@@ -100,11 +108,63 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             HandleHelpButton();
+            HandleMenuButton();
             UpdateKiraDialogue();
             TickBubble();
         }
 
         // ---------------- boton ? (controles desplegables) -------------------
+
+        /// <summary>
+        /// Boton MENU (arriba a la derecha) y atajo con Escape. Vuelve a la pantalla
+        /// de titulo desde cualquier nivel.
+        /// </summary>
+        void HandleMenuButton()
+        {
+            var kb = Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                VolverAlMenu();
+                return;
+            }
+
+            if (m_MenuRect == null) return;
+
+            var mouse = Mouse.current;
+            if (mouse == null) return;
+
+            bool encima = RectTransformUtility.RectangleContainsScreenPoint(
+                m_MenuRect, mouse.position.ReadValue(), CamaraDelCanvas);
+
+            if (m_MenuLabel != null)
+            {
+                m_MenuLabel.color = encima
+                    ? new Color(1f, 1f, 0.85f, 1f)
+                    : new Color(1f, 0.93f, 0.72f, 1f);
+            }
+
+            if (encima && mouse.leftButton.wasPressedThisFrame) VolverAlMenu();
+        }
+
+        public void VolverAlMenu()
+        {
+            if (!Application.CanStreamedLevelBeLoaded(escenaDelMenu))
+            {
+                Debug.LogError("[HUD] La escena '" + escenaDelMenu + "' no esta en Build Settings. " +
+                               "Menu Chocoflan > 1 - Aplicar ajustes de proyecto.", this);
+                return;
+            }
+
+            // El nivel pudo dejar el tiempo parado al ganar o perder.
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(escenaDelMenu);
+        }
+
+        /// <summary>Null en Overlay, la camara del canvas en Screen Space - Camera.</summary>
+        Camera CamaraDelCanvas =>
+            m_Canvas == null || m_Canvas.renderMode == RenderMode.ScreenSpaceOverlay
+                ? null
+                : m_Canvas.worldCamera;
 
         void HandleHelpButton()
         {
@@ -262,6 +322,7 @@ namespace Chocoflan.KiraPotionQuest
             var canvasGo = new GameObject("HUD_Canvas");
             canvasGo.transform.SetParent(transform, false);
             var canvas = canvasGo.AddComponent<Canvas>();
+            m_Canvas = canvas;
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
 
@@ -354,6 +415,20 @@ namespace Chocoflan.KiraPotionQuest
             helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);
 
             SetControlsOpen(controlsStartOpen);
+
+            // --- boton de volver al menu: arriba a la derecha
+            var menuBtn = MakeImage(canvasGo.transform, "Btn_Menu",
+                new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(58f, 20f));
+            menuBtn.color = new Color(0.22f, 0.12f, 0.33f, 0.88f);
+            menuBtn.rectTransform.pivot = new Vector2(1f, 1f);
+            m_MenuRect = menuBtn.rectTransform;
+
+            m_MenuLabel = MakeText(menuBtn.transform, "Txt_Menu", font, Sz(9), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            m_MenuLabel.rectTransform.offsetMin = Vector2.zero;
+            m_MenuLabel.rectTransform.offsetMax = Vector2.zero;
+            m_MenuLabel.text = "MENU";
+            m_MenuLabel.color = new Color(1f, 0.93f, 0.72f, 1f);
 
             // --- panel de resultado
             m_ResultPanel = MakeImage(canvasGo.transform, "Panel_Resultado",

@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.8076924
-    y: -1.80692
-    width: 4.6153846
-    height: 4.613413
+    x: -0.23863636
+    y: -0.7534722
+    width: 1.6783216
+    height: 2.5
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -488,6 +488,9 @@ MonoBehaviour:
     ingredientEgg: {fileID: 21300000, guid: 533801ddbd8034eaf51f5b03ca98f2a9, type: 3}
     ingredientMushroom: {fileID: 21300000, guid: bbce22c23ea530e98b5eb25dab2b7572, type: 3}
     kira: {fileID: 21300000, guid: c150d4e9278799999b84f16bd2f157bf, type: 3}
+    kiraHappy: {fileID: 0}
+    kiraSad: {fileID: 0}
+    kiraNoMana: {fileID: 0}
     selectionRing: {fileID: 21300000, guid: a1be3dfc65c4dc193c7c3831f5543cdc, type: 3}
     aimDot: {fileID: 21300000, guid: 60dbe6b47869d994dbcabd2aa6de4455, type: 3}
     background: {fileID: 21300000, guid: 7920443863c71ee020bc814fcd809374, type: 3}
@@ -541,7 +544,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 300000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 766d262452a750efaa5209657d3702fd, type: 3}
   m_Name: 
@@ -566,6 +569,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
+  escenaDelMenu: MainMenu
   controlsStartOpen: 0
   mostrarDialogosDeKira: 0
   halfManaMessage: Oh no, solo te queda la mitad de mana!! T.T
