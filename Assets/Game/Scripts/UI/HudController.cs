@@ -280,8 +280,15 @@ namespace Chocoflan.KiraPotionQuest
             switch (state)
             {
                 case LevelState.Won:
-                    ShowResult(true, "NIVEL SUPERADO\n" + message + "\n\nR = reiniciar");
+                {
+                    // Si hay siguiente nivel, el GameManager va a cargarlo solo.
+                    string siguiente = m_Game != null ? m_Game.SiguienteNivel : "";
+                    string pie = string.IsNullOrEmpty(siguiente)
+                        ? "R = reiniciar"
+                        : "Siguiente nivel...\nclick o ESPACIO para ir ya";
+                    ShowResult(true, "NIVEL SUPERADO\n" + message + "\n\n" + pie);
                     break;
+                }
                 case LevelState.Lost:
                     ShowResult(true, "NIVEL FALLIDO\n" + message);
                     break;

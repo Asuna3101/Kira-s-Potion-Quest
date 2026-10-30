@@ -45,9 +45,9 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
             // El menu va primero: es la escena con la que arranca el juego.
             // Todos los niveles tienen que estar en Build Settings para que el
             // boton MENU del HUD pueda volver, y el menu pueda cargarlos.
-            AddSceneToBuildSettings("Assets/Game/Scenes/Level02_Enzo.unity", 0);
             AddSceneToBuildSettings("Assets/Game/Scenes/Level02.unity", 0);
             AddSceneToBuildSettings(Level01ScenePath, 0);
+            AddSceneToBuildSettings("Assets/Game/Scenes/LevelSelect.unity", 0);
             AddSceneToBuildSettings(MainMenuScenePath, 0);
 
             Debug.Log("[Chocoflan] Ajustes aplicados: " +

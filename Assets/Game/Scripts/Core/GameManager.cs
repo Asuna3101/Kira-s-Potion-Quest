@@ -28,6 +28,13 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Builder del nivel. Si esta asignado, R reconstruye el tablero sin recargar la escena.")]
         public LevelBuilder builder;
 
+        [Header("Al superar el nivel")]
+        [Tooltip("Escena que se carga al ganar. Vacio = se queda en la pantalla de victoria.")]
+        public string escenaSiguiente = "";
+
+        [Tooltip("Segundos que se ve el cartel de victoria antes de pasar al siguiente nivel.")]
+        public float segundosParaSiguiente = 2.5f;
+
         [Header("Mecanica opcional del GDD (\"por alcance\")")]
         [Tooltip("Activa la mecanica Lanzar: apuntar con el mouse y soltar el ingrediente, con proyeccion de trayectoria.")]
         public bool enableThrow = true;
@@ -81,10 +88,51 @@ namespace Chocoflan.KiraPotionQuest
         /// <summary>El nivel esta horneado a mano en la escena, no lo genera el builder.</summary>
         bool NivelHorneado => builder != null && !builder.buildOnAwake;
 
+        float m_CuentaAtras = -1f;
+
         void Update()
         {
             HandleRestartInput();
+            HandleSiguienteNivel();
         }
+
+        /// <summary>
+        /// Al ganar, espera unos segundos con el cartel en pantalla y pasa al
+        /// siguiente nivel. Con una tecla o un click se salta la espera.
+        /// </summary>
+        void HandleSiguienteNivel()
+        {
+            if (m_CuentaAtras < 0f) return;
+
+            bool saltar = false;
+            var kb = Keyboard.current;
+            if (kb != null && (kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame)) saltar = true;
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame) saltar = true;
+
+            m_CuentaAtras -= Time.unscaledDeltaTime;
+            if (!saltar && m_CuentaAtras > 0f) return;
+
+            m_CuentaAtras = -1f;
+            CargarSiguiente();
+        }
+
+        void CargarSiguiente()
+        {
+            if (string.IsNullOrEmpty(escenaSiguiente)) return;
+
+            if (!Application.CanStreamedLevelBeLoaded(escenaSiguiente))
+            {
+                Debug.LogError("[GameManager] La escena '" + escenaSiguiente + "' no esta en Build Settings. " +
+                               "Menu Chocoflan > 1 - Aplicar ajustes de proyecto.", this);
+                return;
+            }
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(escenaSiguiente);
+        }
+
+        /// <summary>Nombre legible del siguiente nivel, para el cartel de victoria.</summary>
+        public string SiguienteNivel => escenaSiguiente;
 
         void HandleRestartInput()
         {
@@ -142,6 +190,9 @@ namespace Chocoflan.KiraPotionQuest
         void SetState(LevelState newState, string message)
         {
             State = newState;
+            m_CuentaAtras = (newState == LevelState.Won && !string.IsNullOrEmpty(escenaSiguiente))
+                ? Mathf.Max(0.3f, segundosParaSiguiente)
+                : -1f;
             LastMessage = message;
             StateChanged?.Invoke(newState, message);
         }

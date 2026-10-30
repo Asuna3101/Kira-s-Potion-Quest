@@ -437,6 +437,8 @@ MonoBehaviour:
   manaDrainPerSecond: 28
   manaRegenPerSecond: 25
   builder: {fileID: 300003}
+  escenaSiguiente: Level02
+  segundosParaSiguiente: 2.5
   enableThrow: 1
 --- !u!114 &300003
 MonoBehaviour:

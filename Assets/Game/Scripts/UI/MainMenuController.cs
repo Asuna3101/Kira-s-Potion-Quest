@@ -54,7 +54,7 @@ namespace Chocoflan.KiraPotionQuest
 
         [Header("Escenas")]
         [Tooltip("Escena que carga el boton Play. Debe estar en Build Settings.")]
-        public string escenaDeJuego = "Level01";
+        public string escenaDeJuego = "LevelSelect";
 
         [Header("Canvas")]
         public int canvasWidth = GridSettings.ReferenceWidthPx;   // 1920
@@ -464,102 +464,208 @@ namespace Chocoflan.KiraPotionQuest
             });
         }
 
+        // Paleta de los paneles, tomada del arte del menu.
+        static readonly Color PanelFondo   = new Color(0.10f, 0.07f, 0.16f, 0.97f);
+        static readonly Color PanelBorde   = new Color(0.96f, 0.89f, 0.78f, 1f);
+        static readonly Color PanelBarra   = new Color(0.42f, 0.28f, 0.20f, 1f);
+        static readonly Color TextoClaro   = new Color(0.96f, 0.91f, 0.82f, 1f);
+        static readonly Color TextoSuave   = new Color(0.78f, 0.72f, 0.66f, 1f);
+        static readonly Color BotonFondo   = new Color32(0x6B, 0x4A, 0x33, 0xFF);
+
+        static readonly string[] Equipo =
+        {
+            "Sasha Servat Quezada|Productora / Game Designer",
+            "Melanie Pinto Sulca|Artista / Animadora",
+            "Andrea Ximena Fontenla Alva|Game Designer / Programadora",
+            "Edson Vasquez Solis|Programador",
+            "Enzo David Castro Contreras|Programador",
+        };
+
         RectTransform ConstruirCreditos(Transform parent)
         {
-            var panel = NuevoPanel(parent, "Panel_Creditos", new Vector2(1100f, 700f));
+            // Tarjeta 980 x 760. La barra de titulo ocupa 76 arriba y el "Cuerpo"
+            // queda desplazado 33 px hacia abajo respecto al centro de la tarjeta:
+            // por eso las Y de aqui llevan ese +33 ya incorporado.
+            var raiz = NuevoPanel(parent, "Panel_Creditos", new Vector2(980f, 760f), "Creditos");
+            Transform cuerpo = raiz.transform.Find("Borde/Tarjeta/Cuerpo");
 
-            NuevoTexto(panel.transform, "Txt_Titulo", "Chocoflan", 72, TextAnchor.UpperCenter)
-                .rectTransform.anchoredPosition = new Vector2(0f, -40f);
+            float y = 273f;
+            foreach (string entrada in Equipo)
+            {
+                string[] partes = entrada.Split('|');
 
-            var cuerpo = NuevoTexto(panel.transform, "Txt_Equipo",
-                "Sasha Servat Quezada  -  Productora / Game Designer\n" +
-                "Melanie Pinto Sulca  -  Artista / Animadora\n" +
-                "Andrea Ximena Fontenla Alva  -  Game Designer / Programadora\n" +
-                "Edson Vasquez Solis  -  Programador\n" +
-                "Enzo David Castro Contreras  -  Programador",
-                40, TextAnchor.MiddleCenter);
-            cuerpo.rectTransform.sizeDelta = new Vector2(980f, 400f);
-            cuerpo.rectTransform.anchoredPosition = new Vector2(0f, 10f);
+                var nombre = NuevoTextoEn(cuerpo, "Nombre", partes[0], 34, TextAnchor.MiddleCenter,
+                    new Vector2(0f, y), new Vector2(880f, 40f));
+                nombre.color = TextoClaro;
 
-            BotonTexto(panel, "Volver", new Vector2(0f, -280f), CerrarPaneles);
-            return panel.GetComponent<RectTransform>();
+                var rol = NuevoTextoEn(cuerpo, "Rol", partes[1], 24, TextAnchor.MiddleCenter,
+                    new Vector2(0f, y - 34f), new Vector2(880f, 32f));
+                rol.color = TextoSuave;
+
+                y -= 86f;
+            }
+
+            var estudio = NuevoTextoEn(cuerpo, "Txt_Estudio", "Equipo Chocoflan  -  2026", 24,
+                TextAnchor.MiddleCenter, new Vector2(0f, -167f), new Vector2(880f, 32f));
+            estudio.color = TextoSuave;
+
+            BotonTexto(raiz, "Volver", new Vector2(0f, -300f), CerrarPaneles, new Vector2(260f, 72f));
+            return raiz.GetComponent<RectTransform>();
         }
 
         RectTransform ConstruirAjustes(Transform parent)
         {
-            var panel = NuevoPanel(parent, "Panel_Ajustes", new Vector2(900f, 560f));
+            // Tarjeta 820 x 600, mismo desplazamiento de 33 px del Cuerpo.
+            var raiz = NuevoPanel(parent, "Panel_Ajustes", new Vector2(820f, 600f), "Ajustes");
+            Transform cuerpo = raiz.transform.Find("Borde/Tarjeta/Cuerpo");
 
-            NuevoTexto(panel.transform, "Txt_Titulo", "Ajustes", 72, TextAnchor.UpperCenter)
-                .rectTransform.anchoredPosition = new Vector2(0f, -40f);
+            // --- volumen: etiqueta y debajo  [-]  valor  [+]
+            var etqVol = NuevoTextoEn(cuerpo, "Txt_Volumen", "Volumen", 32, TextAnchor.MiddleCenter,
+                new Vector2(0f, 183f), new Vector2(700f, 40f));
+            etqVol.color = TextoClaro;
 
-            // Volumen general: barra con dos botones. Simple a proposito, el
-            // mixer de audio todavia no existe.
-            var etiqueta = NuevoTexto(panel.transform, "Txt_Volumen", "Volumen", 44, TextAnchor.MiddleCenter);
-            etiqueta.rectTransform.anchoredPosition = new Vector2(0f, 60f);
-            etiqueta.rectTransform.sizeDelta = new Vector2(700f, 60f);
+            var valor = NuevoTextoEn(cuerpo, "Txt_Valor", TextoVolumen(), 36, TextAnchor.MiddleCenter,
+                new Vector2(0f, 113f), new Vector2(200f, 56f));
+            valor.color = TextoClaro;
 
-            var valor = NuevoTexto(panel.transform, "Txt_Valor",
-                Mathf.RoundToInt(AudioListener.volume * 100f) + " %", 44, TextAnchor.MiddleCenter);
-            valor.rectTransform.anchoredPosition = new Vector2(0f, -10f);
-            valor.rectTransform.sizeDelta = new Vector2(300f, 60f);
-
-            BotonTexto(panel, "-", new Vector2(-220f, -10f), () =>
+            BotonTexto(raiz, "-", new Vector2(-170f, 80f), () =>
             {
                 AudioListener.volume = Mathf.Clamp01(AudioListener.volume - 0.1f);
-                valor.text = Mathf.RoundToInt(AudioListener.volume * 100f) + " %";
-            }, new Vector2(110f, 80f));
+                valor.text = TextoVolumen();
+            }, new Vector2(80f, 60f));
 
-            BotonTexto(panel, "+", new Vector2(220f, -10f), () =>
+            BotonTexto(raiz, "+", new Vector2(170f, 80f), () =>
             {
                 AudioListener.volume = Mathf.Clamp01(AudioListener.volume + 0.1f);
-                valor.text = Mathf.RoundToInt(AudioListener.volume * 100f) + " %";
-            }, new Vector2(110f, 80f));
+                valor.text = TextoVolumen();
+            }, new Vector2(80f, 60f));
 
-            var pantalla = NuevoTexto(panel.transform, "Txt_Pantalla",
-                Screen.fullScreen ? "Pantalla completa" : "Ventana", 40, TextAnchor.MiddleCenter);
-            pantalla.rectTransform.anchoredPosition = new Vector2(0f, -110f);
-            pantalla.rectTransform.sizeDelta = new Vector2(700f, 60f);
+            Separador(cuerpo, new Vector2(0f, 53f), 620f);
 
-            BotonTexto(panel, "Cambiar", new Vector2(0f, -180f), () =>
+            // --- pantalla: etiqueta y un boton que alterna
+            var etqPant = NuevoTextoEn(cuerpo, "Txt_Pantalla", "Pantalla", 32, TextAnchor.MiddleCenter,
+                new Vector2(0f, 3f), new Vector2(700f, 40f));
+            etqPant.color = TextoClaro;
+
+            var btnPant = BotonTexto(raiz, TextoPantalla(), new Vector2(0f, -100f), null,
+                new Vector2(420f, 64f));
+            Text modo = btnPant.GetComponentInChildren<Text>();
+            m_Botones[m_Botones.Count - 1].onClick = () =>
             {
                 Screen.fullScreen = !Screen.fullScreen;
-                pantalla.text = Screen.fullScreen ? "Pantalla completa" : "Ventana";
-            }, new Vector2(300f, 80f));
+                if (modo != null) modo.text = TextoPantalla();
+            };
 
-            BotonTexto(panel, "Volver", new Vector2(0f, -250f), CerrarPaneles);
-            return panel.GetComponent<RectTransform>();
+            BotonTexto(raiz, "Volver", new Vector2(0f, -210f), CerrarPaneles, new Vector2(260f, 72f));
+            return raiz.GetComponent<RectTransform>();
         }
 
-        // ------------------------------------------------------- utilidades
+        static string TextoVolumen() => Mathf.RoundToInt(AudioListener.volume * 100f) + " %";
+        static string TextoPantalla() => Screen.fullScreen ? "Pantalla completa" : "Ventana";
 
-        GameObject NuevoPanel(Transform parent, string nombre, Vector2 size)
+        /// <summary>Linea fina para separar secciones dentro de un panel.</summary>
+        void Separador(Transform parent, Vector2 pos, float ancho)
         {
-            var go = NuevoUI(parent, nombre);
+            var go = NuevoUI(parent, "Separador");
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.07f, 0.05f, 0.12f, 0.93f);
-            Colocar(img.rectTransform, Vector2.zero, size);
-            return go;
+            img.color = new Color(1f, 1f, 1f, 0.12f);
+            img.raycastTarget = false;
+            Colocar(img.rectTransform, pos, new Vector2(ancho, 2f));
         }
 
-        void BotonTexto(GameObject parent, string etiqueta, Vector2 pos, Action onClick,
-                        Vector2? size = null)
+        /// <summary>
+        /// Panel de dialogo: oscurece el menu de atras, y encima una tarjeta con
+        /// borde claro, barra de titulo y un hijo "Cuerpo" donde va el contenido.
+        /// Devuelve la raiz (que ocupa toda la pantalla), no la tarjeta.
+        /// </summary>
+        GameObject NuevoPanel(Transform parent, string nombre, Vector2 size, string titulo)
         {
+            // Capa que cubre la pantalla y apaga el menu de atras.
+            var raiz = NuevoUI(parent, nombre);
+            var velo = raiz.AddComponent<Image>();
+            velo.color = new Color(0.03f, 0.02f, 0.06f, 0.72f);
+            velo.raycastTarget = false;
+            Estirar(velo.rectTransform);
+
+            // Borde claro = una tarjeta algo mas grande por detras.
+            var borde = NuevoUI(raiz.transform, "Borde");
+            var bordeImg = borde.AddComponent<Image>();
+            bordeImg.color = PanelBorde;
+            bordeImg.raycastTarget = false;
+            Colocar(bordeImg.rectTransform, Vector2.zero, size + new Vector2(10f, 10f));
+
+            var tarjeta = NuevoUI(borde.transform, "Tarjeta");
+            var fondoImg = tarjeta.AddComponent<Image>();
+            fondoImg.color = PanelFondo;
+            fondoImg.raycastTarget = false;
+            Estirar(fondoImg.rectTransform);
+            fondoImg.rectTransform.offsetMin = new Vector2(5f, 5f);
+            fondoImg.rectTransform.offsetMax = new Vector2(-5f, -5f);
+
+            // Barra de titulo pegada arriba.
+            const float altoBarra = 76f;
+            var barra = NuevoUI(tarjeta.transform, "Barra");
+            var barraImg = barra.AddComponent<Image>();
+            barraImg.color = PanelBarra;
+            barraImg.raycastTarget = false;
+            var brt = barraImg.rectTransform;
+            brt.anchorMin = new Vector2(0f, 1f);
+            brt.anchorMax = new Vector2(1f, 1f);
+            brt.pivot = new Vector2(0.5f, 1f);
+            brt.offsetMin = new Vector2(0f, -altoBarra);
+            brt.offsetMax = Vector2.zero;
+            brt.sizeDelta = new Vector2(0f, altoBarra);
+
+            var txtTitulo = NuevoTexto(barra.transform, "Txt_Titulo", titulo, 42, TextAnchor.MiddleCenter);
+            Estirar(txtTitulo.rectTransform);
+            txtTitulo.color = TextoClaro;
+
+            // Cuerpo: todo lo que se coloque dentro queda por debajo del titulo.
+            var cuerpo = NuevoUI(tarjeta.transform, "Cuerpo");
+            var crt = cuerpo.GetComponent<RectTransform>();
+            crt.anchorMin = Vector2.zero;
+            crt.anchorMax = Vector2.one;
+            crt.offsetMin = new Vector2(20f, 20f);
+            crt.offsetMax = new Vector2(-20f, -altoBarra - 10f);
+
+            return raiz;
+        }
+
+        GameObject BotonTexto(GameObject parent, string etiqueta, Vector2 pos, Action onClick,
+                              Vector2? size = null)
+        {
+            Vector2 tam = size ?? new Vector2(300f, 90f);
+
+            // Borde claro, igual que el de la tarjeta, para que los botones del
+            // panel se lean como parte del mismo conjunto.
             var go = NuevoUI(parent.transform, "Btn_" + etiqueta);
-            var img = go.AddComponent<Image>();
-            img.color = new Color32(0x6B, 0x4A, 0x33, 0xFF);
-            Colocar(img.rectTransform, pos, size ?? new Vector2(300f, 90f));
+            var borde = go.AddComponent<Image>();
+            borde.color = PanelBorde;
+            borde.raycastTarget = false;
+            Colocar(borde.rectTransform, pos, tam);
 
-            var txt = NuevoTexto(go.transform, "Txt", etiqueta, 40, TextAnchor.MiddleCenter);
+            var relleno = NuevoUI(go.transform, "Fondo");
+            var img = relleno.AddComponent<Image>();
+            img.color = BotonFondo;
+            img.raycastTarget = false;
+            Estirar(img.rectTransform);
+            img.rectTransform.offsetMin = new Vector2(4f, 4f);
+            img.rectTransform.offsetMax = new Vector2(-4f, -4f);
+
+            var txt = NuevoTexto(relleno.transform, "Txt", etiqueta,
+                Mathf.RoundToInt(Mathf.Clamp(tam.y * 0.45f, 22f, 40f)), TextAnchor.MiddleCenter);
             Estirar(txt.rectTransform);
+            txt.color = TextoClaro;
 
             m_Botones.Add(new Boton
             {
-                rect = img.rectTransform,
+                rect = borde.rectTransform,
                 image = img,
                 onClick = onClick,
-                baseScale = img.rectTransform.localScale,
+                baseScale = borde.rectTransform.localScale,
                 esDePanel = true
             });
+            return go;
         }
 
         /// <summary>
@@ -574,6 +680,15 @@ namespace Chocoflan.KiraPotionQuest
             go.layer = LayerMask.NameToLayer("UI");
             go.transform.SetParent(parent, false);
             return go;
+        }
+
+        /// <summary>Texto con posicion y tamano explicitos. Evita los solapes del layout a ojo.</summary>
+        Text NuevoTextoEn(Transform parent, string nombre, string contenido, int size,
+                          TextAnchor anchor, Vector2 pos, Vector2 tam)
+        {
+            var txt = NuevoTexto(parent, nombre, contenido, size, anchor);
+            Colocar(txt.rectTransform, pos, tam);
+            return txt;
         }
 
         Image NuevaImagen(Transform parent, string nombre, Sprite sprite)

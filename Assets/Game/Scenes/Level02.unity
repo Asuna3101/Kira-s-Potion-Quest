@@ -3190,6 +3190,8 @@ MonoBehaviour:
   manaDrainPerSecond: 28
   manaRegenPerSecond: 25
   builder: {fileID: 1416714900}
+  escenaSiguiente: LevelSelect
+  segundosParaSiguiente: 2.5
   enableThrow: 1
 --- !u!4 &1416714902
 Transform:

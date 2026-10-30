@@ -306,7 +306,7 @@ MonoBehaviour:
     botonPlay: {fileID: 2601571510984264346, guid: 2e6bded86bca8e247a0806588bea54b1, type: 3}
     botonCreditos: {fileID: 1977838310180851048, guid: 2c8a06d83a74cf94989aafb0cd767592, type: 3}
     botonSettings: {fileID: 7468721798811914801, guid: 91a284dd84fdfcf49a71cea3d0902fed, type: 3}
-  escenaDeJuego: Level01
+  escenaDeJuego: LevelSelect
   canvasWidth: 1920
   canvasHeight: 1080
   hoverScale: 1.06
