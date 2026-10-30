@@ -9,7 +9,7 @@ namespace Chocoflan.KiraPotionQuest
     /// </summary>
     public static class Level02EnzoData
     {
-        public const string DisplayName = "Nivel 2 - El jardin del viento";
+        public const string DisplayName = "El jardín del viento";
         public static readonly string[] MapTopDown =
         {
             "################################", // fila 17

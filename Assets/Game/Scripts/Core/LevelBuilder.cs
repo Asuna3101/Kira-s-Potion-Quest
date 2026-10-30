@@ -314,8 +314,6 @@ namespace Chocoflan.KiraPotionQuest
             reaccion.caraTriste = melanieArt.caraTriste;
             reaccion.caraSinMana = melanieArt.caraSinMana;
 
-            // Reemplaza TODO el sprite de Kira (solo en Level01).
-            kira.AddComponent<KiraManaReaction>();
 
             if (melanieArt.kiraVarita != null)
             {
@@ -896,8 +894,11 @@ namespace Chocoflan.KiraPotionQuest
             anim.speed = 1.6f;
             anim.amplitude = 0.03f;
 
-            if (levelLayout == LevelLayout.Level01)
-                go.AddComponent<KiraManaReaction>();
+            // Reaccion emocional de Kira disponible en ambos niveles.
+            var reaccion = go.AddComponent<KiraManaReaction>();
+            reaccion.caraFeliz = placeholders != null ? placeholders.kiraHappy : null;
+            reaccion.caraTriste = placeholders != null ? placeholders.kiraSad : null;
+            reaccion.caraSinMana = placeholders != null ? placeholders.kiraNoMana : null;
         }
 
         void BuildBackground(Transform parent)

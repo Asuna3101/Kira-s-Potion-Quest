@@ -44,6 +44,10 @@ namespace Chocoflan.KiraPotionQuest
 
         [Header("Personaje y FX")]
         public Sprite kira;
+        [Header("Expresiones de Kira")]
+        public Sprite kiraHappy;
+        public Sprite kiraSad;
+        public Sprite kiraNoMana;
         public Sprite selectionRing;
         public Sprite aimDot;
         public Sprite background;

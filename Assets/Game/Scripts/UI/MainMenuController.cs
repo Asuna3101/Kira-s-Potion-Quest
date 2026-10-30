@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -88,6 +89,7 @@ namespace Chocoflan.KiraPotionQuest
 
             /// <summary>Los botones de dentro de un panel son los unicos activos mientras ese panel esta abierto.</summary>
             public bool esDePanel;
+            public bool animating;
         }
 
         readonly List<Boton> m_Botones = new List<Boton>();
@@ -233,14 +235,90 @@ namespace Chocoflan.KiraPotionQuest
                               RectTransformUtility.RectangleContainsScreenPoint(b.rect, screen, null);
                 b.hover = dentro;
 
-                float objetivo = dentro ? hoverScale : 1f;
-                b.rect.localScale = Vector3.Lerp(
-                    b.rect.localScale,
-                    b.baseScale * objetivo,
-                    1f - Mathf.Exp(-hoverLerp * Time.unscaledDeltaTime));
+                if (!b.animating)
+                {
+                    float objetivo = dentro ? hoverScale : 1f;
+                    b.rect.localScale = Vector3.Lerp(
+                        b.rect.localScale,
+                        b.baseScale * objetivo,
+                        1f - Mathf.Exp(-hoverLerp * Time.unscaledDeltaTime));
+                }
 
-                if (dentro && click) b.onClick?.Invoke();
+                if (dentro && click && !b.animating)
+                {
+                    if (b.esDePanel) b.onClick?.Invoke();
+                    else StartCoroutine(AnimarClickMagico(b));
+                }
             }
+        }
+
+
+        /// <summary>Pequena respuesta magica al pulsar los tres botones principales.</summary>
+        IEnumerator AnimarClickMagico(Boton boton)
+        {
+            if (boton == null || boton.rect == null) yield break;
+
+            boton.animating = true;
+            RectTransform rt = boton.rect;
+            Vector3 escalaInicial = rt.localScale;
+            float tiempo = 0f;
+            const float duracion = 0.28f;
+
+            // Destello de pequenas estrellas doradas alrededor del boton.
+            const int cantidad = 8;
+            Image[] estrellas = new Image[cantidad];
+            Vector2[] direcciones = new Vector2[cantidad];
+            Sprite pixel = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1),
+                new Vector2(0.5f, 0.5f));
+
+            for (int i = 0; i < cantidad; i++)
+            {
+                float angulo = (Mathf.PI * 2f * i) / cantidad;
+                direcciones[i] = new Vector2(Mathf.Cos(angulo), Mathf.Sin(angulo));
+                GameObject estrella = new GameObject("Click_Sparkle", typeof(RectTransform), typeof(Image));
+                estrella.transform.SetParent(rt, false);
+                RectTransform estrellaRt = estrella.GetComponent<RectTransform>();
+                estrellaRt.anchorMin = estrellaRt.anchorMax = new Vector2(0.5f, 0.5f);
+                estrellaRt.anchoredPosition = Vector2.zero;
+                float lado = (i % 2 == 0) ? 13f : 8f;
+                estrellaRt.sizeDelta = new Vector2(lado, lado);
+                estrellaRt.localRotation = Quaternion.Euler(0f, 0f, 45f);
+                estrellas[i] = estrella.GetComponent<Image>();
+                estrellas[i].sprite = pixel;
+                estrellas[i].color = new Color(1f, 0.82f, 0.38f, 0.95f);
+                estrellas[i].raycastTarget = false;
+            }
+
+            while (tiempo < duracion)
+            {
+                tiempo += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(tiempo / duracion);
+
+                // Apretar y luego dar un pequeno rebote.
+                float escala;
+                if (t < 0.28f) escala = Mathf.Lerp(1f, 0.88f, t / 0.28f);
+                else escala = Mathf.Lerp(0.88f, 1.12f, (t - 0.28f) / 0.72f);
+                rt.localScale = escalaInicial * escala;
+
+                for (int i = 0; i < cantidad; i++)
+                {
+                    if (estrellas[i] == null) continue;
+                    RectTransform estrellaRt = estrellas[i].rectTransform;
+                    estrellaRt.anchoredPosition = direcciones[i] * (18f + 48f * t);
+                    float alpha = 0.95f * (1f - t);
+                    estrellas[i].color = new Color(1f, 0.82f, 0.38f, alpha);
+                    estrellaRt.localScale = Vector3.one * (1f - 0.45f * t);
+                }
+
+                yield return null;
+            }
+
+            rt.localScale = escalaInicial;
+            for (int i = 0; i < estrellas.Length; i++)
+                if (estrellas[i] != null) Destroy(estrellas[i].gameObject);
+
+            boton.animating = false;
+            boton.onClick?.Invoke();
         }
 
         // ------------------------------------------------------- acciones

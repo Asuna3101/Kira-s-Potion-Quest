@@ -68,7 +68,7 @@ namespace Chocoflan.KiraPotionQuest
     /// </summary>
     public static class Level01Art
     {
-        public const string DisplayName = "Nivel 1 - La primera receta";
+        public const string DisplayName = "La primera receta";
 
         // ---- fondo ---------------------------------------------------------
 

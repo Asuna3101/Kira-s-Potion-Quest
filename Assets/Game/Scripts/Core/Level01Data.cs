@@ -35,7 +35,7 @@ namespace Chocoflan.KiraPotionQuest
     /// </summary>
     public static class Level01Data
     {
-        public const string DisplayName = "Nivel 1 - La primera receta";
+        public const string DisplayName = "La primera receta";
 
         /// <summary>Filas de arriba (row 17) hacia abajo (row 0). 18 filas x 32 columnas.</summary>
         public static readonly string[] MapTopDown =
