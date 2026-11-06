@@ -260,7 +260,7 @@ namespace Chocoflan.KiraPotionQuest
                 else
                 {
                     ReleaseLevitation();
-                    Game.ShowHint("Sin mana. Deja de levitar para recuperarlo.");
+                    Game.ShowHint("Sin maná. Deja de levitar para recuperarlo.");
                 }
             }
             else

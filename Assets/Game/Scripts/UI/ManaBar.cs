@@ -6,16 +6,23 @@ namespace Chocoflan.KiraPotionQuest
     /// Barra de mana de levitacion, con el arte de Melanie
     /// (UI/Marco_barra.png + UI/Barra_Mana.png).
     ///
-    /// Es una barra VERTICAL del lado izquierdo de la pantalla. No es UI de Canvas:
-    /// son sprites colocados en el mundo, igual que el resto del arte del nivel, y
-    /// en la posicion exacta en la que Melanie los dibujo sobre el lienzo.
+    /// Es una barra VERTICAL del lado izquierdo. No es UI de Canvas: son sprites
+    /// colocados en el mundo, en la posicion exacta en la que se dibujaron.
     ///
-    /// El relleno conserva su escala original: una mascara rectangular recorta
-    /// la imagen desde arriba al consumir mana y la descubre desde abajo al
-    /// recuperarse, sin comprimir el dibujo de Melanie.
+    /// COMO SE VACIA
+    /// -------------
+    /// El dibujo NO se escala ni se aplasta. Cada vez que cambia el mana se
+    /// construye por codigo un sprite nuevo que es un RECORTE de la textura
+    /// original: se toma solo la franja de abajo, de la altura que toque. El
+    /// trozo que se ve conserva sus proporciones exactas, asi que la barra
+    /// parece llenarse y vaciarse de verdad.
     ///
-    /// Al agotarse el mana se prepara un tinte mas oscuro que se mantiene
-    /// hasta superar el umbral de recuperacion. El recorte al 0 % es completo.
+    /// El pivote del recorte es el borde inferior, asi que crece hacia arriba
+    /// desde la base del marco sin recolocar nada.
+    ///
+    /// Antes esto se hacia con un SpriteMask. Se cambio porque la mascara
+    /// depende del stencil y no funciona de forma fiable con el material unlit
+    /// que usan los sprites del nivel.
     /// </summary>
     public class ManaBar : MonoBehaviour
     {
@@ -26,7 +33,7 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Relleno de color.")]
         public SpriteRenderer relleno;
 
-        [Tooltip("Pivote del relleno, colocado en la base interior del marco.")]
+        [Tooltip("Heredado de escenas anteriores. Ya no se escala; se deja en 1.")]
         public Transform pivoteRelleno;
 
         [Header("Colores")]
@@ -48,64 +55,57 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Velocidad con la que la barra persigue el valor real. 0 = instantaneo.")]
         public float suavizado = 12f;
 
-        [Tooltip("Valor heredado de escenas anteriores; el nuevo recorte llega a 0 % sin deformar la imagen.")]
-        [Range(0f, 0.1f)]
-        public float minimoVisible = 0.03f;
+        [Tooltip("Pasos de recorte. 200 = la barra se mueve en doscientos escalones, imperceptible.")]
+        [Range(32, 512)]
+        public int pasos = 200;
 
         float m_Mostrado = 1f;
         bool m_Agotada;
-        SpriteMask m_Mascara;
-        Sprite m_SpriteMascara;
-        Bounds m_LimitesRelleno;
+
+        // Datos del sprite original, para recortarlo sin perderlo.
+        Sprite m_Original;
+        Texture2D m_Textura;
+        Rect m_RectOriginal;
+        float m_Ppu = 100f;
+        Vector3 m_Base;          // borde inferior del relleno, en el mundo
+        Sprite m_Recorte;        // sprite generado, se reemplaza al cambiar
+        int m_PasoActual = -1;
 
         public bool Agotada => m_Agotada;
 
         void Start()
         {
-            PrepararMascara();
+            Preparar();
             m_Mostrado = ManaActual();
             Aplicar(true);
         }
 
-        void PrepararMascara()
+        void Preparar()
         {
             if (relleno == null || relleno.sprite == null) return;
 
-            // Recupera la escala del sprite: las escenas antiguas mantienen el
-            // pivote serializado, pero ya no debe deformar el dibujo.
+            // Las escenas viejas traen el pivote escalado por el sistema anterior.
             if (pivoteRelleno != null) pivoteRelleno.localScale = Vector3.one;
-            m_LimitesRelleno = relleno.bounds;
 
-            // El sprite blanco solo actua como recorte, nunca se renderiza.
-            var textura = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            textura.name = "MascaraMana_2x2";
-            textura.filterMode = FilterMode.Point;
-            textura.SetPixels(new[] { Color.white, Color.white, Color.white, Color.white });
-            textura.Apply();
-            m_SpriteMascara = Sprite.Create(textura, new Rect(0f, 0f, 2f, 2f),
-                new Vector2(0.5f, 0.5f), 1f);
-            m_SpriteMascara.name = "MascaraMana_Rectangulo";
+            // Sin mascara: el recorte lo hace el propio sprite.
+            relleno.maskInteraction = SpriteMaskInteraction.None;
+            var mascaraVieja = transform.Find("Mascara_Relleno_Mana");
+            if (mascaraVieja != null) Destroy(mascaraVieja.gameObject);
 
-            var go = new GameObject("Mascara_Relleno_Mana");
-            go.transform.SetParent(transform, false);
-            m_Mascara = go.AddComponent<SpriteMask>();
-            m_Mascara.sprite = m_SpriteMascara;
-            m_Mascara.alphaCutoff = 0.1f;
-            m_Mascara.isCustomRangeActive = true;
-            m_Mascara.frontSortingLayerID = relleno.sortingLayerID;
-            m_Mascara.backSortingLayerID = relleno.sortingLayerID;
-            m_Mascara.frontSortingOrder = relleno.sortingOrder + 1;
-            m_Mascara.backSortingOrder = relleno.sortingOrder - 1;
-            relleno.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            m_Original = relleno.sprite;
+            m_Textura = m_Original.texture;
+            m_RectOriginal = m_Original.rect;
+            m_Ppu = m_Original.pixelsPerUnit;
+
+            // La base: borde inferior del dibujo tal como esta colocado ahora.
+            Bounds b = relleno.bounds;
+            m_Base = new Vector3(b.center.x, b.min.y, relleno.transform.position.z);
+            relleno.transform.position = m_Base;
         }
 
         void OnDestroy()
         {
-            if (m_SpriteMascara != null)
-            {
-                Destroy(m_SpriteMascara.texture);
-                Destroy(m_SpriteMascara);
-            }
+            if (m_Recorte != null) Destroy(m_Recorte);
         }
 
         void Update()
@@ -133,28 +133,49 @@ namespace Chocoflan.KiraPotionQuest
         void Aplicar(bool instantaneo)
         {
             if (instantaneo) m_Mostrado = ManaActual();
+            if (relleno == null) return;
 
-            if (m_Mascara != null)
-            {
-                // El marco y el relleno mantienen sus proporciones originales.
-                float porcentaje = Mathf.Clamp01(m_Mostrado);
-                float altura = m_LimitesRelleno.size.y * porcentaje;
-                Transform mascara = m_Mascara.transform;
-                mascara.position = new Vector3(m_LimitesRelleno.center.x,
-                    m_LimitesRelleno.min.y + altura * 0.5f, relleno.transform.position.z);
-                Vector3 escalaPadre = transform.lossyScale;
-                mascara.localScale = new Vector3(
-                    m_LimitesRelleno.size.x / (2f * Mathf.Max(Mathf.Abs(escalaPadre.x), 0.0001f)),
-                    altura / (2f * Mathf.Max(Mathf.Abs(escalaPadre.y), 0.0001f)), 1f);
-            }
+            ActualizarRecorte(Mathf.Clamp01(m_Mostrado));
 
-            if (relleno != null)
+            Color objetivo = m_Agotada ? colorAgotado : colorNormal;
+            relleno.color = instantaneo || suavizado <= 0f
+                ? objetivo
+                : Color.Lerp(relleno.color, objetivo, 1f - Mathf.Exp(-suavizado * Time.unscaledDeltaTime));
+        }
+
+        /// <summary>
+        /// Rehace el sprite con solo la franja de abajo. Se cuantiza a 'pasos'
+        /// para no construir un sprite nuevo en cada frame.
+        /// </summary>
+        void ActualizarRecorte(float porcentaje)
+        {
+            if (m_Textura == null) return;
+
+            int paso = Mathf.Clamp(Mathf.RoundToInt(porcentaje * pasos), 0, pasos);
+            if (paso == m_PasoActual) return;
+            m_PasoActual = paso;
+
+            if (paso <= 0)
             {
-                Color objetivo = m_Agotada ? colorAgotado : colorNormal;
-                relleno.color = instantaneo || suavizado <= 0f
-                    ? objetivo
-                    : Color.Lerp(relleno.color, objetivo, 1f - Mathf.Exp(-suavizado * Time.unscaledDeltaTime));
+                relleno.enabled = false;
+                return;
             }
+            relleno.enabled = true;
+
+            float fraccion = paso / (float)pasos;
+            float altoPx = Mathf.Max(1f, Mathf.Round(m_RectOriginal.height * fraccion));
+
+            // La franja de ABAJO del dibujo original.
+            var rect = new Rect(m_RectOriginal.x, m_RectOriginal.y, m_RectOriginal.width, altoPx);
+
+            Sprite anterior = m_Recorte;
+            // Pivote en el borde inferior: al crecer, sube desde la base.
+            m_Recorte = Sprite.Create(m_Textura, rect, new Vector2(0.5f, 0f), m_Ppu, 0, SpriteMeshType.FullRect);
+            m_Recorte.name = "Barra_Mana_Recorte";
+            relleno.sprite = m_Recorte;
+            relleno.transform.position = m_Base;
+
+            if (anterior != null) Destroy(anterior);
         }
     }
 }

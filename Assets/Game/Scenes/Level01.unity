@@ -399,6 +399,7 @@ GameObject:
   - component: {fileID: 300005}
   - component: {fileID: 300006}
   - component: {fileID: 950001}
+  - component: {fileID: 960001}
   m_Layer: 0
   m_Name: --- GAME ---
   m_TagString: Untagged
@@ -439,7 +440,7 @@ MonoBehaviour:
   manaRegenPerSecond: 25
   builder: {fileID: 300003}
   escenaSiguiente: Level02
-  segundosParaSiguiente: 2.5
+  segundosParaSiguiente: 4
   enableThrow: 1
 --- !u!114 &300003
 MonoBehaviour:
@@ -572,6 +573,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
+  spriteBotonMenu: {fileID: -1544913928648876571, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
   escenaDelMenu: MainMenu
   controlsStartOpen: 0
   mostrarDialogosDeKira: 0
@@ -595,10 +597,11 @@ MonoBehaviour:
   libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
   anchoLibro: 1400
   posicion: {x: 0, y: 20}
-  entrada: 0.25
-  apertura: 0.3
+  entrada: 0.3
+  pausaCerrado: 0.45
+  apertura: 0.4
   aparicionLetras: 0.4
-  pie: click o ESPACIO para continuar
+  pie: haz click para continuar
 --- !u!62 &128419451
 PhysicsMaterial2D:
   m_ObjectHideFlags: 0
@@ -4444,6 +4447,26 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &960001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c3e5a71d84b4f62a1072e6b3d905c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intervalo: 0.16
+  intervaloLevitando: 0.07
+  radio: 0.42
+  variacionRadio: 0.1
+  tamano: 0.1
+  duracion: 0.45
+  color: {r: 1, g: 0.95, b: 0.7, a: 0.95}
+  colorLevitando: {r: 0.85, g: 0.95, b: 1, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

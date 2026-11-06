@@ -61,6 +61,13 @@ namespace Chocoflan.KiraPotionQuest
         PhysicsMaterial2D m_NormalMaterial;
         PhysicsMaterial2D m_SlideMaterial;
         SpriteRenderer m_Sr;
+        [Header("Aro de seleccion")]
+        [Tooltip("Resaltado alrededor del ingrediente elegido. Apagado: el aro placeholder se veia como un disco amarillo enorme.")]
+        public bool mostrarAroSeleccion = false;
+
+        [Tooltip("Diametro del aro en unidades. El ingrediente mide 0.8, asi que 0.95 lo rodea sin taparlo.")]
+        public float diametroAro = 0.95f;
+
         Transform m_SelectionRing;
         float m_SparkTimer;
 
@@ -85,6 +92,12 @@ namespace Chocoflan.KiraPotionQuest
 
         void BuildSelectionRing()
         {
+            // Desactivado: el aro placeholder medía 1 u fija, mucho mas que el
+            // ingrediente, y con el filtrado se veia como un disco amarillo enorme.
+            // Se deja el codigo porque a los testers les gustaba tener un resaltado;
+            // para recuperarlo, marcar el check y darle un sprite decente.
+            if (!mostrarAroSeleccion) return;
+
             var ring = new GameObject("SelectionRing");
             ring.transform.SetParent(transform, false);
             var sr = ring.AddComponent<SpriteRenderer>();
@@ -93,14 +106,15 @@ namespace Chocoflan.KiraPotionQuest
             sr.sortingOrder = -1;
             Material mat = PlaceholderArt.UnlitSpriteMaterial();
             if (mat != null) sr.sharedMaterial = mat;
-            // El ingrediente mide 0.8 u, asi que su transform viene escalado. El aro
-            // deshace ese escalado para medir siempre 1 u en el mundo y quedar como
-            // un halo justo por fuera del ingrediente.
-            Vector3 parentScale = transform.localScale;
-            ring.transform.localScale = new Vector3(
-                Mathf.Approximately(parentScale.x, 0f) ? 1f : 1f / parentScale.x,
-                Mathf.Approximately(parentScale.y, 0f) ? 1f : 1f / parentScale.y,
-                1f);
+
+            // El aro se ajusta al tamano REAL del ingrediente en el mundo, en vez
+            // de medir 1 u pase lo que pase.
+            float nativo = sr.sprite != null ? sr.sprite.bounds.size.x : 1f;
+            Vector3 escalaPadre = transform.localScale;
+            float px = Mathf.Approximately(escalaPadre.x, 0f) ? 1f : escalaPadre.x;
+            float py = Mathf.Approximately(escalaPadre.y, 0f) ? 1f : escalaPadre.y;
+            float k = nativo > 0.0001f ? diametroAro / nativo : 1f;
+            ring.transform.localScale = new Vector3(k / px, k / py, 1f);
 
             var anim = ring.AddComponent<PlaceholderAnimator>();
             anim.mode = PlaceholderAnimator.Mode.Spin;
@@ -299,8 +313,8 @@ namespace Chocoflan.KiraPotionQuest
             if (impact.magnitude >= breakImpactSpeed)
             {
                 bool fell = Mathf.Abs(impact.y) >= Mathf.Abs(impact.x);
-                Break(ingredientName + (fell ? " se rompio al caer de muy alto"
-                                             : " se rompio por ir demasiado rapido"));
+                Break(ingredientName + (fell ? " se rompió al caer de muy alto"
+                                             : " se rompió por ir demasiado rápido"));
             }
         }
     }

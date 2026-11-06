@@ -31,13 +31,24 @@ namespace Chocoflan.KiraPotionQuest
         public Vector2 posicion = new Vector2(0f, 20f);
 
         [Header("Tiempos (segundos)")]
-        public float entrada = 0.25f;
-        public float apertura = 0.30f;
+        [Tooltip("El libro cerrado entra creciendo.")]
+        public float entrada = 0.30f;
+
+        [Tooltip("Cuanto se queda CERRADO antes de abrirse, para que de tiempo a ver la portada.")]
+        public float pausaCerrado = 0.45f;
+
+        [Tooltip("Lo que tarda en abrirse.")]
+        public float apertura = 0.40f;
+
+        [Tooltip("Lo que tardan en aparecer las letras.")]
         public float aparicionLetras = 0.40f;
+
+        /// <summary>Lo que dura la animacion entera, para que el nivel no avance antes.</summary>
+        public float DuracionTotal => entrada + pausaCerrado + apertura + aparicionLetras;
 
         [Header("Pie")]
         [Tooltip("Texto pequeno bajo el libro. Vacio = no se muestra.")]
-        public string pie = "click o ESPACIO para continuar";
+        public string pie = "haz click para continuar";
 
         // Medidas tomadas de los PNG, en unidades de 240 px.
         const float UAnchoAbierto = 14.60f;
@@ -149,7 +160,7 @@ namespace Chocoflan.KiraPotionQuest
             float k = anchoLibro / UAnchoAbierto;
 
             // 2. se abre
-            float a = apertura <= 0f ? 1f : Mathf.Clamp01((t - entrada) / apertura);
+            float a = apertura <= 0f ? 1f : Mathf.Clamp01((t - entrada - pausaCerrado) / apertura);
             bool abierto = a > 0f && libroAbierto != null;
             if (m_Libro != null && abierto && m_Libro.sprite != libroAbierto)
                 m_Libro.sprite = libroAbierto;
@@ -165,7 +176,7 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             // 3. las letras aparecen subiendo
-            float l = aparicionLetras <= 0f ? 1f : Mathf.Clamp01((t - entrada - apertura) / aparicionLetras);
+            float l = aparicionLetras <= 0f ? 1f : Mathf.Clamp01((t - entrada - pausaCerrado - apertura) / aparicionLetras);
             if (m_LetrasGrupo != null) m_LetrasGrupo.alpha = l;
             if (m_LetrasRect != null)
             {
@@ -176,7 +187,7 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             if (m_PieGrupo != null)
-                m_PieGrupo.alpha = Mathf.Clamp01((t - entrada - apertura - aparicionLetras) / 0.3f);
+                m_PieGrupo.alpha = Mathf.Clamp01((t - DuracionTotal) / 0.3f);
         }
 
         static float Smooth(float x) => x * x * (3f - 2f * x);

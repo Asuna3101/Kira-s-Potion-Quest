@@ -20,7 +20,10 @@ namespace Chocoflan.KiraPotionQuest
         public int referenceWidth = GridSettings.ReferenceWidthPx;
         public int referenceHeight = GridSettings.ReferenceHeightPx;
 
-        [Header("Volver al menu")]
+        [Header("Volver al menú")]
+        [Tooltip("Arte del boton (Sprites/UI/Boton_menu.PNG). Vacio = rectangulo de color con el texto MENU.")]
+        public Sprite spriteBotonMenu;
+
         [Tooltip("Escena que carga el boton MENU y la tecla Escape.")]
         public string escenaDelMenu = "MainMenu";
 
@@ -45,7 +48,7 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Globo de dialogo de Kira al bajar el mana. Desactivado: la barra de mana ya cuenta eso.")]
         public bool mostrarDialogosDeKira = false;
 
-        public string halfManaMessage = "Oh no, solo te queda la mitad de mana!! T.T";
+        public string halfManaMessage = "Oh no, ¡solo te queda la mitad de maná! T.T";
         public string emptyManaMessage = "Te quedaste sin maná, espera un poco :c";
 
         [Tooltip("Segundos que se queda el globo de dialogo en pantalla.")]
@@ -194,6 +197,15 @@ namespace Chocoflan.KiraPotionQuest
                 m_MenuLabel.color = encima
                     ? new Color(1f, 1f, 0.85f, 1f)
                     : new Color(1f, 0.93f, 0.72f, 1f);
+            }
+            else if (m_MenuRect != null)
+            {
+                // Con el arte de Melanie, el hover crece un poco y aclara.
+                var img = m_MenuRect.GetComponent<Image>();
+                if (img != null) img.color = encima ? Color.white : new Color(0.88f, 0.88f, 0.88f, 1f);
+                m_MenuRect.localScale = Vector3.Lerp(m_MenuRect.localScale,
+                    Vector3.one * (encima ? 1.06f : 1f),
+                    1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
             }
 
             if (encima && mouse.leftButton.wasPressedThisFrame) VolverAlMenu();
@@ -500,7 +512,7 @@ namespace Chocoflan.KiraPotionQuest
                     string siguiente = m_Game != null ? m_Game.SiguienteNivel : "";
                     string pie = string.IsNullOrEmpty(siguiente)
                         ? "R = reiniciar"
-                        : "Siguiente nivel...\nclick o ESPACIO para ir ya";
+                        : "Siguiente nivel…\nhaz click para ir ya";
 
                     // Con el arte del libro no hace falta el cartel de texto: la
                     // frase ya esta escrita en el dibujo.
@@ -511,7 +523,7 @@ namespace Chocoflan.KiraPotionQuest
                     }
                     else
                     {
-                        ShowResult(true, "NIVEL SUPERADO\n" + message + "\n\n" + pie);
+                        ShowResult(true, "¡NIVEL SUPERADO!\n" + message + "\n\n" + pie);
                     }
                     break;
                 }
@@ -613,7 +625,7 @@ namespace Chocoflan.KiraPotionQuest
 
                 var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(8), TextAnchor.LowerLeft,
                     new Vector2(0f, 0f), new Vector2(0f, 0f), V(manaX - 1f, manaY + manaH + 4f), V(30f, 10f));
-                manaLabel.text = "MANA";
+                manaLabel.text = "MANÁ";
             }
 
             // --- controles (desplegables con el boton ?)
@@ -658,18 +670,33 @@ namespace Chocoflan.KiraPotionQuest
             SetControlsOpen(false);
 
             // --- boton de volver al menu: arriba a la derecha
+            // El dibujo de Melanie mide 498 x 241 px: se respeta ese aspecto (2.07).
+            Vector2 tamBoton = spriteBotonMenu != null ? new Vector2(62f, 30f) : new Vector2(58f, 20f);
+
             var menuBtn = MakeImage(canvasGo.transform, "Btn_Menu",
-                new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(58f, 20f));
-            menuBtn.color = new Color(0.22f, 0.12f, 0.33f, 0.88f);
+                new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(tamBoton.x, tamBoton.y));
             menuBtn.rectTransform.pivot = new Vector2(1f, 1f);
             m_MenuRect = menuBtn.rectTransform;
 
-            m_MenuLabel = MakeText(menuBtn.transform, "Txt_Menu", font, Sz(9), TextAnchor.MiddleCenter,
-                new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-            m_MenuLabel.rectTransform.offsetMin = Vector2.zero;
-            m_MenuLabel.rectTransform.offsetMax = Vector2.zero;
-            m_MenuLabel.text = "MENU";
-            m_MenuLabel.color = new Color(1f, 0.93f, 0.72f, 1f);
+            if (spriteBotonMenu != null)
+            {
+                // Con arte propio no hace falta ni el fondo de color ni el texto.
+                menuBtn.sprite = spriteBotonMenu;
+                menuBtn.color = Color.white;
+                menuBtn.preserveAspect = true;
+                m_MenuLabel = null;
+            }
+            else
+            {
+                menuBtn.color = new Color(0.22f, 0.12f, 0.33f, 0.88f);
+
+                m_MenuLabel = MakeText(menuBtn.transform, "Txt_Menu", font, Sz(9), TextAnchor.MiddleCenter,
+                    new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+                m_MenuLabel.rectTransform.offsetMin = Vector2.zero;
+                m_MenuLabel.rectTransform.offsetMax = Vector2.zero;
+                m_MenuLabel.text = "MENÚ";
+                m_MenuLabel.color = new Color(1f, 0.93f, 0.72f, 1f);
+            }
 
             // --- libro de "nivel superado" (si hay arte asignado)
             m_Libro = GetComponent<VictoryBook>();

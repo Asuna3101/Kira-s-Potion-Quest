@@ -19,7 +19,7 @@ namespace Chocoflan.KiraPotionQuest
     {
         public static GameManager Instance { get; private set; }
 
-        [Header("Mana de levitacion")]
+        [Header("Maná de levitación")]
         public float maxMana = Level01Data.MaxMana;
         public float manaDrainPerSecond = Level01Data.ManaDrainPerSecond;
         public float manaRegenPerSecond = Level01Data.ManaRegenPerSecond;
@@ -34,6 +34,12 @@ namespace Chocoflan.KiraPotionQuest
 
         [Tooltip("Segundos que se ve el cartel de victoria antes de pasar al siguiente nivel.")]
         public float segundosParaSiguiente = 2.5f;
+
+        [Tooltip("Tiempo minimo que el cartel se queda en pantalla, aunque se pulse algo.")]
+        public float minimoEnPantalla = 0.8f;
+
+        [Tooltip("Congela el nivel al ganar o perder, para que el mapa no siga moviendose detras del cartel.")]
+        public bool pausarAlTerminar = true;
 
         [Header("Mecanica opcional del GDD (\"por alcance\")")]
         [Tooltip("Activa la mecanica Lanzar: apuntar con el mouse y soltar el ingrediente, con proyeccion de trayectoria.")]
@@ -89,6 +95,8 @@ namespace Chocoflan.KiraPotionQuest
         bool NivelHorneado => builder != null && !builder.buildOnAwake;
 
         float m_CuentaAtras = -1f;
+        float m_VistoVictoria;
+        bool m_SoltoTrasGanar;
 
         void Update()
         {
@@ -104,14 +112,31 @@ namespace Chocoflan.KiraPotionQuest
         {
             if (m_CuentaAtras < 0f) return;
 
-            bool saltar = false;
-            var kb = Keyboard.current;
-            if (kb != null && (kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame)) saltar = true;
+            m_VistoVictoria += Time.unscaledDeltaTime;
+
             var mouse = Mouse.current;
-            if (mouse != null && mouse.leftButton.wasPressedThisFrame) saltar = true;
+
+            // Solo adelanta el CLICK. El teclado queda fuera a proposito: se gana
+            // levitando, o sea con ESPACIO pulsado, y cualquier roce de esa tecla
+            // se llevaba por delante el libro de pociones antes de poder leerlo.
+            bool algoPulsado = mouse != null && mouse.leftButton.isPressed;
+            if (!m_SoltoTrasGanar)
+            {
+                if (!algoPulsado) m_SoltoTrasGanar = true;
+            }
+            else if (m_VistoVictoria >= minimoEnPantalla)
+            {
+                bool saltar = mouse != null && mouse.leftButton.wasPressedThisFrame;
+                if (saltar)
+                {
+                    m_CuentaAtras = -1f;
+                    CargarSiguiente();
+                    return;
+                }
+            }
 
             m_CuentaAtras -= Time.unscaledDeltaTime;
-            if (!saltar && m_CuentaAtras > 0f) return;
+            if (m_CuentaAtras > 0f) return;
 
             m_CuentaAtras = -1f;
             CargarSiguiente();
@@ -175,7 +200,7 @@ namespace Chocoflan.KiraPotionQuest
             IngredientsChanged?.Invoke();
 
             if (DeliveredIngredients >= TotalIngredients)
-                SetState(LevelState.Won, "Pocion completa. Nivel superado.");
+                SetState(LevelState.Won, "Poción completa. Nivel superado.");
             else
                 ShowHint("Ingrediente en el caldero. Faltan " + RemainingIngredients + ".");
         }
@@ -190,11 +215,46 @@ namespace Chocoflan.KiraPotionQuest
         void SetState(LevelState newState, string message)
         {
             State = newState;
+
+            // Al ganar o perder se para el nivel entero: ingredientes, plataformas
+            // moviles, llamas y particulas. Antes el mapa seguia animandose detras
+            // del cartel. El HUD, el libro de victoria y la barra de mana usan
+            // tiempo real (unscaledDeltaTime), asi que siguen funcionando.
+            if (newState != LevelState.Playing)
+            {
+                CongelarIngredientes();
+                if (pausarAlTerminar) Time.timeScale = 0f;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
             m_CuentaAtras = (newState == LevelState.Won && !string.IsNullOrEmpty(escenaSiguiente))
                 ? Mathf.Max(0.3f, segundosParaSiguiente)
                 : -1f;
+            m_VistoVictoria = 0f;
+            m_SoltoTrasGanar = false;
             LastMessage = message;
             StateChanged?.Invoke(newState, message);
+        }
+
+        /// <summary>
+        /// Deja quietos los ingredientes que no se entregaron ni se rompieron.
+        /// Kinematic + velocidad a cero: ni caen ni responden a empujones.
+        /// </summary>
+        void CongelarIngredientes()
+        {
+            foreach (var ing in m_Ingredients)
+            {
+                if (ing == null || ing.IsBroken || ing.IsDelivered) continue;
+
+                var rb = ing.Body;
+                if (rb == null) continue;
+
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+            }
         }
 
         public void ShowHint(string message)

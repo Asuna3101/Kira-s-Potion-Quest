@@ -29,8 +29,8 @@ namespace Chocoflan.KiraPotionQuest
             if (!destroysEveryIngredient && !ing.fragile) return;
 
             string reason = type == HazardType.Spikes
-                ? ing.ingredientName + " cayo en los pinchos"
-                : ing.ingredientName + " se quemo en el fuego";
+                ? ing.ingredientName + " cayó en los pinchos"
+                : ing.ingredientName + " se quemó en el fuego";
             ing.Break(reason);
         }
     }

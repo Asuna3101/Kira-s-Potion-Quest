@@ -60,7 +60,7 @@ namespace Chocoflan.KiraPotionQuest
                 m_Sr.color = pressed ? PlaceholderArt.ButtonDone : Color.white;
 
             if (pressed)
-                GameManager.Instance?.ShowHint("La compuerta se abrio. El caldero ya es alcanzable.");
+                GameManager.Instance?.ShowHint("La compuerta se abrió. El caldero ya es alcanzable.");
         }
     }
 }
