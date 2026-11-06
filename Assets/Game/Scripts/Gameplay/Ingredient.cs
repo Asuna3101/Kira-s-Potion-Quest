@@ -162,9 +162,16 @@ namespace Chocoflan.KiraPotionQuest
         // ---- Resultado ----------------------------------------------------
 
         /// <summary>Lo destruyo un obstaculo (pinchos, fuego) o un impacto demasiado fuerte.</summary>
-        public void Break(string reason)
+        public void Break(string reason) => Break(reason, Sonido.Romper);
+
+        /// <summary>
+        /// Igual que Break, pero eligiendo el sonido. El fuego pasa Sonido.Quemar;
+        /// los pinchos y las caidas usan Sonido.Romper.
+        /// </summary>
+        public void Break(string reason, Sonido sonido)
         {
             if (IsBroken || IsDelivered) return;
+            AudioDirector.Reproducir(sonido);
             IsBroken = true;
             IsLevitating = false;
             SetSelected(false);
@@ -301,6 +308,7 @@ namespace Chocoflan.KiraPotionQuest
             if (anim == null) anim = gameObject.AddComponent<PlaceholderAnimator>();
             anim.Play(PlaceholderAnimator.Mode.ShrinkAndFade, 2.2f);
 
+            AudioDirector.Reproducir(Sonido.Caldero);
             GameManager.Instance?.OnIngredientDelivered(this);
         }
 

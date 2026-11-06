@@ -68,6 +68,13 @@ namespace Chocoflan.KiraPotionQuest
         void Awake()
         {
             Instance = this;
+
+            // Time.timeScale es GLOBAL y sobrevive a la recarga de escena. Si el
+            // nivel anterior se congelo al perder, la escena nueva nacia parada y
+            // parecia que no se podia reintentar. Se reinicia aqui, que corre antes
+            // que todo lo demas y cubre cualquier forma de entrar al nivel.
+            Time.timeScale = 1f;
+
             Mana = maxMana;
             if (builder == null) builder = GetComponent<LevelBuilder>();
         }
@@ -222,6 +229,9 @@ namespace Chocoflan.KiraPotionQuest
             // tiempo real (unscaledDeltaTime), asi que siguen funcionando.
             if (newState != LevelState.Playing)
             {
+                // Suena junto con el cartel. Los AudioSource del director tienen
+                // ignoreListenerPause, asi que se oye aunque el nivel se congele.
+                AudioDirector.Reproducir(newState == LevelState.Won ? Sonido.Ganar : Sonido.Perder);
                 CongelarIngredientes();
                 if (pausarAlTerminar) Time.timeScale = 0f;
             }
@@ -269,6 +279,10 @@ namespace Chocoflan.KiraPotionQuest
         /// </summary>
         public void RestartLevel()
         {
+            // El nivel pudo quedar congelado al ganar o perder.
+            Time.timeScale = 1f;
+            m_CuentaAtras = -1f;
+
             // Con el nivel horneado NO se puede reconstruir en caliente: eso
             // borraria los objetos de la escena y con ellos lo que el equipo haya
             // movido a mano. Se recarga la escena.

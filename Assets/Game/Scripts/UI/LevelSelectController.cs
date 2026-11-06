@@ -165,7 +165,11 @@ namespace Chocoflan.KiraPotionQuest
 
                 if (t.borde != null) t.borde.color = dentro ? BordeHover : Borde;
 
-                if (dentro && click) t.onClick?.Invoke();
+                if (dentro && click)
+                {
+                    AudioDirector.Reproducir(Sonido.Boton);
+                    t.onClick?.Invoke();
+                }
             }
         }
 

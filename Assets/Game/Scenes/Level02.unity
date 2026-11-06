@@ -3631,6 +3631,7 @@ GameObject:
   - component: {fileID: 1416714897}
   - component: {fileID: 950002}
   - component: {fileID: 960002}
+  - component: {fileID: 9900201}
   m_Layer: 0
   m_Name: --- GAME ---
   m_TagString: Untagged
@@ -5237,3 +5238,28 @@ SceneRoots:
   - {fileID: 144042287}
   - {fileID: 1871374711}
   - {fileID: 56900467}
+--- !u!114 &9900201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9d3f17c4e5b48d2b6c0e71f9a284d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musica: {fileID: 8300000, guid: 72504df40efb1c041b26ec6a5584bba3, type: 3}
+  volumenMusica: 0.4
+  volumenEfectos: 0.85
+  romper: {fileID: 8300000, guid: 15511c639d713da4baf4f741289f64ae, type: 3}
+  quemar: {fileID: 8300000, guid: f0f4e2f767411e04ca7c949218453f03, type: 3}
+  caldero: {fileID: 8300000, guid: d56eff9296d96284f9dcae32623cb1d1, type: 3}
+  ganar: {fileID: 8300000, guid: 910f31d54108d384a837ff1eaa40e780, type: 3}
+  perder: {fileID: 8300000, guid: 6bd7e5207b8d8504aa3fb006fa62371e, type: 3}
+  boton: {fileID: 8300000, guid: e97a9a38ec033f1439ddd1e55b9c0b73, type: 3}
+  lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
+  empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
+  sonarAlEmpezar: 1
+  fundidoEntrada: 0.6

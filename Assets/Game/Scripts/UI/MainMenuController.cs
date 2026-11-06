@@ -256,6 +256,7 @@ namespace Chocoflan.KiraPotionQuest
 
                 if (dentro && click && !b.animating)
                 {
+                    AudioDirector.Reproducir(Sonido.Boton);
                     if (b.esDePanel) b.onClick?.Invoke();
                     else StartCoroutine(AnimarClickMagico(b));
                 }

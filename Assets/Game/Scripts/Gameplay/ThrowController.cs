@@ -136,6 +136,7 @@ namespace Chocoflan.KiraPotionQuest
                     {
                         m_Aiming.EndLevitate();
                         rb.linearVelocity = launchVelocity;
+                        AudioDirector.Reproducir(Sonido.Lanzar);
                     }
                 }
                 m_Aiming = null;

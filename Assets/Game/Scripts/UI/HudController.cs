@@ -208,7 +208,11 @@ namespace Chocoflan.KiraPotionQuest
                     1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
             }
 
-            if (encima && mouse.leftButton.wasPressedThisFrame) VolverAlMenu();
+            if (encima && mouse.leftButton.wasPressedThisFrame)
+            {
+                AudioDirector.Reproducir(Sonido.Boton);
+                VolverAlMenu();
+            }
         }
 
         public void VolverAlMenu()

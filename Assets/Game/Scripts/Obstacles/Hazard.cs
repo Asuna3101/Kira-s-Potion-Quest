@@ -28,10 +28,13 @@ namespace Chocoflan.KiraPotionQuest
             if (ing == null || ing.IsBroken || ing.IsDelivered) return;
             if (!destroysEveryIngredient && !ing.fragile) return;
 
-            string reason = type == HazardType.Spikes
+            bool pinchos = type == HazardType.Spikes;
+            string reason = pinchos
                 ? ing.ingredientName + " cayó en los pinchos"
                 : ing.ingredientName + " se quemó en el fuego";
-            ing.Break(reason);
+
+            // Los pinchos suenan a rotura; el fuego, a quemado.
+            ing.Break(reason, pinchos ? Sonido.Romper : Sonido.Quemar);
         }
     }
 }
