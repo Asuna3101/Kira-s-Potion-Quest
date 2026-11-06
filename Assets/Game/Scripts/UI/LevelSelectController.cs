@@ -37,6 +37,9 @@ namespace Chocoflan.KiraPotionQuest
         [Header("Arte")]
         public Sprite fondo;
 
+        [Tooltip("Arte del boton Volver (Sprites/UI/boton_volver.png). Vacio = rectangulo con el texto.")]
+        public Sprite spriteBotonVolver;
+
         [Header("Niveles")]
         public List<EntradaNivel> niveles = new List<EntradaNivel>();
 
@@ -256,8 +259,12 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             // --- volver
-            BotonTexto(canvasGo.transform, "Volver", new Vector2(0f, -420f), Volver,
-                new Vector2(260f, 72f));
+            if (spriteBotonVolver != null)
+                BotonArte(canvasGo.transform, "Volver", new Vector2(0f, -420f), Volver,
+                    spriteBotonVolver, 100f);
+            else
+                BotonTexto(canvasGo.transform, "Volver", new Vector2(0f, -420f), Volver,
+                    new Vector2(260f, 72f));
         }
 
         void CrearTarjeta(Transform parent, EntradaNivel nivel, Vector2 pos, Action onClick)
@@ -300,6 +307,32 @@ namespace Chocoflan.KiraPotionQuest
                 borde = bordeImg,
                 onClick = onClick,
                 baseScale = bordeImg.rectTransform.localScale
+            });
+        }
+
+        /// <summary>
+        /// Boton hecho con el dibujo de Melanie: una sola imagen, sin marco ni
+        /// texto de codigo. El ancho sale del propio PNG, asi que si lo reexporta
+        /// con otras proporciones no hay que tocar nada aqui.
+        /// </summary>
+        void BotonArte(Transform parent, string etiqueta, Vector2 pos, Action onClick,
+                       Sprite sprite, float alto)
+        {
+            var go = NuevoUI(parent, "Btn_" + etiqueta);
+            var img = go.AddComponent<Image>();
+            img.sprite = sprite;
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+
+            float aspecto = sprite.rect.height > 0f ? sprite.rect.width / sprite.rect.height : 2.8f;
+            Colocar(img.rectTransform, pos, new Vector2(alto * aspecto, alto));
+
+            m_Tarjetas.Add(new Tarjeta
+            {
+                rect = img.rectTransform,
+                borde = null,            // sin marco: el hover solo crece
+                onClick = onClick,
+                baseScale = img.rectTransform.localScale
             });
         }
 

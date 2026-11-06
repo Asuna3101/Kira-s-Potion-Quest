@@ -302,6 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b61f2d4c07e4a19b3d5e8c2074a9f63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteBotonVolver: {fileID: 21300000, guid: 3eff00414f3b944cf94d22f123d3f2b1, type: 3}
   fondo: {fileID: 6935917129777575428, guid: 23ee43df3afbe1b498968a55be891fab, type: 3}
   niveles:
   - nombre: Nivel 1
@@ -1207,7 +1208,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -420}
-  m_SizeDelta: {x: 260, y: 72}
+  m_SizeDelta: {x: 279.70, y: 100.00}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &600050
 CanvasRenderer:
@@ -1230,16 +1231,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.96, g: 0.89, b: 0.78, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3eff00414f3b944cf94d22f123d3f2b1, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 0
@@ -1264,7 +1265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &600053
 RectTransform:
   m_ObjectHideFlags: 0
