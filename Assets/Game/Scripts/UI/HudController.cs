@@ -65,6 +65,8 @@ namespace Chocoflan.KiraPotionQuest
         Text m_MenuLabel;
         RectTransform m_HelpRect;
         Image m_HelpGlow;
+        RectTransform m_HelpRing;
+        float m_HelpClickTime = -100f;
         GameObject m_ControlsPanel;
         bool m_ControlsOpen;
 
@@ -139,7 +141,7 @@ namespace Chocoflan.KiraPotionQuest
             {
                 // La barra es vertical: se llena de abajo hacia arriba.
                 float mana = m_Game.ManaNormalized;
-                m_ManaFill.rectTransform.localScale = new Vector3(1f, mana, 1f);
+                m_ManaFill.fillAmount = mana;
                 // Con poco mana vira al rojo para avisar que se acaba.
                 m_ManaFill.color = Color.Lerp(PlaceholderArt.PortalACol, PlaceholderArt.Danger,
                     Mathf.InverseLerp(0.3f, 0.1f, mana));
@@ -226,15 +228,26 @@ namespace Chocoflan.KiraPotionQuest
                 m_GuideClosedFrame != Time.frameCount && !m_PauseOpen &&
                 RectTransformUtility.RectangleContainsScreenPoint(m_HelpRect, mouse.position.ReadValue(), null))
             {
+                m_HelpClickTime = Time.unscaledTime;
                 if (m_GuideOpen) CloseGuide(); else OpenGuide();
+            }
+
+            bool encima = mouse != null && RectTransformUtility.RectangleContainsScreenPoint(
+                m_HelpRect, mouse.position.ReadValue(), CamaraDelCanvas);
+            float salto = Mathf.Clamp01(1f - (Time.unscaledTime - m_HelpClickTime) / 0.35f);
+            float latido = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 3.6f);
+            if (m_HelpRing != null)
+            {
+                float escala = 1f + (encima ? 0.10f : 0.025f * latido) + salto * 0.15f;
+                m_HelpRing.localScale = new Vector3(escala, escala, 1f);
             }
 
             // El brillo late para que el boton se note (con tiempo real: sigue latiendo en pausa).
             if (m_HelpGlow != null)
             {
-                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 3f);
-                float alpha = m_GuideOpen ? 0.3f : 0.35f + 0.4f * pulse;
-                m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, alpha);
+                float alpha = m_GuideOpen ? 0.45f : 0.50f + 0.35f * latido;
+                if (encima) alpha = 0.95f;
+                m_HelpGlow.color = new Color(1f, 0.82f, 0.28f, Mathf.Clamp01(alpha + salto * 0.15f));
             }
         }
 
@@ -589,9 +602,13 @@ namespace Chocoflan.KiraPotionQuest
                     new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, 1f), V(manaW, manaH));
                 manaBg.color = new Color(0.05f, 0.03f, 0.1f, 0.8f);
 
-                // pivote abajo-izquierda: al escalar en Y crece hacia arriba
+                // Image.Filled recorta la figura; ya no se comprime con localScale.
                 m_ManaFill = MakeImage(manaBg.transform, "ManaBar_Fill",
                     new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(manaW, manaH));
+                m_ManaFill.type = Image.Type.Filled;
+                m_ManaFill.fillMethod = Image.FillMethod.Vertical;
+                m_ManaFill.fillOrigin = (int)Image.OriginVertical.Bottom;
+                m_ManaFill.fillAmount = 1f;
                 m_ManaFill.color = PlaceholderArt.PortalACol;
 
                 var manaLabel = MakeText(canvasGo.transform, "Txt_Mana", font, Sz(8), TextAnchor.LowerLeft,
@@ -615,23 +632,24 @@ namespace Chocoflan.KiraPotionQuest
 
             // --- boton ? magico: abajo a la izquierda, bajo la barra de mana. Abre la guia.
             m_HelpGlow = MakeImage(canvasGo.transform, "Help_Brillo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(3f, -4f), V(34f, 34f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, -6f), V(38f, 38f));
             m_HelpGlow.sprite = FxSprites.Glow;
             m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.5f);
             m_HelpRect = m_HelpGlow.rectTransform;   // esta es el area donde se hace click
 
             var helpRing = MakeImage(canvasGo.transform, "Help_Aro",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(8f, 1f), V(24f, 24f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, -1f), V(28f, 28f));
+            m_HelpRing = helpRing.rectTransform;
             helpRing.sprite = FxSprites.Disc;
             helpRing.color = new Color(1f, 0.82f, 0.35f, 1f);
 
             var helpDisc = MakeImage(helpRing.transform, "Help_Fondo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1.7f, 1.7f), V(20.6f, 20.6f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(2f, 2f), V(24f, 24f));
             helpDisc.sprite = FxSprites.Disc;
             helpDisc.color = new Color(0.3f, 0.16f, 0.5f, 1f);
 
-            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(18), TextAnchor.MiddleCenter,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(24f, 24f));
+            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(21), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(28f, 28f));
             helpMark.text = "?";
             helpMark.fontStyle = FontStyle.Bold;
             helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);

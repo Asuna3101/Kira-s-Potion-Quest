@@ -10,12 +10,12 @@ namespace Chocoflan.KiraPotionQuest
     /// son sprites colocados en el mundo, igual que el resto del arte del nivel, y
     /// en la posicion exacta en la que Melanie los dibujo sobre el lienzo.
     ///
-    /// Como crece: el relleno cuelga de un pivote colocado en la BASE interior del
-    /// marco, y lo que se anima es la escala en Y de ese pivote. Asi la barra sube
-    /// desde abajo en vez de crecer desde el centro.
+    /// El relleno conserva su escala original: una mascara rectangular recorta
+    /// la imagen desde arriba al consumir mana y la descubre desde abajo al
+    /// recuperarse, sin comprimir el dibujo de Melanie.
     ///
-    /// Al quedarse sin mana el relleno se tine de un color mas oscuro y se queda
-    /// asi hasta que se recupera, para que se vea que el hechizo esta agotado.
+    /// Al agotarse el mana se prepara un tinte mas oscuro que se mantiene
+    /// hasta superar el umbral de recuperacion. El recorte al 0 % es completo.
     /// </summary>
     public class ManaBar : MonoBehaviour
     {
@@ -48,19 +48,64 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Velocidad con la que la barra persigue el valor real. 0 = instantaneo.")]
         public float suavizado = 12f;
 
-        [Tooltip("Trocito de barra que se deja visible al estar a cero, para que se vea el color oscuro.")]
+        [Tooltip("Valor heredado de escenas anteriores; el nuevo recorte llega a 0 % sin deformar la imagen.")]
         [Range(0f, 0.1f)]
         public float minimoVisible = 0.03f;
 
         float m_Mostrado = 1f;
         bool m_Agotada;
+        SpriteMask m_Mascara;
+        Sprite m_SpriteMascara;
+        Bounds m_LimitesRelleno;
 
         public bool Agotada => m_Agotada;
 
         void Start()
         {
+            PrepararMascara();
             m_Mostrado = ManaActual();
             Aplicar(true);
+        }
+
+        void PrepararMascara()
+        {
+            if (relleno == null || relleno.sprite == null) return;
+
+            // Recupera la escala del sprite: las escenas antiguas mantienen el
+            // pivote serializado, pero ya no debe deformar el dibujo.
+            if (pivoteRelleno != null) pivoteRelleno.localScale = Vector3.one;
+            m_LimitesRelleno = relleno.bounds;
+
+            // El sprite blanco solo actua como recorte, nunca se renderiza.
+            var textura = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            textura.name = "MascaraMana_2x2";
+            textura.filterMode = FilterMode.Point;
+            textura.SetPixels(new[] { Color.white, Color.white, Color.white, Color.white });
+            textura.Apply();
+            m_SpriteMascara = Sprite.Create(textura, new Rect(0f, 0f, 2f, 2f),
+                new Vector2(0.5f, 0.5f), 1f);
+            m_SpriteMascara.name = "MascaraMana_Rectangulo";
+
+            var go = new GameObject("Mascara_Relleno_Mana");
+            go.transform.SetParent(transform, false);
+            m_Mascara = go.AddComponent<SpriteMask>();
+            m_Mascara.sprite = m_SpriteMascara;
+            m_Mascara.alphaCutoff = 0.1f;
+            m_Mascara.isCustomRangeActive = true;
+            m_Mascara.frontSortingLayerID = relleno.sortingLayerID;
+            m_Mascara.backSortingLayerID = relleno.sortingLayerID;
+            m_Mascara.frontSortingOrder = relleno.sortingOrder + 1;
+            m_Mascara.backSortingOrder = relleno.sortingOrder - 1;
+            relleno.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        }
+
+        void OnDestroy()
+        {
+            if (m_SpriteMascara != null)
+            {
+                Destroy(m_SpriteMascara.texture);
+                Destroy(m_SpriteMascara);
+            }
         }
 
         void Update()
@@ -89,11 +134,18 @@ namespace Chocoflan.KiraPotionQuest
         {
             if (instantaneo) m_Mostrado = ManaActual();
 
-            if (pivoteRelleno != null)
+            if (m_Mascara != null)
             {
-                float alto = Mathf.Max(minimoVisible, m_Mostrado);
-                Vector3 s = pivoteRelleno.localScale;
-                pivoteRelleno.localScale = new Vector3(s.x, alto, s.z);
+                // El marco y el relleno mantienen sus proporciones originales.
+                float porcentaje = Mathf.Clamp01(m_Mostrado);
+                float altura = m_LimitesRelleno.size.y * porcentaje;
+                Transform mascara = m_Mascara.transform;
+                mascara.position = new Vector3(m_LimitesRelleno.center.x,
+                    m_LimitesRelleno.min.y + altura * 0.5f, relleno.transform.position.z);
+                Vector3 escalaPadre = transform.lossyScale;
+                mascara.localScale = new Vector3(
+                    m_LimitesRelleno.size.x / (2f * Mathf.Max(Mathf.Abs(escalaPadre.x), 0.0001f)),
+                    altura / (2f * Mathf.Max(Mathf.Abs(escalaPadre.y), 0.0001f)), 1f);
             }
 
             if (relleno != null)
