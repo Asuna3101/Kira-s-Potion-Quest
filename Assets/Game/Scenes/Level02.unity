@@ -183,6 +183,27 @@ MonoBehaviour:
   velocidad: 0.45
   desfase: 0.5
   horizontal: 0
+--- !u!114 &950002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  libroAbierto: {fileID: 21300000, guid: c01ae637502767b469c8479a35d71b3e, type: 3}
+  libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
+  anchoLibro: 1400
+  posicion: {x: 0, y: 20}
+  entrada: 0.25
+  apertura: 0.3
+  aparicionLetras: 0.4
+  pie: click o ESPACIO para continuar
 --- !u!1 &46573909
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,7 +466,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -491,7 +512,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -774,6 +795,7 @@ GameObject:
   - component: {fileID: 186369673}
   - component: {fileID: 186369672}
   - component: {fileID: 900003}
+  - component: {fileID: 186369676}
   m_Layer: 0
   m_Name: Caldero
   m_TagString: Untagged
@@ -858,17 +880,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.011658549, y: 0.7522253}
+  m_Offset: {x: 0.011117369, y: 0.7430541}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.2083333, y: 1.8291667}
+    oldSize: {x: 2.2083335, y: 1.8291668}
     newSize: {x: 2.2083333, y: 1.8291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.72965, y: 0.11016828}
+  m_Size: {x: 1.748466, y: 0.1285106}
   m_EdgeRadius: 0
 --- !u!212 &186369675
 SpriteRenderer:
@@ -929,6 +951,43 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!70 &186369676
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186369670}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.0051449896, y: -0.07804514}
+  m_Size: {x: 2.2350035, y: 1.5442306}
+  m_Direction: 1
 --- !u!1 &287648831
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,7 +1093,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.0833334, y: 1.0166667}
+    oldSize: {x: 1.0833334, y: 1.0166668}
     newSize: {x: 1.0833334, y: 1.0166667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1428,7 +1487,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1474,7 +1533,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1755,10 +1814,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -3.4561307
-    y: -4.56
-    width: 10.798652
-    height: 10.8
+    x: -1.993865
+    y: -2.9030302
+    width: 6.5439672
+    height: 6.5454545
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -1881,7 +1940,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1927,7 +1986,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2081,7 +2140,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2127,7 +2186,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.48333332, y: 1.5291667}
+    oldSize: {x: 0.48333335, y: 1.5291667}
     newSize: {x: 0.48333332, y: 1.5291667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2347,9 +2406,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: 1}
-  acceleration: 7
-  maxSpeed: 1.9
-  levitatingFactor: 0.4
+  acceleration: 8
+  maxSpeed: 2
+  levitatingFactor: 0.6
 --- !u!114 &736910570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4011,10 +4070,10 @@ MonoBehaviour:
   ingredientName: El hongo
   fragile: 0
   breakImpactSpeed: 999
-  normalGravityScale: 0.6
-  normalLinearDamping: 0.35
+  normalGravityScale: 1
+  normalLinearDamping: 0.5
   levitationLinearDamping: 0.8
-  sparkInterval: 0.07
+  sparkInterval: 10
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
   shellShards: 0
@@ -4404,9 +4463,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: -1}
-  acceleration: 10
-  maxSpeed: 2.8
-  levitatingFactor: 0.4
+  acceleration: 8
+  maxSpeed: 2
+  levitatingFactor: 0.6
 --- !u!61 &1873557073
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4815,7 +4874,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.0833334, y: 1.0166667}
+    oldSize: {x: 1.0833334, y: 1.0166668}
     newSize: {x: 2.0916667, y: 1.0125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -4974,7 +5033,7 @@ GameObject:
   - component: {fileID: 2094529356}
   - component: {fileID: 2094529360}
   m_Layer: 0
-  m_Name: Ingrediente_Planta
+  m_Name: Ingrediente_Huevo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5131,38 +5190,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
   ingredientName: El huevo
   fragile: 1
-  breakImpactSpeed: 3.5
-  normalGravityScale: 0.6
-  normalLinearDamping: 0.35
-  levitationLinearDamping: 0.8
-  sparkInterval: 0.07
+  breakImpactSpeed: 4
+  normalGravityScale: 0.55
+  normalLinearDamping: 0.8
+  levitationLinearDamping: 0.65
+  sparkInterval: 5
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
   shellShards: 1
   breakFrames: []
   breakFrameRate: 14
   lostDelay: 0.9
---- !u!114 &950002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416714896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
-  libroAbierto: {fileID: 21300000, guid: c01ae637502767b469c8479a35d71b3e, type: 3}
-  libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
-  anchoLibro: 1400
-  posicion: {x: 0, y: 20}
-  entrada: 0.25
-  apertura: 0.3
-  aparicionLetras: 0.4
-  pie: click o ESPACIO para continuar
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
