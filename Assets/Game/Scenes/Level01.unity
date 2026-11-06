@@ -470,7 +470,7 @@ MonoBehaviour:
     paredPequena: {fileID: -7259912736566094623, guid: 6ec0413ecbbb11149949f22e83971e77, type: 3}
     vela1: {fileID: 5339118113947545926, guid: bddda0c6bb3b8294f892f19a45139fc8, type: 3}
     vela2: {fileID: 4644114821656363341, guid: 1d33ea2afff2771468d2e2f3c60f7868, type: 3}
-    caldero: {fileID: -6919974857959850277, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+    caldero: {fileID: 21300000, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
     huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
     kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
     kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
@@ -576,7 +576,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
-  spriteBotonMenu: {fileID: -1544913928648876571, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
+  spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
+  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
   escenaDelMenu: MainMenu
   controlsStartOpen: 0
   mostrarGuiaAlInicio: 1
@@ -3815,7 +3816,7 @@ Transform:
   m_GameObject: {fileID: 1766526405}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.8458, y: -2.3937, z: 0}
+  m_LocalPosition: {x: 4.87488, y: -2.15025, z: 0}
   m_LocalScale: {x: 0.999985, y: 1.0000182, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3883,7 +3884,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.011658549, y: 0.7522253}
+  m_Offset: {x: -0.01517, y: 0.37800}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -3893,7 +3894,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.72965, y: 0.11016828}
+  m_Size: {x: 1.43110, y: 0.27560}
   m_EdgeRadius: 0
 --- !u!212 &1766526410
 SpriteRenderer:
@@ -3944,12 +3945,12 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 20
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -6919974857959850277, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.2083333, y: 1.8291667}
+  m_Size: {x: 3.21618, y: 2.97851}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3988,8 +3989,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0049862307, y: -0.099952914}
-  m_Size: {x: 2.2200131, y: 1.5899953}
+  m_Offset: {x: -0.02908, y: -0.45765}
+  m_Size: {x: 2.00000, y: 1.39570}
   m_Direction: 1
 --- !u!1 &1768034951
 GameObject:
@@ -4188,7 +4189,7 @@ Transform:
   m_GameObject: {fileID: 1839215547}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.8458, y: -1.7126999, z: 0}
+  m_LocalPosition: {x: 4.85971, y: -1.77225, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4207,7 +4208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.FxFollow
   target: {fileID: 1766526406}
-  localOffset: {x: 0, y: 0.6809876}
+  localOffset: {x: -0.01517, y: 0.378}
   referenceScale: {x: 0.999985, y: 1.0000182, z: 1}
   baseScale: 1
 --- !u!114 &1839215550
@@ -4222,12 +4223,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dd0cdb7b4042ff44a4432e3beb2b36f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.CauldronFx
-  mouthWidth: 1.75
-  mouthHeight: 0.26
+  mouthWidth: 1.43110
+  mouthHeight: 0.27560
   potionColor: {r: 0.35, g: 0.95, b: 0.45, a: 1}
   smokeColor: {r: 0.5, g: 1, b: 0.55, a: 1}
   sparkColor: {r: 0.85, g: 1, b: 0.55, a: 1}
-  auraSize: {x: 3.6, y: 2.8}
+  auraSize: {x: 3.26, y: 2.72}
   auraAlphaMin: 0.14
   auraAlphaMax: 0.28
   smokeInterval: 0.16

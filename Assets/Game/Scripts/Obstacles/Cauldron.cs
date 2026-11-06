@@ -15,8 +15,15 @@ namespace Chocoflan.KiraPotionQuest
 
         void Awake()
         {
-            var col = GetComponent<Collider2D>();
-            if (col != null) col.isTrigger = true;
+            // El caldero lleva DOS colliders: la boca (trigger) y la panza maciza.
+            // Si ya hay uno que sea trigger, no se toca nada: antes esto cogia el
+            // primer collider a secas y podia convertir la panza en trigger, con lo
+            // que los ingredientes la atravesaban de lado.
+            var cols = GetComponents<Collider2D>();
+            foreach (var c in cols)
+                if (c.isTrigger) return;
+
+            if (cols.Length > 0) cols[0].isTrigger = true;
         }
 
         void OnTriggerEnter2D(Collider2D other)

@@ -446,15 +446,21 @@ namespace Chocoflan.KiraPotionQuest
                 Level01Art.CalderoCentro, Level01Art.CalderoTamano,
                 "Tablero", Level01Art.OrdenObstaculos);
 
-            Vector3 s = go.transform.localScale;
-            float sx = Mathf.Approximately(s.x, 0f) ? 1f : s.x;
-            float sy = Mathf.Approximately(s.y, 0f) ? 1f : s.y;
-
-            // Solo la boca es trigger: el ingrediente no entra, choca con ella.
+            // Los colliders y el localOffset del Fx van en unidades LOCALES del
+            // objeto, asi que NO se dividen por la escala: Unity ya la aplica.
+            // La boca es el trigger: el ingrediente la toca y cuenta como entregado.
             var boca = go.AddComponent<BoxCollider2D>();
-            boca.size = new Vector2(Level01Art.BocaAncho / sx, Level01Art.BocaAlto / sy);
-            boca.offset = new Vector2(0f, Level01Art.BocaOffsetY / sy);
+            boca.size = new Vector2(Level01Art.BocaAncho, Level01Art.BocaAlto);
+            boca.offset = new Vector2(Level01Art.CalderoCuerpoOffsetX, Level01Art.BocaOffsetY);
             boca.isTrigger = true;
+
+            // La panza es maciza, para que no se pueda atravesar de lado. Acaba
+            // justo debajo de la boca, si no taparia la entrada.
+            var cuerpo = go.AddComponent<CapsuleCollider2D>();
+            cuerpo.direction = CapsuleDirection2D.Horizontal;
+            cuerpo.size = Level01Art.CalderoCuerpoTamano;
+            cuerpo.offset = new Vector2(Level01Art.CalderoCuerpoOffsetX, Level01Art.CalderoCuerpoOffsetY);
+            cuerpo.isTrigger = false;
 
             CauldronRef = go.AddComponent<Cauldron>();
 
@@ -473,7 +479,8 @@ namespace Chocoflan.KiraPotionQuest
 
             var cauldronFollow = fx.AddComponent<FxFollow>();
             cauldronFollow.target = go.transform;
-            cauldronFollow.localOffset = new Vector2(0f, Level01Art.CalderoAperturaOffsetY / sy);
+            cauldronFollow.localOffset = new Vector2(
+                Level01Art.CalderoCuerpoOffsetX, Level01Art.CalderoAperturaOffsetY);
             cauldronFollow.referenceScale = go.transform.localScale;
             cauldronFollow.baseScale = 1f;
         }

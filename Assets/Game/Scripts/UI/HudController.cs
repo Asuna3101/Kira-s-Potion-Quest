@@ -20,6 +20,11 @@ namespace Chocoflan.KiraPotionQuest
         public int referenceWidth = GridSettings.ReferenceWidthPx;
         public int referenceHeight = GridSettings.ReferenceHeightPx;
 
+        [Header("Texto de arriba")]
+        [Tooltip("Nombre del nivel y contador de ingredientes en la franja superior. " +
+                 "Desactivado: la franja queda limpia y solo se ven los botones.")]
+        public bool mostrarTitulo = false;
+
         [Header("Volver al menú")]
         [Tooltip("Arte del boton (Sprites/UI/Boton_menu.PNG). Vacio = rectangulo de color con el texto MENU.")]
         public Sprite spriteBotonMenu;
@@ -28,6 +33,9 @@ namespace Chocoflan.KiraPotionQuest
         public string escenaDelMenu = "MainMenu";
 
         [Header("Ayuda (boton ?)")]
+        [Tooltip("Arte del boton (Sprites/UI/Boton_ayuda.PNG). Vacio = el circulo dorado dibujado por codigo.")]
+        public Sprite spriteBotonAyuda;
+
         [Tooltip("(Ya no se usa: el boton ? abre ahora la guia de como jugar.)")]
         public bool controlsStartOpen = false;
 
@@ -70,6 +78,7 @@ namespace Chocoflan.KiraPotionQuest
         Image m_HelpGlow;
         RectTransform m_HelpRing;
         float m_HelpClickTime = -100f;
+        float m_BrilloAyudaMax = 1f;
         GameObject m_ControlsPanel;
         bool m_ControlsOpen;
 
@@ -263,7 +272,10 @@ namespace Chocoflan.KiraPotionQuest
             {
                 float alpha = m_GuideOpen ? 0.45f : 0.50f + 0.35f * latido;
                 if (encima) alpha = 0.95f;
-                m_HelpGlow.color = new Color(1f, 0.82f, 0.28f, Mathf.Clamp01(alpha + salto * 0.15f));
+                // Con el arte de Melanie el boton ya trae su propio resplandor:
+                // el brillo de codigo se queda muy suave para no duplicarlo.
+                alpha = (alpha + salto * 0.15f) * m_BrilloAyudaMax;
+                m_HelpGlow.color = new Color(1f, 0.82f, 0.28f, Mathf.Clamp01(alpha));
             }
         }
 
@@ -557,7 +569,11 @@ namespace Chocoflan.KiraPotionQuest
             int total = m_Game != null ? m_Game.TotalIngredients : 0;
             var builder = m_Game != null ? m_Game.builder : null;
             string title = builder != null ? builder.CurrentDisplayName : Level01Data.DisplayName;
-            m_TitleText.text = title + "   Ingredientes " + done + " / " + total;
+
+            // El nombre del nivel en crema y el contador en dorado, para que se lean
+            // como dos cosas distintas y no como una linea de depuracion.
+            m_TitleText.text = title +
+                "   <color=#FFD27A>" + done + " / " + total + " ingredientes</color>";
         }
 
         void ShowResult(bool visible, string message)
@@ -592,12 +608,32 @@ namespace Chocoflan.KiraPotionQuest
             Vector2 V(float x, float y) => new Vector2(x * k, y * k);
 
             // --- barra superior
-            m_TitleText = MakeText(canvasGo.transform, "Txt_Titulo", font, Sz(12), TextAnchor.UpperLeft,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), V(6f, -6f), V(300f, 16f));
+            //
+            // Todo lo de arriba se alinea con el MARCO DE MADERA, no con el borde de
+            // la pantalla. Antes iba pegado a las esquinas del canvas y quedaba
+            // desperdigado sobre el fondo, sobre todo en itch.
+            //
+            // La franja libre que queda por encima del marco mide FranjaAlto.
+            float MarcoIzq = (Level01Art.MarcoCentro.x - Level01Art.MarcoTamano.x * 0.5f + 8f) * 30f;
+            float MarcoDer = (Level01Art.MarcoCentro.x + Level01Art.MarcoTamano.x * 0.5f + 8f) * 30f;
+            float FranjaAlto = (4.5f - (Level01Art.MarcoCentro.y + Level01Art.MarcoTamano.y * 0.5f)) * 30f;
 
-            m_HintText = MakeText(canvasGo.transform, "Txt_Pista", font, Sz(11), TextAnchor.UpperRight,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(300f, 32f));
+            // Las cajas ocupan la franja entera (pivote arriba-izquierda, y = 0) y el
+            // texto se centra dentro con MiddleLeft / MiddleRight.
+            if (mostrarTitulo)
+            {
+                m_TitleText = MakeText(canvasGo.transform, "Txt_Titulo", font, Sz(10), TextAnchor.MiddleLeft,
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), V(MarcoIzq, 0f), V(260f, FranjaAlto));
+                m_TitleText.color = new Color(0.97f, 0.93f, 0.86f, 1f);
+                m_TitleText.supportRichText = true;
+                Sombra(m_TitleText.gameObject);
+            }
+
+            // La pista va entre el titulo y los botones, pegada por la derecha.
+            m_HintText = MakeText(canvasGo.transform, "Txt_Pista", font, Sz(9), TextAnchor.MiddleRight,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), V(MarcoDer - 220f, 0f), V(150f, FranjaAlto));
             m_HintText.color = PlaceholderArt.Highlight;
+            Sombra(m_HintText.gameObject);
 
             // --- barra de mana VERTICAL
             // Va en el margen izquierdo (a la izquierda del marco de madera), debajo de
@@ -646,40 +682,70 @@ namespace Chocoflan.KiraPotionQuest
                                   "Flechas IZQ/DER = MOVER   |   Soltar ESPACIO = CAER   |   " +
                                   "Click y mantener = interactuar   |   Tab = cambiar   |   R = reiniciar";
 
-            // --- boton ? magico: abajo a la izquierda, bajo la barra de mana. Abre la guia.
+            // --- boton ? magico: en la franja de arriba, a la izquierda del boton de
+            // menu. Antes iba abajo a la izquierda, donde se montaba encima de la
+            // barra de mana y se salia por el borde de la pantalla.
+            const float AyudaLado = 18f;
+            float AyudaDer = MarcoDer - 47f;                 // deja sitio al boton de menu
+            float AyudaY = -(FranjaAlto - AyudaLado) * 0.5f; // centrado en la franja
+
             m_HelpGlow = MakeImage(canvasGo.transform, "Help_Brillo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1f, -6f), V(38f, 38f));
+                new Vector2(0f, 1f), new Vector2(0f, 1f),
+                V(AyudaDer - AyudaLado - 5f, AyudaY + 5f), V(AyudaLado + 10f, AyudaLado + 10f));
             m_HelpGlow.sprite = FxSprites.Glow;
-            m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.5f);
+            m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.45f);
             m_HelpRect = m_HelpGlow.rectTransform;   // esta es el area donde se hace click
 
             var helpRing = MakeImage(canvasGo.transform, "Help_Aro",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, -1f), V(28f, 28f));
+                new Vector2(0f, 1f), new Vector2(0f, 1f),
+                V(AyudaDer - AyudaLado, AyudaY), V(AyudaLado, AyudaLado));
             m_HelpRing = helpRing.rectTransform;
-            helpRing.sprite = FxSprites.Disc;
-            helpRing.color = new Color(1f, 0.82f, 0.35f, 1f);
 
-            var helpDisc = MakeImage(helpRing.transform, "Help_Fondo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(2f, 2f), V(24f, 24f));
-            helpDisc.sprite = FxSprites.Disc;
-            helpDisc.color = new Color(0.3f, 0.16f, 0.5f, 1f);
+            if (spriteBotonAyuda != null)
+            {
+                // Con el dibujo de Melanie basta una imagen: ya trae el aro dorado,
+                // el fondo y el signo. El codigo solo lo coloca y lo anima.
+                helpRing.sprite = spriteBotonAyuda;
+                helpRing.color = Color.white;
+                helpRing.preserveAspect = true;
+                m_BrilloAyudaMax = 0.4f;
+            }
+            else
+            {
+                // Placeholder: aro + disco + signo dibujados por codigo.
+                helpRing.sprite = FxSprites.Disc;
+                helpRing.color = new Color(1f, 0.82f, 0.35f, 1f);
 
-            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(21), TextAnchor.MiddleCenter,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(28f, 28f));
-            helpMark.text = "?";
-            helpMark.fontStyle = FontStyle.Bold;
-            helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);
+                var helpDisc = MakeImage(helpRing.transform, "Help_Fondo",
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), V(1.5f, -1.5f), V(AyudaLado - 3f, AyudaLado - 3f));
+                helpDisc.sprite = FxSprites.Disc;
+                helpDisc.color = new Color(0.3f, 0.16f, 0.5f, 1f);
+
+                var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(13), TextAnchor.MiddleCenter,
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, V(AyudaLado, AyudaLado));
+                helpMark.text = "?";
+                helpMark.fontStyle = FontStyle.Bold;
+                helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);
+            }
 
             // La tira de controles de una sola linea se reemplazo por la guia (popup).
             SetControlsOpen(false);
 
-            // --- boton de volver al menu: arriba a la derecha
-            // El dibujo de Melanie mide 498 x 241 px: se respeta ese aspecto (2.07).
-            Vector2 tamBoton = spriteBotonMenu != null ? new Vector2(62f, 30f) : new Vector2(58f, 20f);
+            // --- boton de volver al menu: alineado con la esquina superior DERECHA
+            // DEL MARCO, dentro de la franja.
+            //
+            // El ancho sale del PROPIO dibujo, no de un numero escrito aqui: si
+            // Melanie reexporta el boton con otras proporciones, se ajusta solo.
+            float altoBoton = Mathf.Min(FranjaAlto - 4f, 20f);
+            float aspectoBoton = 2.6f;
+            if (spriteBotonMenu != null && spriteBotonMenu.rect.height > 0f)
+                aspectoBoton = spriteBotonMenu.rect.width / spriteBotonMenu.rect.height;
+
+            Vector2 tamBoton = new Vector2(altoBoton * aspectoBoton, altoBoton);
 
             var menuBtn = MakeImage(canvasGo.transform, "Btn_Menu",
-                new Vector2(1f, 1f), new Vector2(1f, 1f), V(-6f, -6f), V(tamBoton.x, tamBoton.y));
-            menuBtn.rectTransform.pivot = new Vector2(1f, 1f);
+                new Vector2(0f, 1f), new Vector2(0f, 1f),
+                V(MarcoDer - tamBoton.x, -(FranjaAlto - altoBoton) * 0.5f), V(tamBoton.x, tamBoton.y));
             m_MenuRect = menuBtn.rectTransform;
 
             if (spriteBotonMenu != null)
@@ -913,6 +979,18 @@ namespace Chocoflan.KiraPotionQuest
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return font;
+        }
+
+        /// <summary>
+        /// Sombra suave detras del texto. El HUD va sobre el fondo pintado, que tiene
+        /// zonas claras y oscuras; sin esto el titulo se pierde segun donde caiga.
+        /// </summary>
+        static void Sombra(GameObject go)
+        {
+            if (go == null || go.GetComponent<Shadow>() != null) return;
+            var s = go.AddComponent<Shadow>();
+            s.effectColor = new Color(0f, 0f, 0f, 0.65f);
+            s.effectDistance = new Vector2(2f, -2f);
         }
 
         static Text MakeText(Transform parent, string name, Font font, int size, TextAnchor anchor,

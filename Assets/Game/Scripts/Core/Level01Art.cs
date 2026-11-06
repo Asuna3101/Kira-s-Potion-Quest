@@ -166,32 +166,60 @@ namespace Chocoflan.KiraPotionQuest
 
         // ---- caldero ---------------------------------------------------------
 
-        public static readonly Vector2 CalderoCentro = new Vector2(4.8458f, -2.3937f);
-        public static readonly Vector2 CalderoTamano = new Vector2(2.2083f, 1.8292f);
+        // OJO: el dibujo nuevo (caldero.png, 1286 x 1223) trae un remolino dorado
+        // alrededor de la olla, asi que el sprite entero es MUCHO mas grande que la
+        // olla. Medido del alfa:
+        //     olla oscura ... 791 x 704 px
+        //     dibujo entero  1272 x 1178 px  (240 px de aire a cada lado,
+        //                                     342 arriba y 131 abajo)
+        //
+        // Por eso se importa a 395.5 PPU en vez de 240: asi la OLLA mide los 2.0 u
+        // de GridSettings.CauldronWidth y el remolino queda fuera, como aire.
+        // Si Melanie reexporta el caldero, hay que volver a medir y ajustar el PPU.
+        public static readonly Vector2 CalderoCentro = new Vector2(4.8749f, -2.1503f);
+
+        /// <summary>Tamano del SPRITE entero (olla + remolino), no el de la olla.</summary>
+        public static readonly Vector2 CalderoTamano = new Vector2(3.2162f, 2.9785f);
+
+        /// <summary>Solo la olla: lo que de verdad ocupa en el tablero.</summary>
+        public static readonly Vector2 CalderoOllaTamano = new Vector2(2f, 1.78f);
 
         /// <summary>
-        /// La boca: 1.2 u de ancho (documento de arte). El ingrediente no entra,
-        /// choca con este trigger y cuenta como entregado.
+        /// El CUERPO MACIZO de la olla (CapsuleCollider2D, no trigger): es lo que
+        /// impide que el ingrediente atraviese la panza y le obliga a entrar por
+        /// arriba.
         ///
-        /// El borde de la olla esta en y = -1.65 (medido del alfa: es la primera
-        /// fila que aparece con los 2 u de ancho completos; por encima solo queda
-        /// un pico suelto del dibujo). La boca se centra ahi, no en el borde de
-        /// arriba del sprite, para que el huevo tenga que llegar a la olla.
+        /// Su borde superior tiene que acabar JUSTO donde empieza la boca. Si sube
+        /// mas, tapa la entrada y el ingrediente se queda encima del caldero sin
+        /// poder caer dentro.
         /// </summary>
-        public const float BocaAncho = 1.2f;
-        public const float BocaAlto = 0.35f;
-
-        /// <summary>Desplazamiento de la boca respecto al centro del caldero.</summary>
-        public const float BocaOffsetY = 0.619f;
+        public static readonly Vector2 CalderoCuerpoTamano = new Vector2(2f, 1.3957f);
+        public const float CalderoCuerpoOffsetX = -0.02908f;
+        public const float CalderoCuerpoOffsetY = -0.45765f;
 
         /// <summary>
-        /// La apertura visible de la olla (el ovalo del borde), medida sobre Caldero.PNG:
-        /// centro 0.681 u por encima del centro del sprite, 1.75 u de ancho y 0.26 de alto.
+        /// La boca. El ingrediente no entra dentro: choca con este trigger y
+        /// cuenta como entregado.
+        ///
+        /// Se hace coincidir con el ovalo verde que dibujo Melanie, para que lo que
+        /// se ve y lo que detecta sean lo mismo. Antes era el 1.2 u del documento de
+        /// arte, mas estrecho que el dibujo, y el huevo rebotaba en el borde.
+        /// </summary>
+        public const float BocaAncho = CalderoAperturaAncho;
+        public const float BocaAlto = CalderoAperturaAlto;
+
+        /// <summary>Desplazamiento de la boca respecto al centro del SPRITE.</summary>
+        public const float BocaOffsetY = 0.378f;
+
+        /// <summary>
+        /// La apertura visible de la olla (el ovalo verde del borde), medida del
+        /// propio dibujo: 566 x 109 px, su centro 149.5 px por encima del centro
+        /// del sprite. A 395.5 PPU eso son 1.431 x 0.276 u y 0.378 de alto.
         /// De ahi sale el humo y el brillo verde (CauldronFx).
         /// </summary>
-        public const float CalderoAperturaOffsetY = 0.681f;
-        public const float CalderoAperturaAncho = 1.75f;
-        public const float CalderoAperturaAlto = 0.26f;
+        public const float CalderoAperturaOffsetY = 0.378f;
+        public const float CalderoAperturaAncho = 1.4311f;
+        public const float CalderoAperturaAlto = 0.2756f;
 
         // ---- ingrediente -----------------------------------------------------
 
