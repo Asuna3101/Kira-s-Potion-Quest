@@ -25,8 +25,21 @@ namespace Chocoflan.KiraPotionQuest
         public string escenaDelMenu = "MainMenu";
 
         [Header("Ayuda (boton ?)")]
-        [Tooltip("Mostrar las indicaciones de control desde el inicio. Por defecto estan ocultas.")]
+        [Tooltip("(Ya no se usa: el boton ? abre ahora la guia de como jugar.)")]
         public bool controlsStartOpen = false;
+
+        [Header("Guia de como jugar (popup)")]
+        [Tooltip("Mostrar la guia al empezar el nivel. El boton ? la vuelve a abrir cuando quieras.")]
+        public bool mostrarGuiaAlInicio = true;
+
+        [Tooltip("Nombre de la escena donde se muestra sola al iniciar. Vacio = en todos los niveles.")]
+        public string guiaSoloEnEscena = "Level01";
+
+        [Tooltip("Mostrarla solo la primera vez en cada partida (al reiniciar con R no vuelve a salir).")]
+        public bool guiaSoloUnaVez = true;
+
+        [Tooltip("El juego se detiene mientras la guia esta abierta.")]
+        public bool pausarMientrasSeLee = true;
 
         [Header("Kira habla")]
         [Tooltip("Globo de dialogo de Kira al bajar el mana. Desactivado: la barra de mana ya cuenta eso.")]
@@ -64,6 +77,29 @@ namespace Chocoflan.KiraPotionQuest
         bool m_HalfArmed = true;     // vuelve a avisar al bajar de la mitad, tras recuperar >= 60%
         bool m_EmptyArmed = true;    // vuelve a avisar al quedarse sin mana, tras recuperar >= 25%
 
+        // popup de la guia
+        RectTransform m_GuideBox;
+        RectTransform m_GuideButtonRect;
+        Text m_GuideButtonLabel;
+        GameObject m_GuideRoot;
+        bool m_GuideOpen;
+        bool m_GuidePaused;
+        float m_GuideOpenTime;
+        int m_GuideClosedFrame = -1;
+        static bool s_GuideSeen;
+
+        // menu de pausa (ESC)
+        GameObject m_PauseRoot;
+        RectTransform m_PauseBox;
+        RectTransform[] m_PauseButtons;
+        Text[] m_PauseLabels;
+        bool m_PauseOpen;
+        bool m_PausePaused;
+        float m_PauseOpenTime;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { s_GuideSeen = false; }
+
         GameManager m_Game;
         float m_HintTimer;
 
@@ -79,10 +115,17 @@ namespace Chocoflan.KiraPotionQuest
             }
             RefreshTitle();
             ShowResult(false, "");
+
+            bool escenaValida = string.IsNullOrEmpty(guiaSoloEnEscena) ||
+                                SceneManager.GetActiveScene().name == guiaSoloEnEscena;
+            if (mostrarGuiaAlInicio && escenaValida && !(guiaSoloUnaVez && s_GuideSeen))
+                OpenGuide();
         }
 
         void OnDestroy()
         {
+            // No dejar el juego en pausa si se recarga la escena con la guia abierta.
+            if (m_GuidePaused || m_PausePaused) Time.timeScale = 1f;
             if (m_Game == null) return;
             m_Game.StateChanged -= OnStateChanged;
             m_Game.HintChanged -= OnHint;
@@ -108,6 +151,8 @@ namespace Chocoflan.KiraPotionQuest
                 if (m_HintTimer <= 0f && m_HintText != null) m_HintText.text = "";
             }
 
+            HandleGuide();
+            HandlePause();
             HandleHelpButton();
             HandleMenuButton();
             UpdateKiraDialogue();
@@ -125,9 +170,14 @@ namespace Chocoflan.KiraPotionQuest
             var kb = Keyboard.current;
             if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
+                if (m_GuideOpen) { CloseGuide(); return; }
+                if (m_PauseOpen) { ClosePause(); return; }
+                // Jugando: ESC abre la pausa. Si el nivel ya termino, vuelve al menu como antes.
+                if (m_Game != null && m_Game.State == LevelState.Playing) { OpenPause(); return; }
                 VolverAlMenu();
                 return;
             }
+            if (m_GuideOpen || m_PauseOpen) return;
 
             if (m_MenuRect == null) return;
 
@@ -173,18 +223,169 @@ namespace Chocoflan.KiraPotionQuest
 
             var mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.wasPressedThisFrame &&
+                m_GuideClosedFrame != Time.frameCount && !m_PauseOpen &&
                 RectTransformUtility.RectangleContainsScreenPoint(m_HelpRect, mouse.position.ReadValue(), null))
             {
-                SetControlsOpen(!m_ControlsOpen);
+                if (m_GuideOpen) CloseGuide(); else OpenGuide();
             }
 
-            // El brillo late mientras las indicaciones estan cerradas, para que el boton se note.
+            // El brillo late para que el boton se note (con tiempo real: sigue latiendo en pausa).
             if (m_HelpGlow != null)
             {
-                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * 3f);
-                float alpha = m_ControlsOpen ? 0.25f : 0.25f + 0.35f * pulse;
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 3f);
+                float alpha = m_GuideOpen ? 0.3f : 0.35f + 0.4f * pulse;
                 m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, alpha);
             }
+        }
+
+        // ---------------- menu de pausa (ESC) ---------------------------------
+
+        const int PauseContinue = 0, PauseGuide = 1, PauseRestart = 2, PauseMenu = 3;
+
+        void OpenPause()
+        {
+            if (m_PauseRoot == null || m_PauseOpen) return;
+            m_PauseOpen = true;
+            m_PauseOpenTime = Time.unscaledTime;
+            m_PauseRoot.SetActive(true);
+            if (m_PauseBox != null) m_PauseBox.localScale = new Vector3(0.85f, 0.85f, 1f);
+
+            if (Time.timeScale > 0f)
+            {
+                Time.timeScale = 0f;
+                m_PausePaused = true;
+            }
+        }
+
+        void ClosePause()
+        {
+            if (!m_PauseOpen) return;
+            m_PauseOpen = false;
+            if (m_PauseRoot != null) m_PauseRoot.SetActive(false);
+            if (m_PausePaused)
+            {
+                m_PausePaused = false;
+                Time.timeScale = 1f;
+            }
+        }
+
+        void HandlePause()
+        {
+            if (!m_PauseOpen) return;
+
+            float t = Mathf.Clamp01((Time.unscaledTime - m_PauseOpenTime) / 0.2f);
+            if (m_PauseBox != null)
+            {
+                float sc = Mathf.LerpUnclamped(0.85f, 1f, EaseOutBack(t));
+                m_PauseBox.localScale = new Vector3(sc, sc, 1f);
+            }
+
+            var mouse = Mouse.current;
+            if (mouse == null || m_PauseButtons == null) return;
+
+            Vector2 pos = mouse.position.ReadValue();
+            for (int i = 0; i < m_PauseButtons.Length; i++)
+            {
+                bool encima = RectTransformUtility.RectangleContainsScreenPoint(m_PauseButtons[i], pos, null);
+                m_PauseLabels[i].color = encima ? Color.white : new Color(0.25f, 0.12f, 0.35f, 1f);
+
+                if (encima && mouse.leftButton.wasPressedThisFrame &&
+                    Time.unscaledTime - m_PauseOpenTime > 0.15f)
+                {
+                    PressPauseButton(i);
+                    return;
+                }
+            }
+        }
+
+        void PressPauseButton(int index)
+        {
+            switch (index)
+            {
+                case PauseContinue:
+                    ClosePause();
+                    break;
+                case PauseGuide:
+                    ClosePause();
+                    OpenGuide();
+                    break;
+                case PauseRestart:
+                    ClosePause();
+                    if (m_Game != null) m_Game.RestartLevel();
+                    break;
+                case PauseMenu:
+                    ClosePause();
+                    VolverAlMenu();
+                    break;
+            }
+        }
+
+        // ---------------- guia de como jugar (popup) --------------------------
+
+        void OpenGuide()
+        {
+            if (m_GuideRoot == null || m_GuideOpen) return;
+            if (m_Game != null && m_Game.State != LevelState.Playing) return;
+
+            m_GuideOpen = true;
+            s_GuideSeen = true;
+            m_GuideOpenTime = Time.unscaledTime;
+            m_GuideRoot.SetActive(true);
+            if (m_GuideBox != null) m_GuideBox.localScale = new Vector3(0.85f, 0.85f, 1f);
+
+            if (pausarMientrasSeLee && Time.timeScale > 0f)
+            {
+                Time.timeScale = 0f;
+                m_GuidePaused = true;
+            }
+        }
+
+        void CloseGuide()
+        {
+            if (!m_GuideOpen) return;
+            m_GuideOpen = false;
+            m_GuideClosedFrame = Time.frameCount;
+            if (m_GuideRoot != null) m_GuideRoot.SetActive(false);
+
+            if (m_GuidePaused)
+            {
+                m_GuidePaused = false;
+                Time.timeScale = 1f;
+            }
+        }
+
+        void HandleGuide()
+        {
+            if (!m_GuideOpen) return;
+
+            // Animacion de entrada con tiempo real (el juego puede estar en pausa).
+            float t = Mathf.Clamp01((Time.unscaledTime - m_GuideOpenTime) / 0.2f);
+            if (m_GuideBox != null)
+            {
+                float s = Mathf.LerpUnclamped(0.85f, 1f, EaseOutBack(t));
+                m_GuideBox.localScale = new Vector3(s, s, 1f);
+            }
+
+            // Evita cerrarla con el mismo click o tecla que la abrio.
+            if (Time.unscaledTime - m_GuideOpenTime < 0.25f) return;
+
+            var kb = Keyboard.current;
+            var mouse = Mouse.current;
+
+            bool close = kb != null &&
+                         (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame ||
+                          kb.spaceKey.wasPressedThisFrame);
+
+            if (mouse != null)
+            {
+                bool encima = m_GuideButtonRect != null && RectTransformUtility.RectangleContainsScreenPoint(
+                    m_GuideButtonRect, mouse.position.ReadValue(), null);
+                if (m_GuideButtonLabel != null)
+                    m_GuideButtonLabel.color = encima ? Color.white : new Color(0.25f, 0.12f, 0.35f, 1f);
+                if (mouse.leftButton.wasPressedThisFrame) close = true;
+            }
+
+            if (close) CloseGuide();
         }
 
         void SetControlsOpen(bool open)
@@ -412,30 +613,31 @@ namespace Chocoflan.KiraPotionQuest
                                   "Flechas IZQ/DER = MOVER   |   Soltar ESPACIO = CAER   |   " +
                                   "Click y mantener = interactuar   |   Tab = cambiar   |   R = reiniciar";
 
-            // --- boton ? magico: abajo a la izquierda, junto a la barra de mana
+            // --- boton ? magico: abajo a la izquierda, bajo la barra de mana. Abre la guia.
             m_HelpGlow = MakeImage(canvasGo.transform, "Help_Brillo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(6f, -1f), V(26f, 26f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(3f, -4f), V(34f, 34f));
             m_HelpGlow.sprite = FxSprites.Glow;
-            m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.4f);
+            m_HelpGlow.color = new Color(1f, 0.85f, 0.4f, 0.5f);
             m_HelpRect = m_HelpGlow.rectTransform;   // esta es el area donde se hace click
 
             var helpRing = MakeImage(canvasGo.transform, "Help_Aro",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(10f, 3f), V(18f, 18f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(8f, 1f), V(24f, 24f));
             helpRing.sprite = FxSprites.Disc;
             helpRing.color = new Color(1f, 0.82f, 0.35f, 1f);
 
             var helpDisc = MakeImage(helpRing.transform, "Help_Fondo",
-                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1.3f, 1.3f), V(15.4f, 15.4f));
+                new Vector2(0f, 0f), new Vector2(0f, 0f), V(1.7f, 1.7f), V(20.6f, 20.6f));
             helpDisc.sprite = FxSprites.Disc;
             helpDisc.color = new Color(0.3f, 0.16f, 0.5f, 1f);
 
-            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(13), TextAnchor.MiddleCenter,
-                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(18f, 18f));
+            var helpMark = MakeText(helpRing.transform, "Help_Signo", font, Sz(18), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero, V(24f, 24f));
             helpMark.text = "?";
             helpMark.fontStyle = FontStyle.Bold;
             helpMark.color = new Color(1f, 0.93f, 0.62f, 1f);
 
-            SetControlsOpen(controlsStartOpen);
+            // La tira de controles de una sola linea se reemplazo por la guia (popup).
+            SetControlsOpen(false);
 
             // --- boton de volver al menu: arriba a la derecha
             var menuBtn = MakeImage(canvasGo.transform, "Btn_Menu",
@@ -454,6 +656,132 @@ namespace Chocoflan.KiraPotionQuest
             // --- libro de "nivel superado" (si hay arte asignado)
             m_Libro = GetComponent<VictoryBook>();
             if (m_Libro != null && m_Libro.TieneArte) m_Libro.Construir(canvasGo.transform, font);
+
+            // --- guia de como jugar (popup centrado; arriba de todo menos el panel de resultado)
+            m_GuideRoot = new GameObject("Guia_Inicio");
+            m_GuideRoot.transform.SetParent(canvasGo.transform, false);
+            var guideRt = m_GuideRoot.AddComponent<RectTransform>();
+            guideRt.anchorMin = Vector2.zero;
+            guideRt.anchorMax = Vector2.one;
+            guideRt.offsetMin = Vector2.zero;
+            guideRt.offsetMax = Vector2.zero;
+            var dim = m_GuideRoot.AddComponent<Image>();
+            dim.color = new Color(0.02f, 0.01f, 0.06f, 0.62f);
+            dim.raycastTarget = false;
+
+            var guideBorder = MakeImage(m_GuideRoot.transform, "Guia_Borde",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(336f, 196f));
+            guideBorder.sprite = FxSprites.RoundedBox;
+            guideBorder.type = Image.Type.Sliced;
+            guideBorder.color = new Color(1f, 0.82f, 0.35f, 1f);
+            m_GuideBox = guideBorder.rectTransform;
+
+            var guidePanel = MakeImage(guideBorder.transform, "Guia_Panel",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(332f, 192f));
+            guidePanel.sprite = FxSprites.RoundedBox;
+            guidePanel.type = Image.Type.Sliced;
+            guidePanel.color = new Color(0.1f, 0.05f, 0.2f, 0.98f);
+
+            var guideTitle = MakeText(guidePanel.transform, "Guia_Titulo", font, Sz(15), TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), V(0f, -9f), V(310f, 20f));
+            guideTitle.text = "\u00bfC\u00f3mo se juega?";
+            guideTitle.fontStyle = FontStyle.Bold;
+            guideTitle.color = new Color(1f, 0.9f, 0.5f, 1f);
+
+            var guideBody = MakeText(guidePanel.transform, "Guia_Texto", font, Sz(9), TextAnchor.UpperLeft,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), V(0f, -34f), V(300f, 118f));
+            guideBody.supportRichText = true;
+            guideBody.lineSpacing = 1.1f;
+            guideBody.color = new Color(0.97f, 0.93f, 1f, 1f);
+            guideBody.text =
+                "Lleva el ingrediente hasta el caldero sin romperlo.\n\n" +
+                "<b>Click</b> sobre el ingrediente  =  elegirlo\n" +
+                "<b>Mantener ESPACIO</b>  =  levitar (gasta man\u00e1)\n" +
+                "<b>Flechas IZQ / DER</b>  =  moverlo (conserva el impulso)\n" +
+                "<b>Soltar ESPACIO</b>  =  caer (desde muy alto se rompe)\n" +
+                "<b>Tab</b>  =  cambiar de ingrediente      <b>R</b>  =  reiniciar\n\n" +
+                "Vuelve a ver esto con el bot\u00f3n <b>?</b> de abajo a la izquierda.";
+
+            var guideBtn = MakeImage(guidePanel.transform, "Guia_Boton",
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), V(0f, 9f), V(120f, 22f));
+            guideBtn.sprite = FxSprites.RoundedBox;
+            guideBtn.type = Image.Type.Sliced;
+            guideBtn.color = new Color(1f, 0.82f, 0.35f, 1f);
+            guideBtn.rectTransform.pivot = new Vector2(0.5f, 0f);
+            m_GuideButtonRect = guideBtn.rectTransform;
+
+            m_GuideButtonLabel = MakeText(guideBtn.transform, "Guia_Boton_Txt", font, Sz(10), TextAnchor.MiddleCenter,
+                new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            m_GuideButtonLabel.rectTransform.offsetMin = Vector2.zero;
+            m_GuideButtonLabel.rectTransform.offsetMax = Vector2.zero;
+            m_GuideButtonLabel.text = "\u00a1Entendido!  (ENTER)";
+            m_GuideButtonLabel.fontStyle = FontStyle.Bold;
+            m_GuideButtonLabel.color = new Color(0.25f, 0.12f, 0.35f, 1f);
+
+            m_GuideRoot.SetActive(false);
+
+            // --- menu de pausa (ESC): Continuar, Como jugar, Reiniciar, Menu principal
+            m_PauseRoot = new GameObject("Menu_Pausa");
+            m_PauseRoot.transform.SetParent(canvasGo.transform, false);
+            var pauseRt = m_PauseRoot.AddComponent<RectTransform>();
+            pauseRt.anchorMin = Vector2.zero;
+            pauseRt.anchorMax = Vector2.one;
+            pauseRt.offsetMin = Vector2.zero;
+            pauseRt.offsetMax = Vector2.zero;
+            var pauseDim = m_PauseRoot.AddComponent<Image>();
+            pauseDim.color = new Color(0.02f, 0.01f, 0.06f, 0.68f);
+            pauseDim.raycastTarget = false;
+
+            var pauseBorder = MakeImage(m_PauseRoot.transform, "Pausa_Borde",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(176f, 152f));
+            pauseBorder.sprite = FxSprites.RoundedBox;
+            pauseBorder.type = Image.Type.Sliced;
+            pauseBorder.color = new Color(1f, 0.82f, 0.35f, 1f);
+            m_PauseBox = pauseBorder.rectTransform;
+
+            var pausePanel = MakeImage(pauseBorder.transform, "Pausa_Panel",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(172f, 148f));
+            pausePanel.sprite = FxSprites.RoundedBox;
+            pausePanel.type = Image.Type.Sliced;
+            pausePanel.color = new Color(0.1f, 0.05f, 0.2f, 0.98f);
+
+            var pauseTitle = MakeText(pausePanel.transform, "Pausa_Titulo", font, Sz(16), TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), V(0f, -8f), V(150f, 20f));
+            pauseTitle.text = "PAUSA";
+            pauseTitle.fontStyle = FontStyle.Bold;
+            pauseTitle.color = new Color(1f, 0.9f, 0.5f, 1f);
+
+            string[] pauseNames =
+            {
+                "Continuar", "\u00bfC\u00f3mo se juega?", "Reiniciar nivel", "Men\u00fa principal"
+            };
+            m_PauseButtons = new RectTransform[pauseNames.Length];
+            m_PauseLabels = new Text[pauseNames.Length];
+            for (int i = 0; i < pauseNames.Length; i++)
+            {
+                var btn = MakeImage(pausePanel.transform, "Pausa_Boton_" + i,
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), V(0f, -34f - i * 25f), V(130f, 21f));
+                btn.sprite = FxSprites.RoundedBox;
+                btn.type = Image.Type.Sliced;
+                btn.color = new Color(1f, 0.82f, 0.35f, 1f);
+                m_PauseButtons[i] = btn.rectTransform;
+
+                var label = MakeText(btn.transform, "Pausa_Boton_Txt", font, Sz(10), TextAnchor.MiddleCenter,
+                    new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+                label.rectTransform.offsetMin = Vector2.zero;
+                label.rectTransform.offsetMax = Vector2.zero;
+                label.text = pauseNames[i];
+                label.fontStyle = FontStyle.Bold;
+                label.color = new Color(0.25f, 0.12f, 0.35f, 1f);
+                m_PauseLabels[i] = label;
+            }
+
+            var pauseHint = MakeText(pausePanel.transform, "Pausa_Pista", font, Sz(8), TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), V(0f, 3f), V(150f, 10f));
+            pauseHint.text = "ESC para volver";
+            pauseHint.color = new Color(0.8f, 0.75f, 0.95f, 0.9f);
+
+            m_PauseRoot.SetActive(false);
 
             // --- panel de resultado
             m_ResultPanel = MakeImage(canvasGo.transform, "Panel_Resultado",
