@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.45922962
-    y: -0.5288845
-    width: 1.9209605
-    height: 2.1513944
+    x: -0.5989584
+    y: -0.9847143
+    width: 2
+    height: 2.3169749
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -576,9 +576,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
+  mostrarTitulo: 0
   spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
-  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
   escenaDelMenu: MainMenu
+  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
+  spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
+  alturaGuia: 185
   controlsStartOpen: 0
   mostrarGuiaAlInicio: 1
   guiaSoloEnEscena: Level01
@@ -3816,8 +3819,8 @@ Transform:
   m_GameObject: {fileID: 1766526405}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.87488, y: -2.15025, z: 0}
-  m_LocalScale: {x: 0.999985, y: 1.0000182, z: 1}
+  m_LocalPosition: {x: 5.05, y: -2.31, z: 0}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1294604097}
@@ -3884,17 +3887,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.01517, y: 0.37800}
+  m_Offset: {x: -0.02726, y: 0.81222}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.2083335, y: 1.8291668}
-    newSize: {x: 2.2083333, y: 1.8291667}
+    oldSize: {x: 3.2161808, y: 2.8236976}
+    newSize: {x: 3.21618, y: 2.97851}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.43110, y: 0.27560}
+  m_Size: {x: 1.63535, y: 0.30526}
   m_EdgeRadius: 0
 --- !u!212 &1766526410
 SpriteRenderer:
@@ -3945,7 +3948,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 20
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9d24e6b17a3c4f58b1e0852fd6c37a94, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3989,8 +3992,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.02908, y: -0.45765}
-  m_Size: {x: 2.00000, y: 1.39570}
+  m_Offset: {x: -0.02726, y: 0.00545}
+  m_Size: {x: 2.18046, y: 1.30828}
   m_Direction: 1
 --- !u!1 &1768034951
 GameObject:
@@ -4189,7 +4192,7 @@ Transform:
   m_GameObject: {fileID: 1839215547}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.85971, y: -1.77225, z: 0}
+  m_LocalPosition: {x: 4.84762, y: -1.41543, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4208,7 +4211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.FxFollow
   target: {fileID: 1766526406}
-  localOffset: {x: -0.01517, y: 0.378}
+  localOffset: {x: -0.02726, y: 0.81222}
   referenceScale: {x: 0.999985, y: 1.0000182, z: 1}
   baseScale: 1
 --- !u!114 &1839215550
@@ -4223,8 +4226,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dd0cdb7b4042ff44a4432e3beb2b36f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.CauldronFx
-  mouthWidth: 1.43110
-  mouthHeight: 0.27560
+  mouthWidth: 1.63535
+  mouthHeight: 0.30526
   potionColor: {r: 0.35, g: 0.95, b: 0.45, a: 1}
   smokeColor: {r: 0.5, g: 1, b: 0.55, a: 1}
   sparkColor: {r: 0.85, g: 1, b: 0.55, a: 1}

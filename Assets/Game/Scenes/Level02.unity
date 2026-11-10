@@ -205,6 +205,51 @@ MonoBehaviour:
   apertura: 0.4
   aparicionLetras: 0.4
   pie: haz click para continuar
+--- !u!114 &960002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c3e5a71d84b4f62a1072e6b3d905c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intervalo: 0.16
+  intervaloLevitando: 0.07
+  radio: 0.42
+  variacionRadio: 0.1
+  tamano: 0.1
+  duracion: 0.45
+  color: {r: 1, g: 0.95, b: 0.7, a: 0.95}
+  colorLevitando: {r: 0.85, g: 0.95, b: 1, a: 1}
+--- !u!114 &9900201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416714896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9d3f17c4e5b48d2b6c0e71f9a284d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musica: {fileID: 8300000, guid: 72504df40efb1c041b26ec6a5584bba3, type: 3}
+  volumenMusica: 0.4
+  volumenEfectos: 0.85
+  romper: {fileID: 8300000, guid: 15511c639d713da4baf4f741289f64ae, type: 3}
+  quemar: {fileID: 8300000, guid: f0f4e2f767411e04ca7c949218453f03, type: 3}
+  caldero: {fileID: 8300000, guid: d56eff9296d96284f9dcae32623cb1d1, type: 3}
+  ganar: {fileID: 8300000, guid: 910f31d54108d384a837ff1eaa40e780, type: 3}
+  perder: {fileID: 8300000, guid: 6bd7e5207b8d8504aa3fb006fa62371e, type: 3}
+  boton: {fileID: 8300000, guid: e97a9a38ec033f1439ddd1e55b9c0b73, type: 3}
+  lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
+  empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
+  sonarAlEmpezar: 1
+  fundidoEntrada: 0.6
 --- !u!1 &46573909
 GameObject:
   m_ObjectHideFlags: 0
@@ -813,8 +858,8 @@ Transform:
   m_GameObject: {fileID: 186369670}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.90326, y: 1.23473, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalPosition: {x: 4.90326, y: 1.1728, z: 0}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1871374711}
@@ -881,17 +926,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.01517, y: 0.37800}
+  m_Offset: {x: -0.02726, y: 0.81222}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.2083335, y: 1.8291668}
-    newSize: {x: 2.2083333, y: 1.8291667}
+    oldSize: {x: 3.2161808, y: 2.8236976}
+    newSize: {x: 3.21618, y: 2.97851}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.43110, y: 0.27560}
+  m_Size: {x: 1.63535, y: 0.30526}
   m_EdgeRadius: 0
 --- !u!212 &186369675
 SpriteRenderer:
@@ -942,7 +987,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 20
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9d24e6b17a3c4f58b1e0852fd6c37a94, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -986,8 +1031,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.02908, y: -0.45765}
-  m_Size: {x: 2.00000, y: 1.39570}
+  m_Offset: {x: -0.02726, y: 0.00545}
+  m_Size: {x: 2.18046, y: 1.30828}
   m_Direction: 1
 --- !u!1 &287648831
 GameObject:
@@ -1287,7 +1332,7 @@ MonoBehaviour:
   umbralAgotado: 0.02
   umbralRecuperado: 0.12
   suavizado: 12
-  minimoVisible: 0.03
+  pasos: 200
 --- !u!1 &387725188
 GameObject:
   m_ObjectHideFlags: 0
@@ -1815,10 +1860,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.993865
-    y: -2.9030302
-    width: 6.5439672
-    height: 6.5454545
+    x: -0.5989584
+    y: -0.9847143
+    width: 2
+    height: 2.3169749
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -2949,7 +2994,7 @@ Transform:
   m_GameObject: {fileID: 1107042113}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.89112, y: 1.53713, z: 0}
+  m_LocalPosition: {x: 4.88146, y: 1.82258, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2968,7 +3013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.FxFollow
   target: {fileID: 186369671}
-  localOffset: {x: -0.01517, y: 0.378}
+  localOffset: {x: -0.02726, y: 0.81222}
   referenceScale: {x: 0.999985, y: 1.0000182, z: 1}
   baseScale: 1
 --- !u!114 &1107042116
@@ -2983,8 +3028,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dd0cdb7b4042ff44a4432e3beb2b36f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.CauldronFx
-  mouthWidth: 1.43110
-  mouthHeight: 0.27560
+  mouthWidth: 1.63535
+  mouthHeight: 0.30526
   potionColor: {r: 0.35, g: 0.95, b: 0.45, a: 1}
   smokeColor: {r: 0.5, g: 1, b: 0.55, a: 1}
   sparkColor: {r: 0.85, g: 1, b: 0.55, a: 1}
@@ -3412,8 +3457,8 @@ Transform:
   m_GameObject: {fileID: 1302040337}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -1, w: 0}
-  m_LocalPosition: {x: 1.0389999, y: -0.059000015, z: 0}
-  m_LocalScale: {x: 1.12, y: 0.7363576, z: 0.7363576}
+  m_LocalPosition: {x: 1.0389999, y: -0.08621, z: 0}
+  m_LocalScale: {x: 1.12, y: 1.12, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1871374711}
@@ -3467,7 +3512,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 582371ca897a303c35236b07c5a73d31, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3f1c7a52b8d94e61a05d2c9e47b813f6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3511,17 +3556,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.02453}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.5}
+    oldSize: {x: 1, y: 0.37732342}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 0.5}
+  m_Size: {x: 0.86, y: 0.22262}
   m_EdgeRadius: 0
 --- !u!114 &1302040341
 MonoBehaviour:
@@ -3653,10 +3698,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceWidth: 1920
   referenceHeight: 1080
+  mostrarTitulo: 0
   spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
-  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
   escenaDelMenu: MainMenu
+  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
+  spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
+  alturaGuia: 170
   controlsStartOpen: 0
+  mostrarGuiaAlInicio: 1
+  guiaSoloEnEscena: Level01
+  guiaSoloUnaVez: 1
+  pausarMientrasSeLee: 1
   mostrarDialogosDeKira: 0
   halfManaMessage: Oh no, solo te queda la mitad de mana!! T.T
   emptyManaMessage: "Te quedaste sin man\xE1, espera un poco :c"
@@ -3796,6 +3848,8 @@ MonoBehaviour:
   builder: {fileID: 1416714900}
   escenaSiguiente: LevelSelect
   segundosParaSiguiente: 4
+  minimoEnPantalla: 0.8
+  pausarAlTerminar: 1
   enableThrow: 1
 --- !u!4 &1416714902
 Transform:
@@ -4085,6 +4139,8 @@ MonoBehaviour:
   breakFrames: []
   breakFrameRate: 14
   lostDelay: 0.9
+  mostrarAroSeleccion: 0
+  diametroAro: 0.95
 --- !u!1 &1661283992
 GameObject:
   m_ObjectHideFlags: 0
@@ -4185,8 +4241,8 @@ Transform:
   m_GameObject: {fileID: 1744653479}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -1, w: 0}
-  m_LocalPosition: {x: -1.161, y: 1.91, z: 0}
-  m_LocalScale: {x: 1.12, y: 0.7363576, z: 0.7363576}
+  m_LocalPosition: {x: -1.17, y: 1.92, z: 0}
+  m_LocalScale: {x: 1.12, y: 1.12, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1871374711}
@@ -4240,7 +4296,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 582371ca897a303c35236b07c5a73d31, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3f1c7a52b8d94e61a05d2c9e47b813f6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4284,17 +4340,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.02453}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.5}
+    oldSize: {x: 1, y: 0.37732342}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 0.5}
+  m_Size: {x: 0.86, y: 0.22262}
   m_EdgeRadius: 0
 --- !u!114 &1744653483
 MonoBehaviour:
@@ -4560,8 +4616,8 @@ Transform:
   m_GameObject: {fileID: 1881846771}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.84, y: -3.04, z: 0}
-  m_LocalScale: {x: 1.74, y: 1, z: 1}
+  m_LocalPosition: {x: 4.84, y: -2.98, z: 0}
+  m_LocalScale: {x: 1.74, y: 1.74, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1871374711}
@@ -4615,7 +4671,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 582371ca897a303c35236b07c5a73d31, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3f1c7a52b8d94e61a05d2c9e47b813f6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4659,17 +4715,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.02453}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.5}
+    oldSize: {x: 1, y: 0.37732342}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 0.5}
+  m_Size: {x: 0.86, y: 0.22262}
   m_EdgeRadius: 0
 --- !u!114 &1881846775
 MonoBehaviour:
@@ -5206,26 +5262,8 @@ MonoBehaviour:
   breakFrames: []
   breakFrameRate: 14
   lostDelay: 0.9
---- !u!114 &960002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416714896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c3e5a71d84b4f62a1072e6b3d905c48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intervalo: 0.16
-  intervaloLevitando: 0.07
-  radio: 0.42
-  variacionRadio: 0.1
-  tamano: 0.1
-  duracion: 0.45
-  color: {r: 1, g: 0.95, b: 0.7, a: 0.95}
-  colorLevitando: {r: 0.85, g: 0.95, b: 1, a: 1}
+  mostrarAroSeleccion: 0
+  diametroAro: 0.95
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5239,28 +5277,3 @@ SceneRoots:
   - {fileID: 144042287}
   - {fileID: 1871374711}
   - {fileID: 56900467}
---- !u!114 &9900201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416714896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9d3f17c4e5b48d2b6c0e71f9a284d33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  musica: {fileID: 8300000, guid: 72504df40efb1c041b26ec6a5584bba3, type: 3}
-  volumenMusica: 0.4
-  volumenEfectos: 0.85
-  romper: {fileID: 8300000, guid: 15511c639d713da4baf4f741289f64ae, type: 3}
-  quemar: {fileID: 8300000, guid: f0f4e2f767411e04ca7c949218453f03, type: 3}
-  caldero: {fileID: 8300000, guid: d56eff9296d96284f9dcae32623cb1d1, type: 3}
-  ganar: {fileID: 8300000, guid: 910f31d54108d384a837ff1eaa40e780, type: 3}
-  perder: {fileID: 8300000, guid: 6bd7e5207b8d8504aa3fb006fa62371e, type: 3}
-  boton: {fileID: 8300000, guid: e97a9a38ec033f1439ddd1e55b9c0b73, type: 3}
-  lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
-  empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
-  sonarAlEmpezar: 1
-  fundidoEntrada: 0.6

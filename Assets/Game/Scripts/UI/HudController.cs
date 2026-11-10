@@ -36,6 +36,14 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Arte del boton (Sprites/UI/Boton_ayuda.PNG). Vacio = el circulo dorado dibujado por codigo.")]
         public Sprite spriteBotonAyuda;
 
+        [Tooltip("Imagen del libro abierto con la guia (Sprites/UI/Guia_libro.png). " +
+                 "Si esta asignada, reemplaza al panel de texto de 'Como se juega'. Vacio = panel de texto.")]
+        public Sprite spriteGuia;
+
+        [Tooltip("Alto del libro en pantalla (el alto total del HUD es 270). Mas chico = mas nitido; " +
+                 "mas grande = se ve mas pixeleado. Prueba entre 150 y 230.")]
+        [Range(100f, 260f)] public float alturaGuia = 170f;
+
         [Tooltip("(Ya no se usa: el boton ? abre ahora la guia de como jugar.)")]
         public bool controlsStartOpen = false;
 
@@ -421,7 +429,7 @@ namespace Chocoflan.KiraPotionQuest
             {
                 bool encima = m_GuideButtonRect != null && RectTransformUtility.RectangleContainsScreenPoint(
                     m_GuideButtonRect, mouse.position.ReadValue(), null);
-                if (m_GuideButtonLabel != null)
+                if (m_GuideButtonLabel != null && m_GuideButtonRect != null)
                     m_GuideButtonLabel.color = encima ? Color.white : new Color(0.25f, 0.12f, 0.35f, 1f);
                 if (mouse.leftButton.wasPressedThisFrame) close = true;
             }
@@ -832,6 +840,31 @@ namespace Chocoflan.KiraPotionQuest
             m_GuideButtonLabel.text = "\u00a1Entendido!  (ENTER)";
             m_GuideButtonLabel.fontStyle = FontStyle.Bold;
             m_GuideButtonLabel.color = new Color(0.25f, 0.12f, 0.35f, 1f);
+
+            // Con imagen de libro: se muestra la imagen entera (sin deformarla) y se
+            // esconde el panel de texto. El texto de abajo solo dice como continuar.
+            if (spriteGuia != null && spriteGuia.rect.height > 0f)
+            {
+                guidePanel.gameObject.SetActive(false);
+                float asp = spriteGuia.rect.width / spriteGuia.rect.height;
+                float libroAlto = alturaGuia;
+                float libroAncho = libroAlto * asp;
+                if (libroAncho > 456f) { libroAncho = 456f; libroAlto = libroAncho / asp; }
+                guideBorder.sprite = spriteGuia;
+                guideBorder.type = Image.Type.Simple;
+                guideBorder.preserveAspect = true;
+                guideBorder.color = Color.white;
+                guideBorder.raycastTarget = false;
+                guideBorder.rectTransform.sizeDelta = V(libroAncho, libroAlto);
+
+                var hint = MakeText(m_GuideRoot.transform, "Guia_Continuar", font, Sz(9), TextAnchor.MiddleCenter,
+                    new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), V(0f, 6f), V(300f, 14f));
+                hint.text = "ENTER, ESPACIO o click para continuar";
+                hint.color = new Color(1f, 0.93f, 0.7f, 1f);
+                hint.raycastTarget = false;
+                m_GuideButtonLabel = hint;
+                m_GuideButtonRect = null;
+            }
 
             m_GuideRoot.SetActive(false);
 
