@@ -24,9 +24,9 @@ namespace Chocoflan.KiraPotionQuest
 
         [Header("Aura")]
         [Tooltip("Tamano del halo que rodea la olla (u).")]
-        public Vector2 auraSize = new Vector2(3.6f, 2.8f);
-        [Range(0f, 1f)] public float auraAlphaMin = 0.14f;
-        [Range(0f, 1f)] public float auraAlphaMax = 0.28f;
+        public Vector2 auraSize = new Vector2(2.25f, 1.95f);
+        [Range(0f, 1f)] public float auraAlphaMin = 0.09f;
+        [Range(0f, 1f)] public float auraAlphaMax = 0.18f;
 
         [Header("Humo y chispas")]
         [Tooltip("Segundos entre bocanadas de humo. Menor = mas humo.")]

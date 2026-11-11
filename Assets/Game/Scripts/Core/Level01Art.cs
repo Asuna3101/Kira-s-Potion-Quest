@@ -25,6 +25,13 @@ namespace Chocoflan.KiraPotionQuest
         public Sprite vela1;            // Ingredients/Obstacles/Vela_1.PNG
         public Sprite vela2;            // Ingredients/Obstacles/Vela_2.PNG
 
+        [Header("Corriente de aire (2 fotogramas)")]
+        [Tooltip("Tablero/Obstacles/aires.PNG")]
+        public Sprite corrienteAire;
+
+        [Tooltip("Tablero/Obstacles/aires2.PNG. Se alterna con el anterior para que el aire parezca moverse.")]
+        public Sprite corrienteAire2;
+
         [Header("Meta e ingredientes")]
         public Sprite caldero;          // Character/Caldero.PNG
         public Sprite huevo;            // Ingredients/Huevo.PNG
@@ -166,36 +173,37 @@ namespace Chocoflan.KiraPotionQuest
 
         // ---- caldero ---------------------------------------------------------
 
-        // OJO: el dibujo nuevo (caldero.png, 1286 x 1223) trae un remolino dorado
-        // alrededor de la olla, asi que el sprite entero es MUCHO mas grande que la
-        // olla. Medido del alfa:
-        //     olla oscura ... 791 x 704 px
-        //     dibujo entero  1272 x 1178 px  (240 px de aire a cada lado,
-        //                                     342 arriba y 131 abajo)
+        // Arte actual: Character/Caldero_verde.png (la olla negra), 590 x 518 px,
+        // importada a 183.4474 PPU. En la escena va con escala 0.7, y asi la olla
+        // acaba midiendo los 2.0 u de GridSettings.CauldronWidth.
         //
-        // Por eso se importa a 395.5 PPU en vez de 240: asi la OLLA mide los 2.0 u
-        // de GridSettings.CauldronWidth y el remolino queda fuera, como aire.
-        // Si Melanie reexporta el caldero, hay que volver a medir y ajustar el PPU.
-        public static readonly Vector2 CalderoCentro = new Vector2(4.8749f, -2.1503f);
+        // Medido del alfa del dibujo:
+        //     dibujo entero  568 x 513 px
+        //     olla oscura    527 x 485 px
+        //     verde (boca)   336 x  58 px, su centro 148 px sobre el centro
+        //
+        // Si Melanie cambia otra vez el caldero, hay que volver a medir. Las
+        // ESCENAS mandan: estos valores son para el builder, que solo se usa si
+        // el nivel no esta horneado.
+        public static readonly Vector2 CalderoCentro = new Vector2(5.05f, -2.31f);
 
-        /// <summary>Tamano del SPRITE entero (olla + remolino), no el de la olla.</summary>
-        public static readonly Vector2 CalderoTamano = new Vector2(3.2162f, 2.9785f);
+        /// <summary>Tamano del sprite entero ya en la escena (con la escala 0.7).</summary>
+        public static readonly Vector2 CalderoTamano = new Vector2(2.1673f, 1.9576f);
 
         /// <summary>Solo la olla: lo que de verdad ocupa en el tablero.</summary>
-        public static readonly Vector2 CalderoOllaTamano = new Vector2(2f, 1.78f);
+        public static readonly Vector2 CalderoOllaTamano = new Vector2(2.011f, 1.851f);
 
         /// <summary>
         /// El CUERPO MACIZO de la olla (CapsuleCollider2D, no trigger): es lo que
         /// impide que el ingrediente atraviese la panza y le obliga a entrar por
-        /// arriba.
+        /// arriba. En unidades LOCALES del objeto (la escala 0.7 la aplica Unity).
         ///
-        /// Su borde superior tiene que acabar JUSTO donde empieza la boca. Si sube
-        /// mas, tapa la entrada y el ingrediente se queda encima del caldero sin
-        /// poder caer dentro.
+        /// Su borde superior acaba JUSTO donde empieza la boca. Si sube mas, tapa
+        /// la entrada y el ingrediente se queda encima sin poder caer dentro.
         /// </summary>
-        public static readonly Vector2 CalderoCuerpoTamano = new Vector2(2f, 1.3957f);
-        public const float CalderoCuerpoOffsetX = -0.02908f;
-        public const float CalderoCuerpoOffsetY = -0.45765f;
+        public static readonly Vector2 CalderoCuerpoTamano = new Vector2(2.18046f, 1.30828f);
+        public const float CalderoCuerpoOffsetX = -0.02726f;
+        public const float CalderoCuerpoOffsetY = 0.00545f;
 
         /// <summary>
         /// La boca. El ingrediente no entra dentro: choca con este trigger y
@@ -209,17 +217,17 @@ namespace Chocoflan.KiraPotionQuest
         public const float BocaAlto = CalderoAperturaAlto;
 
         /// <summary>Desplazamiento de la boca respecto al centro del SPRITE.</summary>
-        public const float BocaOffsetY = 0.378f;
+        public const float BocaOffsetY = 0.81222f;
 
         /// <summary>
         /// La apertura visible de la olla (el ovalo verde del borde), medida del
-        /// propio dibujo: 566 x 109 px, su centro 149.5 px por encima del centro
-        /// del sprite. A 395.5 PPU eso son 1.431 x 0.276 u y 0.378 de alto.
+        /// propio dibujo: 336 x 58 px, su centro 148 px por encima del centro
+        /// del sprite. A 183.4474 PPU eso son 1.635 x 0.305 u y 0.812 de alto.
         /// De ahi sale el humo y el brillo verde (CauldronFx).
         /// </summary>
-        public const float CalderoAperturaOffsetY = 0.378f;
-        public const float CalderoAperturaAncho = 1.4311f;
-        public const float CalderoAperturaAlto = 0.2756f;
+        public const float CalderoAperturaOffsetY = 0.81222f;
+        public const float CalderoAperturaAncho = 1.63535f;
+        public const float CalderoAperturaAlto = 0.30526f;
 
         // ---- ingrediente -----------------------------------------------------
 

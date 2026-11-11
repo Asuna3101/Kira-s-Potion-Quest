@@ -470,7 +470,9 @@ MonoBehaviour:
     paredPequena: {fileID: -7259912736566094623, guid: 6ec0413ecbbb11149949f22e83971e77, type: 3}
     vela1: {fileID: 5339118113947545926, guid: bddda0c6bb3b8294f892f19a45139fc8, type: 3}
     vela2: {fileID: 4644114821656363341, guid: 1d33ea2afff2771468d2e2f3c60f7868, type: 3}
-    caldero: {fileID: 21300000, guid: ecaa95d929cb35448a61f82e6f1423fa, type: 3}
+    corrienteAire: {fileID: 21300000, guid: 74a250df3f87144c08c4970ca72f5e5a, type: 3}
+    corrienteAire2: {fileID: 21300000, guid: 9f7732d60a51f49759f4214c3459ee3c, type: 3}
+    caldero: {fileID: 21300000, guid: 9d24e6b17a3c4f58b1e0852fd6c37a94, type: 3}
     huevo: {fileID: -2368408383761483995, guid: 424c50462ddcfcd419d909e014aac87e, type: 3}
     kira: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
     kiraVarita: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
@@ -579,7 +581,7 @@ MonoBehaviour:
   mostrarTitulo: 0
   spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
   escenaDelMenu: MainMenu
-  spriteBotonAyuda: {fileID: 21300000, guid: b4e71c90a35d4f26ad8912f5c7e30b48, type: 3}
+  spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
   alturaGuia: 185
   controlsStartOpen: 0
@@ -625,14 +627,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3e5a71d84b4f62a1072e6b3d905c48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intervalo: 0.16
-  intervaloLevitando: 0.07
-  radio: 0.42
-  variacionRadio: 0.1
-  tamano: 0.1
-  duracion: 0.45
-  color: {r: 1, g: 0.95, b: 0.7, a: 0.95}
-  colorLevitando: {r: 0.85, g: 0.95, b: 1, a: 1}
+  intervalo: 0.08
+  intervaloLevitando: 0.04
+  radio: 0.44
+  variacionRadio: 0.12
+  tamano: 0.19
+  duracion: 0.65
+  color: {r: 1, g: 0.93, b: 0.6, a: 1}
+  colorLevitando: {r: 0.7, g: 0.92, b: 1, a: 1}
 --- !u!114 &9900101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4231,9 +4233,9 @@ MonoBehaviour:
   potionColor: {r: 0.35, g: 0.95, b: 0.45, a: 1}
   smokeColor: {r: 0.5, g: 1, b: 0.55, a: 1}
   sparkColor: {r: 0.85, g: 1, b: 0.55, a: 1}
-  auraSize: {x: 3.26, y: 2.72}
-  auraAlphaMin: 0.14
-  auraAlphaMax: 0.28
+  auraSize: {x: 2.25, y: 1.95}
+  auraAlphaMin: 0.09
+  auraAlphaMax: 0.18
   smokeInterval: 0.16
   bubbleInterval: 0.3
   sparkInterval: 0.28

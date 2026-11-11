@@ -773,6 +773,24 @@ namespace Chocoflan.KiraPotionQuest
             var anim = go.AddComponent<PlaceholderAnimator>();
             anim.mode = PlaceholderAnimator.Mode.ScrollUp;
             anim.speed = 1.5f;
+
+            // Con el arte de Melanie el remolino se REPITE a lo alto en vez de
+            // estirarse, y se alternan los dos dibujos para que el aire fluya.
+            if (melanieArt != null && melanieArt.corrienteAire != null)
+            {
+                var sr = go.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.sprite = melanieArt.corrienteAire;
+
+                float alto = r.Height * GridSettings.TileSize;
+                float ancho = r.Width * GridSettings.TileSize;
+                Repetir(go, new Vector2(ancho, alto));
+
+                if (melanieArt.corrienteAire2 != null)
+                {
+                    var arte = go.AddComponent<AirCurrentArt>();
+                    arte.fotogramas = new[] { melanieArt.corrienteAire, melanieArt.corrienteAire2 };
+                }
+            }
         }
 
         Gate BuildGate(Transform parent, TileRect r)

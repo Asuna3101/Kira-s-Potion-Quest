@@ -17,29 +17,29 @@ namespace Chocoflan.KiraPotionQuest
     {
         [Header("Ritmo")]
         [Tooltip("Segundos entre chispas con el ingrediente quieto.")]
-        public float intervalo = 0.16f;
+        public float intervalo = 0.08f;
 
         [Tooltip("Segundos entre chispas mientras levita. Mas bajo = mas chispas.")]
-        public float intervaloLevitando = 0.07f;
+        public float intervaloLevitando = 0.04f;
 
         [Header("Forma")]
         [Tooltip("Radio del anillo por el que aparecen, en unidades.")]
-        public float radio = 0.42f;
+        public float radio = 0.44f;
 
         [Tooltip("Variacion del radio, para que no salgan todas a la misma distancia.")]
-        public float variacionRadio = 0.1f;
+        public float variacionRadio = 0.12f;
 
         [Tooltip("Tamano de cada chispa en unidades.")]
-        public float tamano = 0.1f;
+        public float tamano = 0.19f;
 
         [Tooltip("Cuanto duran en pantalla.")]
-        public float duracion = 0.45f;
+        public float duracion = 0.65f;
 
         [Header("Color")]
-        public Color color = new Color(1f, 0.95f, 0.70f, 0.95f);
+        public Color color = new Color(1f, 0.93f, 0.60f, 1f);
 
         [Tooltip("Color mientras levita, para que se note que el hechizo esta activo.")]
-        public Color colorLevitando = new Color(0.85f, 0.95f, 1f, 1f);
+        public Color colorLevitando = new Color(0.70f, 0.92f, 1f, 1f);
 
         LevitationController m_Levitation;
         float m_Timer;
@@ -88,8 +88,8 @@ namespace Chocoflan.KiraPotionQuest
                 0f,                       // sin gravedad: flotan
                 1.2f,                     // se van frenando
                 duracion * Random.Range(0.8f, 1.2f),
-                tamano * Random.Range(0.7f, 1.2f),
-                0f,                       // terminan en nada
+                tamano * Random.Range(0.75f, 1.25f),
+                tamano * 0.25f,           // no se apagan del todo: se ven hasta el final
                 levitando ? colorLevitando : color,
                 Random.Range(-90f, 90f),
                 0f,
