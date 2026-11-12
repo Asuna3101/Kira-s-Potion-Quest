@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.8780097
-    y: -2.5099828
-    width: 6.163724
-    height: 6.1608667
+    x: -2.5283911
+    y: -2.5238097
+    width: 6.0567822
+    height: 6.0504203
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -4213,7 +4213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.FxFollow
   target: {fileID: 1766526406}
-  localOffset: {x: -0.02726, y: 0.81222}
+  localOffset: {x: -0.02726, y: 0.63}
   referenceScale: {x: 0.999985, y: 1.0000182, z: 1}
   baseScale: 1
 --- !u!114 &1839215550
