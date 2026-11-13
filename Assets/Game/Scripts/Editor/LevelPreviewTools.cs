@@ -29,6 +29,9 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
         {
             ("Level01", "Preview_Level01.png"),
             ("Level02", "Preview_Level02.png"),
+            ("Level03", "Preview_Level03.png"),
+            ("Level04", "Preview_Level04.png"),
+            ("Level05", "Preview_Level05.png"),
         };
 
         [MenuItem("Chocoflan/9 - Actualizar vistas previas de los niveles", false, 18)]
