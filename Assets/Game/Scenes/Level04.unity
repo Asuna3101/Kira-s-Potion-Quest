@@ -4836,6 +4836,7 @@ MonoBehaviour:
   libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   libroAbierto: {fileID: -566771948524518883, guid: a9d20020d8283104bb57c1bfde4e08fc, type: 3}
   libroLetras: {fileID: 0}
+  cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   anchoLibro: 1400
   posicion: {x: 0, y: 0}
   entrada: 0.3

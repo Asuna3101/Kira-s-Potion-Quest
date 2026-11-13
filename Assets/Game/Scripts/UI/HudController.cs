@@ -553,7 +553,17 @@ namespace Chocoflan.KiraPotionQuest
                 }
                 case LevelState.Lost:
                     if (m_Libro != null) m_Libro.Ocultar();
-                    ShowResult(true, "NIVEL FALLIDO\n" + message);
+                    // Con el cartel de derrota (Level_lose) no hace falta el texto:
+                    // la frase y "Pulsa R" ya estan en el dibujo.
+                    if (m_Libro != null && m_Libro.TieneCartelDerrota)
+                    {
+                        ShowResult(false, "");
+                        m_Libro.MostrarDerrota();
+                    }
+                    else
+                    {
+                        ShowResult(true, "NIVEL FALLIDO\n" + message);
+                    }
                     break;
                 default:
                     ShowResult(false, "");

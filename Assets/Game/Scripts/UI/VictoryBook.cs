@@ -31,6 +31,10 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Segundos que tarda el cartel en aparecer (aparece con un fundido y un saltito).")]
         public float entradaCartel = 0.35f;
 
+        [Header("Cartel de derrota (Level_lose)")]
+        [Tooltip("Imagen completa que sale al perder. Vacio = el cartel de texto de siempre.")]
+        public Sprite cartelDerrota;
+
         bool ModoCartel => soloImagenCompleta && libroAbierto != null;
 
         [Header("Tamano")]
@@ -83,13 +87,41 @@ namespace Chocoflan.KiraPotionQuest
         float m_T = -1f;
         bool m_Construido;
 
-        public bool TieneArte => libroAbierto != null || libroCerrado != null;
+        public bool TieneArte => libroAbierto != null || libroCerrado != null || cartelDerrota != null;
+
+        public bool TieneCartelDerrota => cartelDerrota != null;
+
+        RectTransform m_Derrota;
+        CanvasGroup m_DerrotaGrupo;
+        float m_TD = -1f;
 
         /// <summary>Crea los objetos dentro del canvas indicado. Idempotente.</summary>
         public void Construir(Transform canvas, Font fuente)
         {
             if (m_Construido || canvas == null) return;
             m_Construido = true;
+
+            // Cartel de derrota: otra imagen a pantalla completa, oculta hasta perder.
+            if (cartelDerrota != null)
+            {
+                var d = NuevoUI(canvas, "Cartel_Derrota");
+                m_Derrota = d.GetComponent<RectTransform>();
+                m_Derrota.anchorMin = Vector2.zero;
+                m_Derrota.anchorMax = Vector2.one;
+                m_Derrota.offsetMin = Vector2.zero;
+                m_Derrota.offsetMax = Vector2.zero;
+                m_Derrota.pivot = new Vector2(0.5f, 0.5f);
+                var dimg = d.AddComponent<Image>();
+                dimg.sprite = cartelDerrota;
+                dimg.preserveAspect = true;
+                dimg.raycastTarget = false;
+                m_DerrotaGrupo = d.AddComponent<CanvasGroup>();
+                m_DerrotaGrupo.interactable = false;
+                m_DerrotaGrupo.blocksRaycasts = false;
+                d.SetActive(false);
+            }
+
+            if (libroAbierto == null && libroCerrado == null) return;
 
             if (ModoCartel)
             {
@@ -171,10 +203,39 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_T = -1f;
             if (m_Raiz != null) m_Raiz.gameObject.SetActive(false);
+            OcultarDerrota();
+        }
+
+        public void MostrarDerrota()
+        {
+            if (m_Derrota == null) return;
+            m_TD = 0f;
+            m_Derrota.gameObject.SetActive(true);
+            AplicarDerrota();
+        }
+
+        public void OcultarDerrota()
+        {
+            m_TD = -1f;
+            if (m_Derrota != null) m_Derrota.gameObject.SetActive(false);
+        }
+
+        void AplicarDerrota()
+        {
+            float c = entradaCartel <= 0f ? 1f : Mathf.Clamp01(m_TD / entradaCartel);
+            if (m_DerrotaGrupo != null) m_DerrotaGrupo.alpha = c;
+            float u = c - 1f;
+            float esc = Mathf.LerpUnclamped(0.9f, 1f, 1f + 2.70158f * u * u * u + 1.70158f * u * u);
+            if (m_Derrota != null) m_Derrota.localScale = new Vector3(esc, esc, 1f);
         }
 
         void Update()
         {
+            if (m_TD >= 0f)
+            {
+                m_TD += Time.unscaledDeltaTime;
+                AplicarDerrota();
+            }
             if (m_T < 0f) return;
             m_T += Time.unscaledDeltaTime;
             Aplicar();
