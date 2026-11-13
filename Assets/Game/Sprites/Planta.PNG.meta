@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d43d2997878534ea7a1b5153eeb14bba
+guid: a43061c4a4b16844b9402c6ef289ba20
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3584789615676629409
-    second: Boton_menu1_0
+      213: -221336637827978425
+    second: Planta_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 240
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Boton_menu1_0
+      name: Planta_0
       rect:
         serializedVersion: 2
-        x: 557
-        y: 484
-        width: 498
-        height: 241
+        x: 12
+        y: 12
+        width: 211
+        height: 319
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f5ed51b66d4404ec0800000000000000
-      internalID: -3584789615676629409
+      spriteID: 74beb762087adecf0800000000000000
+      internalID: -221336637827978425
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Boton_menu1_0: -3584789615676629409
+      Planta_0: -221336637827978425
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
