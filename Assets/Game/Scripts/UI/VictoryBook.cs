@@ -23,6 +23,20 @@ namespace Chocoflan.KiraPotionQuest
         public Sprite libroAbierto;
         public Sprite libroLetras;
 
+        [Header("Cartel completo")]
+        [Tooltip("ON: el cartel de WIN es UNA sola imagen a pantalla completa (la de 'Libro Abierto'). " +
+                 "No hay libro cerrado, ni letras aparte, ni texto debajo. OFF: la animacion vieja del libro.")]
+        public bool soloImagenCompleta = true;
+
+        [Tooltip("Segundos que tarda el cartel en aparecer (aparece con un fundido y un saltito).")]
+        public float entradaCartel = 0.35f;
+
+        [Header("Cartel de derrota (Level_lose)")]
+        [Tooltip("Imagen completa que sale al perder. Vacio = el cartel de texto de siempre.")]
+        public Sprite cartelDerrota;
+
+        bool ModoCartel => soloImagenCompleta && libroAbierto != null;
+
         [Header("Tamano")]
         [Tooltip("Ancho del libro abierto en pixeles de canvas. Lo demas se calcula a partir de este.")]
         public float anchoLibro = 1400f;
@@ -44,7 +58,7 @@ namespace Chocoflan.KiraPotionQuest
         public float aparicionLetras = 0.40f;
 
         /// <summary>Lo que dura la animacion entera, para que el nivel no avance antes.</summary>
-        public float DuracionTotal => entrada + pausaCerrado + apertura + aparicionLetras;
+        public float DuracionTotal => ModoCartel ? entradaCartel : entrada + pausaCerrado + apertura + aparicionLetras;
 
         [Header("Pie")]
         [Tooltip("Texto pequeno bajo el libro. Vacio = no se muestra.")]
@@ -73,13 +87,63 @@ namespace Chocoflan.KiraPotionQuest
         float m_T = -1f;
         bool m_Construido;
 
-        public bool TieneArte => libroAbierto != null || libroCerrado != null;
+        public bool TieneArte => libroAbierto != null || libroCerrado != null || cartelDerrota != null;
+
+        public bool TieneCartelDerrota => cartelDerrota != null;
+
+        RectTransform m_Derrota;
+        CanvasGroup m_DerrotaGrupo;
+        float m_TD = -1f;
 
         /// <summary>Crea los objetos dentro del canvas indicado. Idempotente.</summary>
         public void Construir(Transform canvas, Font fuente)
         {
             if (m_Construido || canvas == null) return;
             m_Construido = true;
+
+            // Cartel de derrota: otra imagen a pantalla completa, oculta hasta perder.
+            if (cartelDerrota != null)
+            {
+                var d = NuevoUI(canvas, "Cartel_Derrota");
+                m_Derrota = d.GetComponent<RectTransform>();
+                m_Derrota.anchorMin = Vector2.zero;
+                m_Derrota.anchorMax = Vector2.one;
+                m_Derrota.offsetMin = Vector2.zero;
+                m_Derrota.offsetMax = Vector2.zero;
+                m_Derrota.pivot = new Vector2(0.5f, 0.5f);
+                var dimg = d.AddComponent<Image>();
+                dimg.sprite = cartelDerrota;
+                dimg.preserveAspect = true;
+                dimg.raycastTarget = false;
+                m_DerrotaGrupo = d.AddComponent<CanvasGroup>();
+                m_DerrotaGrupo.interactable = false;
+                m_DerrotaGrupo.blocksRaycasts = false;
+                d.SetActive(false);
+            }
+
+            if (libroAbierto == null && libroCerrado == null) return;
+
+            if (ModoCartel)
+            {
+                // Una sola imagen que ocupa toda la pantalla (conserva su proporcion).
+                var cartelRaiz = NuevoUI(canvas, "Cartel_Victoria");
+                m_Raiz = cartelRaiz.GetComponent<RectTransform>();
+                m_Raiz.anchorMin = Vector2.zero;
+                m_Raiz.anchorMax = Vector2.one;
+                m_Raiz.offsetMin = Vector2.zero;
+                m_Raiz.offsetMax = Vector2.zero;
+                m_Raiz.pivot = new Vector2(0.5f, 0.5f);
+
+                var img = cartelRaiz.AddComponent<Image>();
+                img.sprite = libroAbierto;
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+                m_LibroGrupo = cartelRaiz.AddComponent<CanvasGroup>();
+                m_LibroGrupo.interactable = false;
+                m_LibroGrupo.blocksRaycasts = false;
+                cartelRaiz.SetActive(false);
+                return;
+            }
 
             float k = anchoLibro / UAnchoAbierto;   // pixeles de canvas por unidad
 
@@ -139,10 +203,39 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_T = -1f;
             if (m_Raiz != null) m_Raiz.gameObject.SetActive(false);
+            OcultarDerrota();
+        }
+
+        public void MostrarDerrota()
+        {
+            if (m_Derrota == null) return;
+            m_TD = 0f;
+            m_Derrota.gameObject.SetActive(true);
+            AplicarDerrota();
+        }
+
+        public void OcultarDerrota()
+        {
+            m_TD = -1f;
+            if (m_Derrota != null) m_Derrota.gameObject.SetActive(false);
+        }
+
+        void AplicarDerrota()
+        {
+            float c = entradaCartel <= 0f ? 1f : Mathf.Clamp01(m_TD / entradaCartel);
+            if (m_DerrotaGrupo != null) m_DerrotaGrupo.alpha = c;
+            float u = c - 1f;
+            float esc = Mathf.LerpUnclamped(0.9f, 1f, 1f + 2.70158f * u * u * u + 1.70158f * u * u);
+            if (m_Derrota != null) m_Derrota.localScale = new Vector3(esc, esc, 1f);
         }
 
         void Update()
         {
+            if (m_TD >= 0f)
+            {
+                m_TD += Time.unscaledDeltaTime;
+                AplicarDerrota();
+            }
             if (m_T < 0f) return;
             m_T += Time.unscaledDeltaTime;
             Aplicar();
@@ -151,6 +244,16 @@ namespace Chocoflan.KiraPotionQuest
         void Aplicar()
         {
             float t = m_T;
+
+            if (ModoCartel)
+            {
+                float c = entradaCartel <= 0f ? 1f : Mathf.Clamp01(t / entradaCartel);
+                if (m_LibroGrupo != null) m_LibroGrupo.alpha = c;
+                float u = c - 1f;
+                float esc = Mathf.LerpUnclamped(0.9f, 1f, 1f + 2.70158f * u * u * u + 1.70158f * u * u);
+                if (m_Raiz != null) m_Raiz.localScale = new Vector3(esc, esc, 1f);
+                return;
+            }
 
             // 1. el libro cerrado entra creciendo
             float e = entrada <= 0f ? 1f : Mathf.Clamp01(t / entrada);

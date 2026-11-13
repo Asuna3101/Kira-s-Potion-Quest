@@ -119,6 +119,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!50 &9950011
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842972393}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
+--- !u!114 &9950012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779082826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c38f77878336c171bd4a4de7729975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gates:
+  - {fileID: 842972395}
+  seQuedaPulsado: 1
+  alturaDeteccion: 0.4
+  hundimiento: 0.06
+  velocidadHundido: 10
+  aviso: "La pared se abri\xF3."
 --- !u!1 &25879208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1571,8 +1617,9 @@ GameObject:
   - component: {fileID: 559797005}
   - component: {fileID: 559797004}
   - component: {fileID: 559797003}
+  - component: {fileID: 559797007}
   m_Layer: 0
-  m_Name: Ingrediente_Gema
+  m_Name: Ingrediente_Ojo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1588,7 +1635,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.21, y: -2.77, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 812387370}
@@ -1605,12 +1652,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5692ff515ed32eb39e124c654dcaad56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
-  ingredientName: La gema
-  fragile: 0
-  breakImpactSpeed: 999
-  normalGravityScale: 1.2
-  normalLinearDamping: 1
-  levitationLinearDamping: 1
+  ingredientName: El ojo
+  fragile: 1
+  resistenteAlFuego: 0
+  resistenteALosPinchos: 0
+  breakImpactSpeed: 5
+  normalGravityScale: 0.5
+  normalLinearDamping: 0.9
+  levitationLinearDamping: 0.4
   sparkInterval: 70
   shellColor: {r: 0.48783588, g: 0, b: 1, a: 1}
   yolkColor: {r: 1, g: 0.22745097, b: 0.94094425, a: 1}
@@ -1654,8 +1703,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.05521025, y: 0}
-  m_Radius: 0.47591552
+  m_Offset: {x: -0.085906334, y: 0}
+  m_Radius: 0.53451717
 --- !u!50 &559797005
 Rigidbody2D:
   serializedVersion: 5
@@ -1732,7 +1781,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -4085098773795274061, guid: c018a039e2e1b4736867fa1c4c9e84d8, type: 3}
+  m_Sprite: {fileID: 8960632303266285448, guid: 2faa1f3ae5f4631439bf24a0eedbbbb3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1742,6 +1791,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!95 &559797007
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559797001}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 06d26992a306c134d830abc36fb76783, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &570456429
 GameObject:
   m_ObjectHideFlags: 0
@@ -3254,6 +3325,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
   ingredientName: El huevo
   fragile: 1
+  resistenteAlFuego: 0
+  resistenteALosPinchos: 0
   breakImpactSpeed: 4
   normalGravityScale: 0.55
   normalLinearDamping: 0.8
@@ -4568,10 +4641,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.8201619
-    y: -2.6104972
-    width: 5.9738646
-    height: 5.966851
+    x: -4.21001
+    y: -4.213974
+    width: 9.421001
+    height: 9.432315
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -4761,10 +4834,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
-  libroAbierto: {fileID: 21300000, guid: c01ae637502767b469c8479a35d71b3e, type: 3}
-  libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
+  libroAbierto: {fileID: -566771948524518883, guid: a9d20020d8283104bb57c1bfde4e08fc, type: 3}
+  libroLetras: {fileID: 0}
+  cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   anchoLibro: 1400
-  posicion: {x: 0, y: 20}
+  posicion: {x: 0, y: 0}
   entrada: 0.3
   pausaCerrado: 0.45
   apertura: 0.4
@@ -4785,7 +4859,7 @@ MonoBehaviour:
   referenceWidth: 1920
   referenceHeight: 1080
   mostrarTitulo: 0
-  spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
+  spriteBotonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
   escenaDelMenu: MainMenu
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
@@ -7210,43 +7284,3 @@ SceneRoots:
   - {fileID: 1340890475}
   - {fileID: 1182636606}
   - {fileID: 1483856012}
---- !u!50 &9950011
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842972393}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 1
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 0
---- !u!114 &9950012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 779082826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c38f77878336c171bd4a4de7729975, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gates:
-  - {fileID: 842972395}
-  seQuedaPulsado: 1
-  alturaDeteccion: 0.4
-  hundimiento: 0.06
-  velocidadHundido: 10
-  aviso: La pared se abrió.

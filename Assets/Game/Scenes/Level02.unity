@@ -196,10 +196,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
-  libroAbierto: {fileID: 21300000, guid: c01ae637502767b469c8479a35d71b3e, type: 3}
-  libroLetras: {fileID: 21300000, guid: 62e461da6039957449b605c188b94821, type: 3}
+  libroAbierto: {fileID: 7974127766424114187, guid: c6261cec0d625304cb50d7daf8686877, type: 3}
+  libroLetras: {fileID: 0}
+  cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   anchoLibro: 1400
-  posicion: {x: 0, y: 20}
+  posicion: {x: 0, y: 0}
   entrada: 0.3
   pausaCerrado: 0.45
   apertura: 0.4
@@ -1894,10 +1895,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.845426
-    y: -2.647059
-    width: 6.0567822
-    height: 6.0504203
+    x: -1.7944785
+    y: -2.427714
+    width: 5.88957
+    height: 5.89198
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -3734,7 +3735,7 @@ MonoBehaviour:
   referenceWidth: 1920
   referenceHeight: 1080
   mostrarTitulo: 0
-  spriteBotonMenu: {fileID: 21300000, guid: 990f3789d6bc2c04e8647ec9aec77c60, type: 3}
+  spriteBotonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
   escenaDelMenu: MainMenu
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
@@ -4165,6 +4166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
   ingredientName: El hongo
   fragile: 0
+  resistenteAlFuego: 0
+  resistenteALosPinchos: 0
   breakImpactSpeed: 999
   normalGravityScale: 1
   normalLinearDamping: 0.5
@@ -5289,6 +5292,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.Ingredient
   ingredientName: El huevo
   fragile: 1
+  resistenteAlFuego: 0
+  resistenteALosPinchos: 0
   breakImpactSpeed: 4
   normalGravityScale: 0.55
   normalLinearDamping: 0.8
