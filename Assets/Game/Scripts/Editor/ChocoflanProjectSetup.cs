@@ -42,13 +42,15 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
             EditorSnapSettings.move = new Vector3(step, step, step);
             EditorSnapSettings.gridSnapEnabled = true;
 
-            // El menu va primero: es la escena con la que arranca el juego.
-            // Todos los niveles tienen que estar en Build Settings para que el
-            // boton MENU del HUD pueda volver, y el menu pueda cargarlos.
+            // La intro va primera: es la escena con la que arranca el juego, y si
+            // el video ya se vio pasa sola al menu. Todos los niveles tienen que
+            // estar en Build Settings para que el boton MENU del HUD pueda volver,
+            // y el menu pueda cargarlos.
             AddSceneToBuildSettings("Assets/Game/Scenes/Level02.unity", 0);
             AddSceneToBuildSettings(Level01ScenePath, 0);
             AddSceneToBuildSettings("Assets/Game/Scenes/LevelSelect.unity", 0);
             AddSceneToBuildSettings(MainMenuScenePath, 0);
+            AddSceneToBuildSettings("Assets/Game/Scenes/Intro.unity", 0);
 
             Debug.Log("[Chocoflan] Ajustes aplicados: " +
                       GridSettings.ReferenceWidthPx + "x" + GridSettings.ReferenceHeightPx +
@@ -105,6 +107,21 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
         ///
         /// Afecta tambien a SashasScene, por eso no se ejecuta solo.
         /// </summary>
+        /// <summary>
+        /// El video de intro solo sale la PRIMERA vez que se abre el juego. Esto
+        /// borra esa marca, para poder volver a verlo al probar.
+        ///
+        /// Ojo: la marca se guarda en cada maquina y en cada navegador. En itch,
+        /// un jugador que entre desde otro navegador o en incognito lo vera otra vez.
+        /// </summary>
+        [MenuItem("Chocoflan/Opcional - Volver a mostrar el video de intro", false, 41)]
+        public static void ResetIntro()
+        {
+            PlayerPrefs.DeleteKey("Chocoflan.IntroVista");
+            PlayerPrefs.Save();
+            Debug.Log("[Chocoflan] El video de intro volvera a salir la proxima vez que se abra el juego.");
+        }
+
         [MenuItem("Chocoflan/Opcional - Reimportar sprites a 240 PPU", false, 40)]
         public static void FixPlaceholderSpriteImport()
         {

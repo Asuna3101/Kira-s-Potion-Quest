@@ -799,7 +799,9 @@ namespace Chocoflan.KiraPotionQuest
             AddBox(go, r.Width, r.Height, false);
             var gate = go.AddComponent<Gate>();
             // Se hunde lo suficiente para desaparecer de la pantalla.
-            gate.openOffsetY = -(r.Height * GridSettings.TileSize + GridSettings.TileSize);
+            // Baja lo suficiente para desaparecer por debajo del hueco que tapa.
+            gate.desplazamiento = new Vector2(
+                0f, -(r.Height * GridSettings.TileSize + GridSettings.TileSize));
             return gate;
         }
 

@@ -28,6 +28,11 @@ namespace Chocoflan.KiraPotionQuest
             if (ing == null || ing.IsBroken || ing.IsDelivered) return;
             if (!destroysEveryIngredient && !ing.fragile) return;
 
+            // El ingrediente puede ser inmune a este obstaculo. Se marca con las
+            // casillas "Resistente Al Fuego" / "Resistente A Los Pinchos" en su
+            // propio Inspector, no aqui: asi un mismo fuego mata a unos y a otros no.
+            if (!ing.LeAfecta(type)) return;
+
             bool pinchos = type == HazardType.Spikes;
             string reason = pinchos
                 ? ing.ingredientName + " cayó en los pinchos"

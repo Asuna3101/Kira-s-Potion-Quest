@@ -18,6 +18,28 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Si es fragil se rompe tambien por impactos fuertes, no solo por pinchos y fuego.")]
         public bool fragile = false;
 
+        [Header("Resistencias")]
+        [Tooltip("Encendido: el fuego NO lo destruye, lo atraviesa sin pasar nada. " +
+                 "Sirve para ingredientes que se cocinan, o para abrir caminos que " +
+                 "solo algunos ingredientes pueden tomar.")]
+        public bool resistenteAlFuego = false;
+
+        [Tooltip("Encendido: los pinchos NO lo destruyen.")]
+        public bool resistenteALosPinchos = false;
+
+        /// <summary>
+        /// Si este obstaculo puede destruirlo. Lo consulta Hazard antes de romperlo.
+        /// </summary>
+        public bool LeAfecta(Hazard.HazardType tipo)
+        {
+            switch (tipo)
+            {
+                case Hazard.HazardType.Fire: return !resistenteAlFuego;
+                case Hazard.HazardType.Spikes: return !resistenteALosPinchos;
+                default: return true;
+            }
+        }
+
         [Tooltip("Velocidad de impacto (u/s) a partir de la cual un ingrediente fragil se rompe.")]
         public float breakImpactSpeed = 10f;
 
