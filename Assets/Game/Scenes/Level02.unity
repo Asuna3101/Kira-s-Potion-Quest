@@ -198,6 +198,8 @@ MonoBehaviour:
   libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   libroAbierto: {fileID: 7974127766424114187, guid: c6261cec0d625304cb50d7daf8686877, type: 3}
   libroLetras: {fileID: 0}
+  soloImagenCompleta: 1
+  entradaCartel: 0.35
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   anchoLibro: 1400
   posicion: {x: 0, y: 0}
@@ -1469,7 +1471,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -343268989
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1895,10 +1897,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.7944785
-    y: -2.427714
-    width: 5.88957
-    height: 5.89198
+    x: -8.739555
+    y: -11.419753
+    width: 26.740952
+    height: 26.666666
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -2463,7 +2465,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.044854164, y: -0.032038927}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -2473,7 +2475,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 6.11064}
+  m_Size: {x: 0.5514579, y: 5.2007403}
   m_EdgeRadius: 0
 --- !u!114 &736910569
 MonoBehaviour:
@@ -2488,7 +2490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: 1}
-  acceleration: 8
+  acceleration: 6
   maxSpeed: 2
   levitatingFactor: 0.6
 --- !u!114 &736910570
@@ -3283,7 +3285,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -343268989
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4565,7 +4567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chocoflan.KiraPotionQuest.AirCurrent
   direction: {x: 0, y: -1}
-  acceleration: 8
+  acceleration: 6
   maxSpeed: 2
   levitatingFactor: 0.6
 --- !u!61 &1873557073
@@ -4602,7 +4604,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.025630832, y: -0.035337567}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -4612,7 +4614,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 6.11064}
+  m_Size: {x: 0.5642736, y: 5.28423}
   m_EdgeRadius: 0
 --- !u!114 &1873557074
 MonoBehaviour:

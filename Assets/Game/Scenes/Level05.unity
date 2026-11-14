@@ -912,7 +912,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -343268989
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 419385432573313890, guid: c62f7eb674716d5448d29cb175532af7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2886,6 +2886,8 @@ MonoBehaviour:
   libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   libroAbierto: {fileID: 2241103610462319168, guid: 05c884c1b3eb21f45925f0cb668a3293, type: 3}
   libroLetras: {fileID: 2241103610462319168, guid: 05c884c1b3eb21f45925f0cb668a3293, type: 3}
+  soloImagenCompleta: 1
+  entradaCartel: 0.35
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   anchoLibro: 1400
   posicion: {x: 0, y: 20}
@@ -3436,10 +3438,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -3.0789993
-    y: -4.0611353
-    width: 9.421001
-    height: 9.432315
+    x: -8.739555
+    y: -11.419753
+    width: 26.740952
+    height: 26.666666
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -4440,7 +4442,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -343268989
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1939931630380301661, guid: 08b789ae5c54a324389620e6119f77c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
