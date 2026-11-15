@@ -6,9 +6,12 @@ namespace Chocoflan.KiraPotionQuest
     /// <summary>
     /// Un ingrediente: el objeto que el jugador mueve con la mecanica Levitar.
     /// GDD: "algunos ingredientes son mas fragiles que otros".
+    ///
+    /// Collider: sirve CUALQUIER tipo de Collider2D (Circle, Box, Capsule, Polygon,
+    /// Composite...) y tambien varios a la vez. Basta con ponerlo en el mismo objeto.
+    /// Si el objeto no tiene ninguno, se agrega un CircleCollider2D como respaldo.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(CircleCollider2D))]
     public class Ingredient : MonoBehaviour
     {
         [Header("Identidad")]
@@ -79,8 +82,8 @@ namespace Chocoflan.KiraPotionQuest
         public bool IsLevitating { get; private set; }
 
         Rigidbody2D m_Rb;
-        Collider2D m_Collider;
-        PhysicsMaterial2D m_NormalMaterial;
+        Collider2D[] m_Colliders;
+        PhysicsMaterial2D[] m_NormalMaterials;
         PhysicsMaterial2D m_SlideMaterial;
         SpriteRenderer m_Sr;
         [Header("Aro de seleccion")]
@@ -99,8 +102,17 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_Rb = GetComponent<Rigidbody2D>();
             m_Sr = GetComponent<SpriteRenderer>();
-            m_Collider = GetComponent<Collider2D>();
-            if (m_Collider != null) m_NormalMaterial = m_Collider.sharedMaterial;
+            // Cualquier forma de collider; si no hay ninguno, un circulo de respaldo.
+            m_Colliders = GetComponents<Collider2D>();
+            if (m_Colliders.Length == 0)
+            {
+                gameObject.AddComponent<CircleCollider2D>();
+                m_Colliders = GetComponents<Collider2D>();
+                Debug.LogWarning("[Ingredient] '" + name + "' no tenia Collider2D: se agrego un CircleCollider2D.", this);
+            }
+            m_NormalMaterials = new PhysicsMaterial2D[m_Colliders.Length];
+            for (int i = 0; i < m_Colliders.Length; i++)
+                m_NormalMaterials[i] = m_Colliders[i].sharedMaterial;
 
             m_Rb.bodyType = RigidbodyType2D.Dynamic;
             m_Rb.gravityScale = normalGravityScale;
@@ -164,18 +176,21 @@ namespace Chocoflan.KiraPotionQuest
 
             // Mientras levita no se agarra a nada: sin roce puede deslizarse por el techo
             // o por una pared aunque una corriente de aire lo empuje contra ella.
-            if (m_Collider != null)
+            if (m_Colliders != null)
             {
                 if (m_SlideMaterial == null)
                     m_SlideMaterial = new PhysicsMaterial2D("LevitandoSinRoce") { friction = 0f, bounciness = 0.05f };
-                m_Collider.sharedMaterial = m_SlideMaterial;
+                foreach (var col in m_Colliders)
+                    if (col != null) col.sharedMaterial = m_SlideMaterial;
             }
         }
 
         public void EndLevitate()
         {
             IsLevitating = false;
-            if (m_Collider != null) m_Collider.sharedMaterial = m_NormalMaterial;
+            if (m_Colliders != null)
+                for (int i = 0; i < m_Colliders.Length; i++)
+                    if (m_Colliders[i] != null) m_Colliders[i].sharedMaterial = m_NormalMaterials[i];
             if (IsBroken || IsDelivered) return;
             m_Rb.gravityScale = normalGravityScale;
             m_Rb.linearDamping = normalLinearDamping;
