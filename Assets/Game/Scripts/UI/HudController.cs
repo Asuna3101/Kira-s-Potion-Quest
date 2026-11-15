@@ -29,8 +29,8 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Arte del boton (Sprites/UI/Boton_menu.PNG). Vacio = rectangulo de color con el texto MENU.")]
         public Sprite spriteBotonMenu;
 
-        [Tooltip("Escena que carga el boton MENU y la tecla Escape.")]
-        public string escenaDelMenu = "MainMenu";
+        [Tooltip("Escena que carga el boton MENU y la tecla Escape: el menu de niveles.")]
+        public string escenaDelMenu = "LevelSelect";
 
         [Header("Ayuda (boton ?)")]
         [Tooltip("Arte del boton (Sprites/UI/Boton_ayuda.PNG). Vacio = el circulo dorado dibujado por codigo.")]
@@ -901,7 +901,7 @@ namespace Chocoflan.KiraPotionQuest
 
             m_GuideRoot.SetActive(false);
 
-            // --- menu de pausa (ESC): Continuar, Como jugar, Reiniciar, Menu principal
+            // --- menu de pausa (ESC): Continuar, Como jugar, Reiniciar, Menu de niveles
             m_PauseRoot = new GameObject("Menu_Pausa");
             m_PauseRoot.transform.SetParent(canvasGo.transform, false);
             var pauseRt = m_PauseRoot.AddComponent<RectTransform>();
@@ -934,7 +934,7 @@ namespace Chocoflan.KiraPotionQuest
 
             string[] pauseNames =
             {
-                "Continuar", "\u00bfC\u00f3mo se juega?", "Reiniciar nivel", "Men\u00fa principal"
+                "Continuar", "\u00bfC\u00f3mo se juega?", "Reiniciar nivel", "Men\u00fa de niveles"
             };
             m_PauseButtons = new RectTransform[pauseNames.Length];
             m_PauseLabels = new Text[pauseNames.Length];
