@@ -124,6 +124,7 @@ namespace Chocoflan.KiraPotionQuest
 
         GameManager m_Game;
         float m_HintTimer;
+        bool m_GuiaPendiente;   // la guia espera a que termine la animacion de Kira
 
         void Start()
         {
@@ -140,12 +141,31 @@ namespace Chocoflan.KiraPotionQuest
 
             bool escenaValida = string.IsNullOrEmpty(guiaSoloEnEscena) ||
                                 SceneManager.GetActiveScene().name == guiaSoloEnEscena;
-            if (mostrarGuiaAlInicio && escenaValida && !(guiaSoloUnaVez && s_GuideSeen))
+            bool abrirGuia = mostrarGuiaAlInicio && escenaValida && !(guiaSoloUnaVez && s_GuideSeen);
+            if (KiraIntro.EnCurso)
+            {
+                // Suena la animacion de Kira: el HUD se esconde y la guia espera a que acabe.
+                if (m_Canvas != null) m_Canvas.enabled = false;
+                m_GuiaPendiente = abrirGuia;
+                KiraIntro.Terminada += OnKiraIntroTerminada;
+            }
+            else if (abrirGuia)
+            {
                 OpenGuide();
+            }
+        }
+
+        void OnKiraIntroTerminada()
+        {
+            KiraIntro.Terminada -= OnKiraIntroTerminada;
+            if (m_Canvas != null) m_Canvas.enabled = true;
+            if (m_GuiaPendiente) OpenGuide();
+            m_GuiaPendiente = false;
         }
 
         void OnDestroy()
         {
+            KiraIntro.Terminada -= OnKiraIntroTerminada;
             // No dejar el juego en pausa si se recarga la escena con la guia abierta.
             if (m_GuidePaused || m_PausePaused) Time.timeScale = 1f;
             if (m_Game == null) return;
@@ -156,6 +176,9 @@ namespace Chocoflan.KiraPotionQuest
 
         void Update()
         {
+            // Con la animacion de Kira en pantalla el HUD no responde (ni botones ni Escape).
+            if (KiraIntro.EnCurso) return;
+
             if (m_Game == null) m_Game = GameManager.Instance;
             if (m_Game != null && m_ManaFill != null)
             {

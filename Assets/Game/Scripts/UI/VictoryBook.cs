@@ -35,6 +35,32 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Imagen completa que sale al perder. Vacio = el cartel de texto de siempre.")]
         public Sprite cartelDerrota;
 
+        [Tooltip("Pergamino CERRADO (Sprites/UI/Pergamino_cerrado). Sale primero y despues se abre en el cartel " +
+                 "de derrota. Vacio = el cartel abierto sale directo, como antes.")]
+        public Sprite pergaminoCerrado;
+
+        [Header("Tamano de los carteles")]
+        [Tooltip("Tamano del libro de VICTORIA respecto al alto de la pantalla (1 = ocupa todo el alto). " +
+                 "Siempre queda centrado.")]
+        [Range(0.2f, 1f)] public float escalaVictoria = 0.65f;
+
+        [Tooltip("Tamano del pergamino de DERROTA respecto al alto de la pantalla (1 = ocupa todo el alto). " +
+                 "Siempre queda centrado.")]
+        [Range(0.2f, 1f)] public float escalaDerrota = 0.70f;
+
+        [Header("Derrota: pergamino cerrado -> abierto (segundos)")]
+        [Tooltip("El pergamino cerrado aparece.")]
+        public float entradaPergamino = 0.25f;
+
+        [Tooltip("Cuanto se queda CERRADO antes de abrirse.")]
+        public float pausaPergamino = 0.55f;
+
+        [Tooltip("Lo que tarda en abrirse.")]
+        public float aperturaPergamino = 0.35f;
+
+        [Tooltip("Alto del pergamino cerrado respecto al alto del pergamino abierto.")]
+        [Range(0.2f, 1f)] public float altoPergaminoCerrado = 0.55f;
+
         bool ModoCartel => soloImagenCompleta && libroAbierto != null;
 
         [Header("Tamano")]
@@ -93,6 +119,8 @@ namespace Chocoflan.KiraPotionQuest
 
         RectTransform m_Derrota;
         CanvasGroup m_DerrotaGrupo;
+        RectTransform m_DerrotaCerrada;
+        CanvasGroup m_DerrotaCerradaGrupo;
         float m_TD = -1f;
 
         /// <summary>Crea los objetos dentro del canvas indicado. Idempotente.</summary>
@@ -101,16 +129,17 @@ namespace Chocoflan.KiraPotionQuest
             if (m_Construido || canvas == null) return;
             m_Construido = true;
 
-            // Cartel de derrota: otra imagen a pantalla completa, oculta hasta perder.
+            float altoCanvas = AltoCanvas(canvas);
+
+            // Cartel de derrota: el pergamino abierto, centrado y a escalaDerrota del alto
+            // de la pantalla. Oculto hasta perder.
             if (cartelDerrota != null)
             {
+                float altoDerrota = altoCanvas * escalaDerrota;
+
                 var d = NuevoUI(canvas, "Cartel_Derrota");
                 m_Derrota = d.GetComponent<RectTransform>();
-                m_Derrota.anchorMin = Vector2.zero;
-                m_Derrota.anchorMax = Vector2.one;
-                m_Derrota.offsetMin = Vector2.zero;
-                m_Derrota.offsetMax = Vector2.zero;
-                m_Derrota.pivot = new Vector2(0.5f, 0.5f);
+                AjustarCentrado(m_Derrota, cartelDerrota, altoDerrota);
                 var dimg = d.AddComponent<Image>();
                 dimg.sprite = cartelDerrota;
                 dimg.preserveAspect = true;
@@ -119,20 +148,33 @@ namespace Chocoflan.KiraPotionQuest
                 m_DerrotaGrupo.interactable = false;
                 m_DerrotaGrupo.blocksRaycasts = false;
                 d.SetActive(false);
+
+                // El pergamino CERRADO va encima del abierto: sale primero y luego se abre.
+                if (pergaminoCerrado != null)
+                {
+                    var c = NuevoUI(canvas, "Pergamino_Cerrado");
+                    m_DerrotaCerrada = c.GetComponent<RectTransform>();
+                    AjustarCentrado(m_DerrotaCerrada, pergaminoCerrado, altoDerrota * altoPergaminoCerrado);
+                    var cimg = c.AddComponent<Image>();
+                    cimg.sprite = pergaminoCerrado;
+                    cimg.preserveAspect = true;
+                    cimg.raycastTarget = false;
+                    m_DerrotaCerradaGrupo = c.AddComponent<CanvasGroup>();
+                    m_DerrotaCerradaGrupo.interactable = false;
+                    m_DerrotaCerradaGrupo.blocksRaycasts = false;
+                    c.SetActive(false);
+                }
             }
 
             if (libroAbierto == null && libroCerrado == null) return;
 
             if (ModoCartel)
             {
-                // Una sola imagen que ocupa toda la pantalla (conserva su proporcion).
+                // Una sola imagen, centrada en la pantalla y a escalaVictoria de su alto
+                // (conserva su proporcion).
                 var cartelRaiz = NuevoUI(canvas, "Cartel_Victoria");
                 m_Raiz = cartelRaiz.GetComponent<RectTransform>();
-                m_Raiz.anchorMin = Vector2.zero;
-                m_Raiz.anchorMax = Vector2.one;
-                m_Raiz.offsetMin = Vector2.zero;
-                m_Raiz.offsetMax = Vector2.zero;
-                m_Raiz.pivot = new Vector2(0.5f, 0.5f);
+                AjustarCentrado(m_Raiz, libroAbierto, altoCanvas * escalaVictoria);
 
                 var img = cartelRaiz.AddComponent<Image>();
                 img.sprite = libroAbierto;
@@ -211,6 +253,7 @@ namespace Chocoflan.KiraPotionQuest
             if (m_Derrota == null) return;
             m_TD = 0f;
             m_Derrota.gameObject.SetActive(true);
+            if (m_DerrotaCerrada != null) m_DerrotaCerrada.gameObject.SetActive(true);
             AplicarDerrota();
         }
 
@@ -218,15 +261,51 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_TD = -1f;
             if (m_Derrota != null) m_Derrota.gameObject.SetActive(false);
+            if (m_DerrotaCerrada != null) m_DerrotaCerrada.gameObject.SetActive(false);
         }
 
         void AplicarDerrota()
         {
+            if (m_DerrotaCerrada != null)
+            {
+                AplicarDerrotaConPergamino();
+                return;
+            }
+
+            // Sin pergamino cerrado: el cartel abierto entra directo (fundido + saltito).
             float c = entradaCartel <= 0f ? 1f : Mathf.Clamp01(m_TD / entradaCartel);
             if (m_DerrotaGrupo != null) m_DerrotaGrupo.alpha = c;
             float u = c - 1f;
             float esc = Mathf.LerpUnclamped(0.9f, 1f, 1f + 2.70158f * u * u * u + 1.70158f * u * u);
             if (m_Derrota != null) m_Derrota.localScale = new Vector3(esc, esc, 1f);
+        }
+
+        /// <summary>
+        /// Derrota en dos tiempos: 1) el pergamino CERRADO aparece y se queda un momento,
+        /// 2) se abre: el cerrado se desvanece mientras el abierto se despliega a lo ancho.
+        /// </summary>
+        void AplicarDerrotaConPergamino()
+        {
+            float t = m_TD;
+
+            // 1. el cerrado entra con un saltito
+            float e = entradaPergamino <= 0f ? 1f : Mathf.Clamp01(t / entradaPergamino);
+            float escCerrado = Mathf.LerpUnclamped(0.6f, 1f, EaseOutBack(e));
+
+            // 2. se abre, despues de la pausa
+            float inicioApertura = entradaPergamino + pausaPergamino;
+            float a = aperturaPergamino <= 0f
+                ? (t >= inicioApertura ? 1f : 0f)
+                : Mathf.Clamp01((t - inicioApertura) / aperturaPergamino);
+            float sa = Smooth(a);
+
+            if (m_DerrotaCerradaGrupo != null) m_DerrotaCerradaGrupo.alpha = e * (1f - sa);
+            if (m_DerrotaCerrada != null)
+                m_DerrotaCerrada.localScale = new Vector3(escCerrado * (1f - 0.35f * sa), escCerrado, 1f);
+
+            if (m_DerrotaGrupo != null) m_DerrotaGrupo.alpha = sa;
+            if (m_Derrota != null)
+                m_Derrota.localScale = new Vector3(Mathf.Lerp(0.35f, 1f, sa), Mathf.Lerp(0.92f, 1f, sa), 1f);
         }
 
         void Update()
@@ -294,6 +373,40 @@ namespace Chocoflan.KiraPotionQuest
         }
 
         static float Smooth(float x) => x * x * (3f - 2f * x);
+
+        /// <summary>Curva con rebote al final (el "saltito" de los carteles).</summary>
+        static float EaseOutBack(float t)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1f;
+            float u = t - 1f;
+            return 1f + c3 * u * u * u + c1 * u * u;
+        }
+
+        /// <summary>Alto del canvas en pixeles (el HUD usa MatchWidthOrHeight = 1: manda el alto).</summary>
+        static float AltoCanvas(Transform canvas)
+        {
+            var scaler = canvas != null ? canvas.GetComponent<CanvasScaler>() : null;
+            return scaler != null && scaler.referenceResolution.y > 0f
+                ? scaler.referenceResolution.y
+                : GridSettings.ReferenceHeightPx;
+        }
+
+        /// <summary>
+        /// Coloca el dibujo en el CENTRO de la pantalla con el alto indicado y la proporcion de
+        /// su sprite. El pivote es el centro, asi que tambien escala desde el centro.
+        /// </summary>
+        static void AjustarCentrado(RectTransform rt, Sprite sprite, float alto)
+        {
+            float aspecto = sprite != null && sprite.rect.height > 0f
+                ? sprite.rect.width / sprite.rect.height
+                : 16f / 9f;
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(alto * aspecto, alto);
+            rt.anchoredPosition = Vector2.zero;
+        }
 
         static GameObject NuevoUI(Transform parent, string nombre)
         {

@@ -85,7 +85,7 @@ namespace Chocoflan.KiraPotionQuest
 
         void Update()
         {
-            if (Game != null && Game.State != LevelState.Playing)
+            if (KiraIntro.EnCurso || (Game != null && Game.State != LevelState.Playing))
             {
                 ReleaseLevitation();
                 return;

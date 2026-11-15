@@ -89,7 +89,7 @@ namespace Chocoflan.KiraPotionQuest
             if (!Enabled) { HideDots(); return; }
 
             var gm = GameManager.Instance;
-            if (gm != null && gm.State != LevelState.Playing) { CancelAim(); return; }
+            if (KiraIntro.EnCurso || (gm != null && gm.State != LevelState.Playing)) { CancelAim(); return; }
 
             var mouse = Mouse.current;
             if (mouse == null || m_Camera == null) return;
