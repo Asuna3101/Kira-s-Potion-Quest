@@ -3744,10 +3744,11 @@ MonoBehaviour:
   escenaDelMenu: LevelSelect
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
+  spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   alturaGuia: 170
   controlsStartOpen: 0
   mostrarGuiaAlInicio: 1
-  guiaSoloEnEscena: Level01
+  guiaSoloEnEscena: Level01,Level03,Level04
   guiaSoloUnaVez: 1
   pausarMientrasSeLee: 1
   mostrarDialogosDeKira: 0

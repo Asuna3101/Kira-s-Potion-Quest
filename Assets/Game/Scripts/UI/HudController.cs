@@ -44,6 +44,22 @@ namespace Chocoflan.KiraPotionQuest
                  "mas grande = se ve mas pixeleado. Prueba entre 150 y 230.")]
         [Range(100f, 260f)] public float alturaGuia = 170f;
 
+        [Header("Libro de la guia: cerrado -> abierto")]
+        [Tooltip("Libro CERRADO (Sprites/UI/Libro). Cada vez que sale la guia aparece primero este y despues se abre. Vacio = la guia sale abierta directo.")]
+        public Sprite spriteLibroCerrado;
+
+        [Tooltip("El libro cerrado aparece (segundos).")]
+        public float entradaLibroCerrado = 0.25f;
+
+        [Tooltip("Cuanto se queda cerrado antes de abrirse (segundos).")]
+        public float pausaLibroCerrado = 0.55f;
+
+        [Tooltip("Lo que tarda en abrirse (segundos).")]
+        public float aperturaLibro = 0.35f;
+
+        [Tooltip("Alto del libro cerrado respecto al alto del libro abierto.")]
+        [Range(0.3f, 1.3f)] public float altoLibroCerrado = 1f;
+
         [Tooltip("(Ya no se usa: el boton ? abre ahora la guia de como jugar.)")]
         public bool controlsStartOpen = false;
 
@@ -51,7 +67,7 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Mostrar la guia al empezar el nivel. El boton ? la vuelve a abrir cuando quieras.")]
         public bool mostrarGuiaAlInicio = true;
 
-        [Tooltip("Nombre de la escena donde se muestra sola al iniciar. Vacio = en todos los niveles.")]
+        [Tooltip("Escenas donde se muestra sola al iniciar, separadas por coma (ej. Level01,Level03,Level04). Vacio = en todos los niveles.")]
         public string guiaSoloEnEscena = "Level01";
 
         [Tooltip("Mostrarla solo la primera vez en cada partida (al reiniciar con R no vuelve a salir).")]
@@ -108,7 +124,11 @@ namespace Chocoflan.KiraPotionQuest
         bool m_GuidePaused;
         float m_GuideOpenTime;
         int m_GuideClosedFrame = -1;
-        static bool s_GuideSeen;
+        static readonly System.Collections.Generic.HashSet<string> s_GuideSeen = new System.Collections.Generic.HashSet<string>();
+        RectTransform m_GuideClosedRect;
+        CanvasGroup m_GuideClosedGroup;
+        CanvasGroup m_GuideOpenGroup;
+        Text m_GuideHint;
 
         // menu de pausa (ESC)
         GameObject m_PauseRoot;
@@ -120,7 +140,7 @@ namespace Chocoflan.KiraPotionQuest
         float m_PauseOpenTime;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { s_GuideSeen = false; }
+        static void ResetStatics() { s_GuideSeen.Clear(); }
 
         GameManager m_Game;
         float m_HintTimer;
@@ -139,9 +159,10 @@ namespace Chocoflan.KiraPotionQuest
             RefreshTitle();
             ShowResult(false, "");
 
-            bool escenaValida = string.IsNullOrEmpty(guiaSoloEnEscena) ||
-                                SceneManager.GetActiveScene().name == guiaSoloEnEscena;
-            bool abrirGuia = mostrarGuiaAlInicio && escenaValida && !(guiaSoloUnaVez && s_GuideSeen);
+            string escenaActual = SceneManager.GetActiveScene().name;
+            bool escenaValida = EscenaConGuia(escenaActual);
+            bool abrirGuia = mostrarGuiaAlInicio && escenaValida &&
+                             !(guiaSoloUnaVez && s_GuideSeen.Contains(escenaActual));
             if (KiraIntro.EnCurso)
             {
                 // Suena la animacion de Kira: el HUD se esconde y la guia espera a que acabe.
@@ -153,6 +174,14 @@ namespace Chocoflan.KiraPotionQuest
             {
                 OpenGuide();
             }
+        }
+
+        bool EscenaConGuia(string escena)
+        {
+            if (string.IsNullOrWhiteSpace(guiaSoloEnEscena)) return true;
+            foreach (var parte in guiaSoloEnEscena.Split(new[] { ',', ';' }))
+                if (parte.Trim() == escena) return true;
+            return false;
         }
 
         void OnKiraIntroTerminada()
@@ -400,10 +429,11 @@ namespace Chocoflan.KiraPotionQuest
             if (m_Game != null && m_Game.State != LevelState.Playing) return;
 
             m_GuideOpen = true;
-            s_GuideSeen = true;
+            s_GuideSeen.Add(SceneManager.GetActiveScene().name);
             m_GuideOpenTime = Time.unscaledTime;
             m_GuideRoot.SetActive(true);
             if (m_GuideBox != null) m_GuideBox.localScale = new Vector3(0.85f, 0.85f, 1f);
+            if (m_GuideClosedRect != null) AplicarGuiaCerradoAbierto(0f);
 
             if (pausarMientrasSeLee && Time.timeScale > 0f)
             {
@@ -431,15 +461,24 @@ namespace Chocoflan.KiraPotionQuest
             if (!m_GuideOpen) return;
 
             // Animacion de entrada con tiempo real (el juego puede estar en pausa).
-            float t = Mathf.Clamp01((Time.unscaledTime - m_GuideOpenTime) / 0.2f);
-            if (m_GuideBox != null)
+            float el = Time.unscaledTime - m_GuideOpenTime;
+            if (m_GuideClosedRect != null)
             {
-                float s = Mathf.LerpUnclamped(0.85f, 1f, EaseOutBack(t));
-                m_GuideBox.localScale = new Vector3(s, s, 1f);
+                AplicarGuiaCerradoAbierto(el);
+            }
+            else
+            {
+                float t = Mathf.Clamp01(el / 0.2f);
+                if (m_GuideBox != null)
+                {
+                    float s = Mathf.LerpUnclamped(0.85f, 1f, EaseOutBack(t));
+                    m_GuideBox.localScale = new Vector3(s, s, 1f);
+                }
             }
 
-            // Evita cerrarla con el mismo click o tecla que la abrio.
-            if (Time.unscaledTime - m_GuideOpenTime < 0.25f) return;
+            // Evita cerrarla con el mismo click o tecla que la abrio, y mientras el libro se abre.
+            if (el < 0.25f) return;
+            if (m_GuideClosedRect != null && el < entradaLibroCerrado + pausaLibroCerrado + aperturaLibro) return;
 
             var kb = Keyboard.current;
             var mouse = Mouse.current;
@@ -458,6 +497,30 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             if (close) CloseGuide();
+        }
+
+        /// <summary>
+        /// Guia en dos tiempos: 1) el libro CERRADO aparece y se queda un momento,
+        /// 2) se abre: el cerrado se desvanece mientras el abierto se despliega a lo ancho.
+        /// </summary>
+        void AplicarGuiaCerradoAbierto(float el)
+        {
+            float e = entradaLibroCerrado <= 0f ? 1f : Mathf.Clamp01(el / entradaLibroCerrado);
+            float escCerrado = Mathf.LerpUnclamped(0.6f, 1f, EaseOutBack(e));
+
+            float inicio = entradaLibroCerrado + pausaLibroCerrado;
+            float a = aperturaLibro <= 0f
+                ? (el >= inicio ? 1f : 0f)
+                : Mathf.Clamp01((el - inicio) / aperturaLibro);
+            float sa = a * a * (3f - 2f * a);
+
+            if (m_GuideClosedGroup != null) m_GuideClosedGroup.alpha = e * (1f - sa);
+            m_GuideClosedRect.localScale = new Vector3(escCerrado * (1f - 0.35f * sa), escCerrado, 1f);
+
+            if (m_GuideOpenGroup != null) m_GuideOpenGroup.alpha = sa;
+            if (m_GuideBox != null)
+                m_GuideBox.localScale = new Vector3(Mathf.Lerp(0.35f, 1f, sa), Mathf.Lerp(0.92f, 1f, sa), 1f);
+            if (m_GuideHint != null) m_GuideHint.canvasRenderer.SetAlpha(sa);
         }
 
         void SetControlsOpen(bool open)
@@ -897,6 +960,29 @@ namespace Chocoflan.KiraPotionQuest
                 hint.raycastTarget = false;
                 m_GuideButtonLabel = hint;
                 m_GuideButtonRect = null;
+                m_GuideHint = hint;
+
+                // Libro cerrado encima: sale primero y despues se abre.
+                if (spriteLibroCerrado != null && spriteLibroCerrado.rect.height > 0f)
+                {
+                    m_GuideOpenGroup = guideBorder.gameObject.AddComponent<CanvasGroup>();
+                    m_GuideOpenGroup.interactable = false;
+                    m_GuideOpenGroup.blocksRaycasts = false;
+
+                    float altoC = libroAlto * altoLibroCerrado;
+                    float anchoC = altoC * spriteLibroCerrado.rect.width / spriteLibroCerrado.rect.height;
+                    var cerrado = MakeImage(m_GuideRoot.transform, "Guia_Libro_Cerrado",
+                        new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, V(anchoC, altoC));
+                    cerrado.sprite = spriteLibroCerrado;
+                    cerrado.type = Image.Type.Simple;
+                    cerrado.preserveAspect = true;
+                    cerrado.color = Color.white;
+                    cerrado.raycastTarget = false;
+                    m_GuideClosedRect = cerrado.rectTransform;
+                    m_GuideClosedGroup = cerrado.gameObject.AddComponent<CanvasGroup>();
+                    m_GuideClosedGroup.interactable = false;
+                    m_GuideClosedGroup.blocksRaycasts = false;
+                }
             }
 
             m_GuideRoot.SetActive(false);
