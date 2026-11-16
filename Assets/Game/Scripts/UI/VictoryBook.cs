@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Chocoflan.KiraPotionQuest
@@ -30,6 +31,14 @@ namespace Chocoflan.KiraPotionQuest
 
         [Tooltip("Segundos que tarda el cartel en aparecer (aparece con un fundido y un saltito).")]
         public float entradaCartel = 0.35f;
+
+        [Header("Botones del cartel de WIN")]
+        [Tooltip("Boton MENU (vuelve al selector de niveles). Es el sprite de 'Boton_menu'.")]
+        public Sprite botonMenu;
+
+        [Tooltip("Boton NEXT (pasa al siguiente nivel). Es el sprite de 'Botonnext'. " +
+                 "No sale si el GameManager no tiene 'Escena Siguiente'.")]
+        public Sprite botonNext;
 
         [Header("Cartel de derrota (Level_lose)")]
         [Tooltip("Imagen completa que sale al perder. Vacio = el cartel de texto de siempre.")]
@@ -117,6 +126,11 @@ namespace Chocoflan.KiraPotionQuest
 
         public bool TieneCartelDerrota => cartelDerrota != null;
 
+        RectTransform m_BtnMenu, m_BtnNext;
+        GameManager m_Juego;
+        HudController m_Hud;
+        bool m_ClickSuelto;
+
         RectTransform m_Derrota;
         CanvasGroup m_DerrotaGrupo;
         RectTransform m_DerrotaCerrada;
@@ -183,6 +197,12 @@ namespace Chocoflan.KiraPotionQuest
                 m_LibroGrupo = cartelRaiz.AddComponent<CanvasGroup>();
                 m_LibroGrupo.interactable = false;
                 m_LibroGrupo.blocksRaycasts = false;
+
+                // Botones: estan dibujados en el mismo lienzo (3840 x 2160) que el
+                // cartel, asi que se colocan por el recuadro de su sprite.
+                m_BtnMenu = CrearBoton(m_Raiz, "Boton_Menu", botonMenu);
+                m_BtnNext = CrearBoton(m_Raiz, "Boton_Next", botonNext);
+
                 cartelRaiz.SetActive(false);
                 return;
             }
@@ -233,9 +253,84 @@ namespace Chocoflan.KiraPotionQuest
             raiz.SetActive(false);
         }
 
+        static RectTransform CrearBoton(RectTransform padre, string nombre, Sprite sprite)
+        {
+            if (sprite == null) return null;
+            var go = NuevoUI(padre, nombre);
+            var img = go.AddComponent<Image>();
+            img.sprite = sprite;
+            img.raycastTarget = false;
+            var rt = img.rectTransform;
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+            return rt;
+        }
+
+        // Pone cada boton donde esta dibujado respecto al cartel (mismo lienzo de origen).
+        void ColocarBotones()
+        {
+            if (!ModoCartel || m_Raiz == null) return;
+            Rect cr = libroAbierto.rect;
+            Rect rr = m_Raiz.rect;
+            if (cr.width <= 0f || cr.height <= 0f) return;
+            float s = Mathf.Min(rr.width / cr.width, rr.height / cr.height);
+            Poner(m_BtnMenu, botonMenu, cr, s);
+            Poner(m_BtnNext, botonNext, cr, s);
+        }
+
+        static void Poner(RectTransform rt, Sprite sp, Rect cr, float s)
+        {
+            if (rt == null || sp == null) return;
+            Rect r = sp.rect;
+            rt.anchoredPosition = (r.center - cr.center) * s;
+            rt.sizeDelta = r.size * s;
+        }
+
+        bool HaySiguiente => m_Juego != null && !string.IsNullOrEmpty(m_Juego.SiguienteNivel);
+
+        void ManejarBotones()
+        {
+            if (!ModoCartel || m_T < entradaCartel) return;
+
+            var mouse = Mouse.current;
+            if (mouse == null) return;
+
+            bool nextActivo = m_BtnNext != null && HaySiguiente;
+            if (m_BtnNext != null && m_BtnNext.gameObject.activeSelf != nextActivo)
+                m_BtnNext.gameObject.SetActive(nextActivo);
+
+            // El click con el que se gano (lanzar, etc.) no cuenta: hay que soltar primero.
+            if (!mouse.leftButton.isPressed) m_ClickSuelto = true;
+
+            Vector2 p = mouse.position.ReadValue();
+            bool sobreMenu = m_BtnMenu != null && RectTransformUtility.RectangleContainsScreenPoint(m_BtnMenu, p, null);
+            bool sobreNext = nextActivo && RectTransformUtility.RectangleContainsScreenPoint(m_BtnNext, p, null);
+
+            Animar(m_BtnMenu, sobreMenu);
+            Animar(m_BtnNext, sobreNext);
+
+            if (!m_ClickSuelto || !mouse.leftButton.wasPressedThisFrame) return;
+
+            if (sobreNext && m_Juego != null) { m_Juego.IrAlSiguiente(); }
+            else if (sobreMenu && m_Hud != null) { m_Hud.VolverAlMenu(); }
+        }
+
+        static void Animar(RectTransform rt, bool encima)
+        {
+            if (rt == null) return;
+            float objetivo = encima ? 1.07f : 1f;
+            float s = Mathf.Lerp(rt.localScale.x, objetivo, 1f - Mathf.Exp(-16f * Time.unscaledDeltaTime));
+            rt.localScale = new Vector3(s, s, 1f);
+        }
+
         public void Mostrar()
         {
             if (m_Raiz == null) return;
+            if (m_Juego == null) m_Juego = GetComponent<GameManager>();
+            if (m_Juego == null) m_Juego = Object.FindFirstObjectByType<GameManager>();
+            if (m_Hud == null) m_Hud = GetComponent<HudController>();
+            m_ClickSuelto = false;
+            if (m_BtnMenu != null) m_BtnMenu.localScale = Vector3.one;
+            if (m_BtnNext != null) m_BtnNext.localScale = Vector3.one;
             m_T = 0f;
             m_Raiz.gameObject.SetActive(true);
             Aplicar();
@@ -318,6 +413,8 @@ namespace Chocoflan.KiraPotionQuest
             if (m_T < 0f) return;
             m_T += Time.unscaledDeltaTime;
             Aplicar();
+            ColocarBotones();
+            ManejarBotones();
         }
 
         void Aplicar()

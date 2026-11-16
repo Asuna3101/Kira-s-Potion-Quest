@@ -611,6 +611,8 @@ MonoBehaviour:
   soloImagenCompleta: 1
   entradaCartel: 0.35
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
+  botonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
+  botonNext: {fileID: 7657008966190279101, guid: 83546cf65aa0c63498e62fdcad951ac5, type: 3}
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
   anchoLibro: 1000
   posicion: {x: 0, y: 0}

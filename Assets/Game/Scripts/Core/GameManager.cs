@@ -32,7 +32,11 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Escena que se carga al ganar. Vacio = se queda en la pantalla de victoria.")]
         public string escenaSiguiente = "";
 
-        [Tooltip("Segundos que se ve el cartel de victoria antes de pasar al siguiente nivel.")]
+        [Tooltip("OFF (recomendado): al ganar se queda el cartel y el jugador elige con los botones " +
+                 "NEXT o MENU. ON: pasa solo al siguiente nivel tras los segundos de abajo.")]
+        public bool avanzarSolo = false;
+
+        [Tooltip("Segundos que se ve el cartel de victoria antes de pasar al siguiente nivel (solo con Avanzar Solo).")]
         public float segundosParaSiguiente = 2.5f;
 
         [Tooltip("Tiempo minimo que el cartel se queda en pantalla, aunque se pulse algo.")]
@@ -149,6 +153,13 @@ namespace Chocoflan.KiraPotionQuest
             CargarSiguiente();
         }
 
+        /// <summary>Boton NEXT del cartel de victoria.</summary>
+        public void IrAlSiguiente()
+        {
+            m_CuentaAtras = -1f;
+            CargarSiguiente();
+        }
+
         void CargarSiguiente()
         {
             if (string.IsNullOrEmpty(escenaSiguiente)) return;
@@ -239,7 +250,7 @@ namespace Chocoflan.KiraPotionQuest
             {
                 Time.timeScale = 1f;
             }
-            m_CuentaAtras = (newState == LevelState.Won && !string.IsNullOrEmpty(escenaSiguiente))
+            m_CuentaAtras = (newState == LevelState.Won && avanzarSolo && !string.IsNullOrEmpty(escenaSiguiente))
                 ? Mathf.Max(0.3f, segundosParaSiguiente)
                 : -1f;
             m_VistoVictoria = 0f;
