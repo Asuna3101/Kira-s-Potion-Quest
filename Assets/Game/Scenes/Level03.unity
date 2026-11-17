@@ -790,9 +790,9 @@ MonoBehaviour:
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
   escalaVictoria: 0.65
   escalaDerrota: 0.7
-  entradaPergamino: 0.25
-  pausaPergamino: 0.55
-  aperturaPergamino: 0.35
+  entradaPergamino: 0.2
+  pausaPergamino: 0.15
+  aperturaPergamino: 0.4
   altoPergaminoCerrado: 0.85
   anchoLibro: 1400
   posicion: {x: 0, y: 0}
