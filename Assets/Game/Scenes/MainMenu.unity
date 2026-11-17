@@ -825,14 +825,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musica: {fileID: 8300000, guid: 2a5666d5d993b484ba11863b51c471b1, type: 3}
-  volumenMusica: 0.45
+  volumenMusica: 0.6
   volumenEfectos: 0.85
   romper: {fileID: 8300000, guid: 15511c639d713da4baf4f741289f64ae, type: 3}
-  quemar: {fileID: 8300000, guid: f0f4e2f767411e04ca7c949218453f03, type: 3}
-  caldero: {fileID: 8300000, guid: d56eff9296d96284f9dcae32623cb1d1, type: 3}
-  ganar: {fileID: 8300000, guid: 910f31d54108d384a837ff1eaa40e780, type: 3}
-  perder: {fileID: 8300000, guid: 6bd7e5207b8d8504aa3fb006fa62371e, type: 3}
-  boton: {fileID: 8300000, guid: e97a9a38ec033f1439ddd1e55b9c0b73, type: 3}
+  quemar: {fileID: 8300000, guid: 9de9c3de29c833a40b1dc71143bed74f, type: 3}
+  caldero: {fileID: 8300000, guid: c36160f346f0e1248a25a9591e963c9e, type: 3}
+  ganar: {fileID: 8300000, guid: 3679a3818be68fe418ae901763de80dd, type: 3}
+  perder: {fileID: 8300000, guid: d6ba885340bdebf4f93a995c4b9df0e6, type: 3}
+  boton: {fileID: 8300000, guid: 949c805bc996e71418600e18e448533d, type: 3}
   lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
   empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
   sonarAlEmpezar: 0

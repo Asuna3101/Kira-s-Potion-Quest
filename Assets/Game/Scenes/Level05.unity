@@ -161,8 +161,8 @@ MonoBehaviour:
   gates:
   - {fileID: 371853436}
   seQuedaPulsado: 1
-  spritePresionado: {fileID: -29324363082825270, guid: 95cb758c532255b44905c7c136f3c22b, type: 3}
   alturaDeteccion: 0.4
+  spritePresionado: {fileID: -29324363082825270, guid: 95cb758c532255b44905c7c136f3c22b, type: 3}
   hundimiento: 0.06
   velocidadHundido: 10
   aviso: "La pared se abri\xF3."
@@ -2841,14 +2841,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musica: {fileID: 8300000, guid: 72504df40efb1c041b26ec6a5584bba3, type: 3}
-  volumenMusica: 0.4
+  volumenMusica: 0.6
   volumenEfectos: 0.85
   romper: {fileID: 8300000, guid: 15511c639d713da4baf4f741289f64ae, type: 3}
-  quemar: {fileID: 8300000, guid: f0f4e2f767411e04ca7c949218453f03, type: 3}
-  caldero: {fileID: 8300000, guid: d56eff9296d96284f9dcae32623cb1d1, type: 3}
-  ganar: {fileID: 8300000, guid: 910f31d54108d384a837ff1eaa40e780, type: 3}
-  perder: {fileID: 8300000, guid: 6bd7e5207b8d8504aa3fb006fa62371e, type: 3}
-  boton: {fileID: 8300000, guid: e97a9a38ec033f1439ddd1e55b9c0b73, type: 3}
+  quemar: {fileID: 8300000, guid: 9de9c3de29c833a40b1dc71143bed74f, type: 3}
+  caldero: {fileID: 8300000, guid: c36160f346f0e1248a25a9591e963c9e, type: 3}
+  ganar: {fileID: 8300000, guid: 3679a3818be68fe418ae901763de80dd, type: 3}
+  perder: {fileID: 8300000, guid: d6ba885340bdebf4f93a995c4b9df0e6, type: 3}
+  boton: {fileID: 8300000, guid: 949c805bc996e71418600e18e448533d, type: 3}
   lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
   empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
   sonarAlEmpezar: 1
@@ -2925,7 +2925,7 @@ MonoBehaviour:
   spriteBotonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
   escenaDelMenu: LevelSelect
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
-  spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
+  spriteGuia: {fileID: -994983170010146492, guid: 697990156b7f5744ab82c342fb7e2610, type: 3}
   alturaGuia: 170
   spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   entradaLibroCerrado: 0.25
@@ -3455,8 +3455,8 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.5
-    y: -0.5
+    x: -0.59843755
+    y: -0.8111111
     width: 2
     height: 2
   near clip plane: 0.3
@@ -5105,7 +5105,7 @@ MonoBehaviour:
   sparkInterval: 50
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
-  shellShards: 1
+  shellShards: 0
   breakFrames: []
   breakFrameRate: 14
   lostDelay: 0.9
@@ -5863,10 +5863,10 @@ SceneRoots:
   m_Roots:
   - {fileID: 1205686950}
   - {fileID: 1973528366}
+  - {fileID: 961912932}
   - {fileID: 482623593}
   - {fileID: 839514225}
   - {fileID: 1181606542}
   - {fileID: 222717521}
   - {fileID: 92331361}
   - {fileID: 1407935237}
-  - {fileID: 961912932}
