@@ -43,6 +43,10 @@ namespace Chocoflan.KiraPotionQuest
         public float alturaDeteccion = 0.4f;
 
         [Header("Aspecto")]
+        [Tooltip("Sprite del boton PRESIONADO (Tablero/Obstacles/Boton_presionado). Al pisarlo se cambia a este, " +
+                 "y al soltarlo vuelve al normal. Vacio = el boton solo se hunde y cambia de color.")]
+        public Sprite spritePresionado;
+
         [Tooltip("Cuanto se hunde el boton al pisarlo, en unidades.")]
         public float hundimiento = 0.06f;
 
@@ -56,6 +60,7 @@ namespace Chocoflan.KiraPotionQuest
         public bool IsPressed { get; private set; }
 
         SpriteRenderer m_Sr;
+        Sprite m_SpriteNormal;
         Collider2D m_Col;
         Vector3 m_PosArriba;
         bool m_AvisoDado;
@@ -68,6 +73,7 @@ namespace Chocoflan.KiraPotionQuest
         void Awake()
         {
             m_Sr = GetComponent<SpriteRenderer>();
+            if (m_Sr != null) m_SpriteNormal = m_Sr.sprite;
             m_Col = BuscarOCrearZona();
             m_PosArriba = transform.position;
 
@@ -142,13 +148,29 @@ namespace Chocoflan.KiraPotionQuest
         void Update()
         {
             // El boton se hunde al pisarlo. Tiempo real: sigue animando en pausa.
+            // Con sprite de "presionado" el dibujo ya muestra el boton hundido: no se mueve.
+            float hundir = spritePresionado != null ? 0f : hundimiento;
             Vector3 objetivo = IsPressed
-                ? m_PosArriba + new Vector3(0f, -hundimiento, 0f)
+                ? m_PosArriba + new Vector3(0f, -hundir, 0f)
                 : m_PosArriba;
 
             if ((transform.position - objetivo).sqrMagnitude > 0.0000001f)
                 transform.position = Vector3.Lerp(transform.position, objetivo,
                     1f - Mathf.Exp(-velocidadHundido * Time.unscaledDeltaTime));
+        }
+
+        /// <summary>
+        /// Cambia el sprite sin que el boton se despegue del suelo: el sprite presionado es
+        /// mas bajito, asi que se corrige la altura para que la base quede donde estaba.
+        /// </summary>
+        void PonerSpriteApoyado(Sprite nuevo)
+        {
+            if (nuevo == null || m_Sr.sprite == nuevo) return;
+            float base0 = m_Sr.bounds.min.y;
+            m_Sr.sprite = nuevo;
+            float dy = base0 - m_Sr.bounds.min.y;
+            transform.position += new Vector3(0f, dy, 0f);
+            m_PosArriba += new Vector3(0f, dy, 0f);
         }
 
         void SetPressed(bool pressed)
@@ -164,7 +186,17 @@ namespace Chocoflan.KiraPotionQuest
             }
 
             if (m_Sr != null)
-                m_Sr.color = pressed ? PlaceholderArt.ButtonDone : Color.white;
+            {
+                if (spritePresionado != null)
+                {
+                    PonerSpriteApoyado(pressed ? spritePresionado : m_SpriteNormal);
+                    m_Sr.color = Color.white;
+                }
+                else
+                {
+                    m_Sr.color = pressed ? PlaceholderArt.ButtonDone : Color.white;
+                }
+            }
 
             if (!pressed) return;
 

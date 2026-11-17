@@ -161,6 +161,7 @@ MonoBehaviour:
   gates:
   - {fileID: 371853436}
   seQuedaPulsado: 1
+  spritePresionado: {fileID: -29324363082825270, guid: 95cb758c532255b44905c7c136f3c22b, type: 3}
   alturaDeteccion: 0.4
   hundimiento: 0.06
   velocidadHundido: 10
