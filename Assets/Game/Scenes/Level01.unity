@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -1.6711051
-    y: -2.1888309
-    width: 5.113182
-    height: 5.111216
+    x: -2.5219493
+    y: -3.6640625
+    width: 8.428447
+    height: 8.4375
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -436,11 +436,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9544e3949f0d0b6a5e52717c2b670f0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMana: 100
+  maxMana: 120
   manaDrainPerSecond: 28
   manaRegenPerSecond: 25
   builder: {fileID: 300003}
   escenaSiguiente: Level02
+  avanzarSolo: 0
   segundosParaSiguiente: 4
   minimoEnPantalla: 0.8
   pausarAlTerminar: 1
@@ -583,8 +584,12 @@ MonoBehaviour:
   escenaDelMenu: LevelSelect
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
-  spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   alturaGuia: 185
+  spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  entradaLibroCerrado: 0.25
+  pausaLibroCerrado: 0.55
+  aperturaLibro: 0.35
+  altoLibroCerrado: 1
   controlsStartOpen: 0
   mostrarGuiaAlInicio: 1
   guiaSoloEnEscena: Level01,Level03,Level04
@@ -611,10 +616,16 @@ MonoBehaviour:
   libroLetras: {fileID: -234898234377868160, guid: 650e4a07749876f46859fdf6808cb52b, type: 3}
   soloImagenCompleta: 1
   entradaCartel: 0.35
-  cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   botonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
   botonNext: {fileID: 7657008966190279101, guid: 83546cf65aa0c63498e62fdcad951ac5, type: 3}
+  cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
+  escalaVictoria: 0.65
+  escalaDerrota: 0.7
+  entradaPergamino: 0.25
+  pausaPergamino: 0.55
+  aperturaPergamino: 0.35
+  altoPergaminoCerrado: 0.85
   anchoLibro: 1000
   posicion: {x: 0, y: 0}
   entrada: 0.3
