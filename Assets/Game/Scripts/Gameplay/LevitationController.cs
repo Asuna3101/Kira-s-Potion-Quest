@@ -111,10 +111,10 @@ namespace Chocoflan.KiraPotionQuest
             // ESPACIO levanta por si solo: no hace falta usar flecha ARRIBA.
             m_LevitateHeld = kb[levitateKey].isPressed;
 
-            // Las flechas solo dirigen el movimiento horizontal.
+            // Las flechas IZQ/DER o las teclas A/D dirigen el movimiento horizontal.
             float x = 0f;
-            if (kb.leftArrowKey.isPressed) x -= 1f;
-            if (kb.rightArrowKey.isPressed) x += 1f;
+            if (kb.leftArrowKey.isPressed || kb.aKey.isPressed) x -= 1f;
+            if (kb.rightArrowKey.isPressed || kb.dKey.isPressed) x += 1f;
             m_HorizontalInput = x;
 
             // Tab cambia de ingrediente seleccionado.

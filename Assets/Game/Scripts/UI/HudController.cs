@@ -783,7 +783,7 @@ namespace Chocoflan.KiraPotionQuest
             m_ControlsText = MakeText(m_ControlsPanel.transform, "Txt_Controles", font, Sz(10), TextAnchor.MiddleLeft,
                 new Vector2(0f, 0f), new Vector2(0f, 0f), V(7f, 3f), V(428f, 22f));
             m_ControlsText.text = "Click = elegir ingrediente   |   Mantener ESPACIO = SUBIR   |   " +
-                                  "Flechas IZQ/DER = MOVER   |   Soltar ESPACIO = CAER   |   " +
+                                  "Flechas o A/D = MOVER   |   Soltar ESPACIO = CAER   |   " +
                                   "Click y mantener = interactuar   |   Tab = cambiar   |   R = reiniciar";
 
             // --- boton ? magico: en la franja de arriba, a la izquierda del boton de
@@ -916,7 +916,7 @@ namespace Chocoflan.KiraPotionQuest
                 "Lleva el ingrediente hasta el caldero sin romperlo.\n\n" +
                 "<b>Click</b> sobre el ingrediente  =  elegirlo\n" +
                 "<b>Mantener ESPACIO</b>  =  levitar (gasta man\u00e1)\n" +
-                "<b>Flechas IZQ / DER</b>  =  moverlo (conserva el impulso)\n" +
+                "<b>Flechas IZQ / DER</b> o <b>A / D</b>  =  moverlo (conserva el impulso)\n" +
                 "<b>Soltar ESPACIO</b>  =  caer (desde muy alto se rompe)\n" +
                 "<b>Tab</b>  =  cambiar de ingrediente      <b>R</b>  =  reiniciar\n\n" +
                 "Vuelve a ver esto con el bot\u00f3n <b>?</b> de abajo a la izquierda.";
