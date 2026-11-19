@@ -78,6 +78,11 @@ namespace Chocoflan.KiraPotionQuest
                  "Y positivo las sube. Para afinar sin tocar la zona.")]
         public Vector2 ajusteTarjetas = Vector2.zero;
 
+        [Header("Marcos de las tarjetas")]
+        [Tooltip("Los objetos cuyo nombre empieza asi (Marco_lv1, Marco_lv2...) son los marcos de las " +
+                 "vistas previas. Salen DESPUES de que el pergamino se abre, junto con las tarjetas.")]
+        public string prefijoMarcos = "Marco_lv";
+
         [Header("Niveles")]
         public List<EntradaNivel> niveles = new List<EntradaNivel>();
 
@@ -123,6 +128,11 @@ namespace Chocoflan.KiraPotionQuest
         RectTransform m_ZonaRect;
         CanvasGroup m_ZonaGrupo;
         float m_T = -1f;
+
+        // Los marcos son SpriteRenderers: el CanvasGroup de la zona no les afecta,
+        // asi que se controlan aparte (activar y fundir su alfa).
+        readonly List<SpriteRenderer> m_Marcos = new List<SpriteRenderer>();
+        readonly List<Color> m_MarcosColor = new List<Color>();
 
         Camera CamaraDelCanvas =>
             m_Canvas == null || m_Canvas.renderMode == RenderMode.ScreenSpaceOverlay
@@ -349,8 +359,14 @@ namespace Chocoflan.KiraPotionQuest
         {
             if (m_Canvas == null) return;
 
+            BuscarMarcos();
+
             Transform papel = m_Canvas.transform.Find("Pergamino");
-            if (papel == null) return;
+            if (papel == null)
+            {
+                AplicarMarcos(1f);
+                return;
+            }
 
             m_Pergamino = papel.GetComponent<Image>();
             m_PergaminoRect = papel as RectTransform;
@@ -370,13 +386,43 @@ namespace Chocoflan.KiraPotionQuest
             if (!animarApertura || m_Pergamino == null)
             {
                 m_T = -1f;
+                AplicarMarcos(1f);
                 return;
             }
 
             if (pergaminoCerrado != null) m_Pergamino.sprite = pergaminoCerrado;
             m_PergaminoGrupo.alpha = 0f;
             if (m_ZonaGrupo != null) m_ZonaGrupo.alpha = 0f;
+            AplicarMarcos(0f);   // los marcos esperan a que el pergamino se abra
             m_T = 0f;
+        }
+
+        /// <summary>Junta los marcos de las tarjetas (SpriteRenderers) y recuerda su color.</summary>
+        void BuscarMarcos()
+        {
+            m_Marcos.Clear();
+            m_MarcosColor.Clear();
+            if (m_Canvas == null || string.IsNullOrEmpty(prefijoMarcos)) return;
+
+            foreach (var sr in m_Canvas.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (!sr.gameObject.name.StartsWith(prefijoMarcos, StringComparison.OrdinalIgnoreCase)) continue;
+                m_Marcos.Add(sr);
+                m_MarcosColor.Add(sr.color);
+            }
+        }
+
+        /// <summary>0 = marcos ocultos, 1 = marcos del todo visibles (fundido intermedio).</summary>
+        void AplicarMarcos(float k)
+        {
+            for (int i = 0; i < m_Marcos.Count; i++)
+            {
+                if (m_Marcos[i] == null) continue;
+                Color c = m_MarcosColor[i];
+                c.a *= Mathf.Clamp01(k);
+                m_Marcos[i].color = c;
+                m_Marcos[i].enabled = k > 0.001f;
+            }
         }
 
         void AnimarPergamino()
@@ -422,6 +468,7 @@ namespace Chocoflan.KiraPotionQuest
                 ? 1f
                 : Mathf.Clamp01((m_T - entrada - pausaCerrado - apertura) / aparicionTarjetas);
             if (m_ZonaGrupo != null) m_ZonaGrupo.alpha = c;
+            AplicarMarcos(c);
 
             if (c >= 1f) m_T = -1f;   // listo, no hay mas que animar
         }

@@ -60,6 +60,16 @@ namespace Chocoflan.KiraPotionQuest
         public int canvasWidth = GridSettings.ReferenceWidthPx;   // 1920
         public int canvasHeight = GridSettings.ReferenceHeightPx; // 1080
 
+        [Header("Titulo animado")]
+        [Tooltip("El titulo (Kira's Potion Quest) flota suavemente arriba y abajo.")]
+        public bool animarTitulo = true;
+
+        [Tooltip("Velocidad del movimiento del titulo.")]
+        public float velocidadTitulo = 1.1f;
+
+        [Tooltip("Cuanto sube y baja el titulo, en pixeles de canvas.")]
+        public float amplitudTitulo = 6f;
+
         [Header("Feedback")]
         [Tooltip("Cuanto crece el boton al pasar el mouse por encima.")]
         public float hoverScale = 1.06f;
@@ -165,6 +175,25 @@ namespace Chocoflan.KiraPotionQuest
             EngancharBoton(canvas.transform, "Boton_Creditos", AbrirCreditos);
             EngancharBoton(canvas.transform, "Boton_Play", Jugar);
             EngancharBoton(canvas.transform, "Boton_Settings", AbrirAjustes);
+
+            // El titulo horneado en la escena no trae el movimiento: se le da aqui.
+            Transform titulo = canvas.transform.Find("Titulo");
+            if (titulo != null) AnimarTitulo(titulo.gameObject);
+        }
+
+        /// <summary>Hace flotar el titulo (solo el, no los botones ni el fondo).</summary>
+        void AnimarTitulo(GameObject titulo)
+        {
+            if (!animarTitulo || titulo == null) return;
+
+            // Si alguien ya le puso un PlaceholderAnimator a mano en la escena, se respeta.
+            var anim = titulo.GetComponent<PlaceholderAnimator>();
+            if (anim != null && anim.mode != PlaceholderAnimator.Mode.None) return;
+            if (anim == null) anim = titulo.AddComponent<PlaceholderAnimator>();
+
+            anim.mode = PlaceholderAnimator.Mode.Bob;
+            anim.speed = velocidadTitulo;
+            anim.amplitude = amplitudTitulo;   // en pixeles de canvas, no en unidades
         }
 
         void EngancharBoton(Transform canvas, string nombre, Action onClick)
@@ -418,10 +447,7 @@ namespace Chocoflan.KiraPotionQuest
                 var txt = NuevoTexto(titulo.transform, "Txt_Titulo", "Kira's Potion Quest", 90, TextAnchor.MiddleCenter);
                 Estirar(txt.rectTransform);
             }
-            var anim = titulo.gameObject.AddComponent<PlaceholderAnimator>();
-            anim.mode = PlaceholderAnimator.Mode.Bob;
-            anim.speed = 1.1f;
-            anim.amplitude = 6f;          // en pixeles de canvas, no en unidades
+            AnimarTitulo(titulo.gameObject);
 
             // --- botones (de izquierda a derecha, como en el mockup)
             CrearBoton(canvasGo.transform, "Boton_Creditos", art.botonCreditos, "creditos",
