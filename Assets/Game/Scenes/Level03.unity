@@ -1022,7 +1022,7 @@ Transform:
   m_GameObject: {fileID: 278541667}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.271, y: 0.188, z: 0}
+  m_LocalPosition: {x: -4.06, y: 0.188, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1495,7 +1495,7 @@ Transform:
   m_GameObject: {fileID: 485231601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: -4.39, y: 2.62, z: 0}
+  m_LocalPosition: {x: -4.06, y: 2.62, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2023,9 +2023,9 @@ MonoBehaviour:
   resistenteAlFuego: 1
   resistenteALosPinchos: 0
   breakImpactSpeed: 999
-  normalGravityScale: 1.2
-  normalLinearDamping: 0.3
-  levitationLinearDamping: 1
+  normalGravityScale: 1.8
+  normalLinearDamping: 0.25
+  levitationLinearDamping: 1.4
   sparkInterval: 10
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
@@ -2447,7 +2447,7 @@ Transform:
   m_GameObject: {fileID: 698936373}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.53, y: -0.35, z: 0}
+  m_LocalPosition: {x: -2.28, y: -0.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4236,7 +4236,7 @@ Transform:
   m_GameObject: {fileID: 1750656334}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.33, y: -0.71, z: 0}
+  m_LocalPosition: {x: -4.06, y: -0.71, z: 0}
   m_LocalScale: {x: 1, y: 0.6, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4391,9 +4391,9 @@ Transform:
   m_GameObject: {fileID: 1753025764}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -5.69, y: -1.02, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -5.653, y: -1.004, z: 0}
+  m_LocalScale: {x: 0.64, y: 0.64, z: 0.64}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 756001958}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
@@ -4481,7 +4481,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1064736555
   m_SortingLayer: 2
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4077920997968710466, guid: 565a8b38a929b7c4aa3a0656a161a2fb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5243,9 +5243,9 @@ MonoBehaviour:
   resistenteAlFuego: 0
   resistenteALosPinchos: 0
   breakImpactSpeed: 7
-  normalGravityScale: 1
-  normalLinearDamping: 0.5
-  levitationLinearDamping: 0.65
+  normalGravityScale: 0.6
+  normalLinearDamping: 1.35
+  levitationLinearDamping: 0.4
   sparkInterval: 10
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}

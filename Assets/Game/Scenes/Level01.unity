@@ -183,7 +183,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: -0.59843755
-    y: -0.8111111
+    y: -0.8842592
     width: 2
     height: 2
   near clip plane: 0.3
@@ -4394,9 +4394,9 @@ MonoBehaviour:
   resistenteALosPinchos: 0
   breakImpactSpeed: 999
   normalGravityScale: 1
-  normalLinearDamping: 0.5
+  normalLinearDamping: 0.6
   levitationLinearDamping: 0.8
-  sparkInterval: 10
+  sparkInterval: 50
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
   shellShards: 0

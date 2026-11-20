@@ -978,8 +978,8 @@ MonoBehaviour:
   resistenteAlFuego: 0
   resistenteALosPinchos: 0
   breakImpactSpeed: 5.5
-  normalGravityScale: 0.5
-  normalLinearDamping: 0.9
+  normalGravityScale: 0.9
+  normalLinearDamping: 0.65
   levitationLinearDamping: 0.4
   sparkInterval: 10
   shellColor: {r: 0.82745105, g: 0.6431373, b: 0.6666667, a: 1}
@@ -4118,8 +4118,8 @@ Transform:
   m_GameObject: {fileID: 1539530944}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 3.578, y: -2.448, z: 0}
-  m_LocalScale: {x: 0.57, y: 0.57, z: 0.57}
+  m_LocalPosition: {x: 3.54, y: -2.448, z: 0}
+  m_LocalScale: {x: 0.74, y: 0.74, z: 0.74}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 839514225}
@@ -5099,9 +5099,9 @@ MonoBehaviour:
   resistenteAlFuego: 1
   resistenteALosPinchos: 0
   breakImpactSpeed: 999
-  normalGravityScale: 1.2
-  normalLinearDamping: 0.3
-  levitationLinearDamping: 1
+  normalGravityScale: 1.8
+  normalLinearDamping: 0.25
+  levitationLinearDamping: 1.4
   sparkInterval: 50
   shellColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   yolkColor: {r: 1, g: 0.75686276, b: 0.22745098, a: 1}
