@@ -639,9 +639,14 @@ namespace Chocoflan.KiraPotionQuest
                 }
                 case LevelState.Lost:
                     if (m_Libro != null) m_Libro.Ocultar();
+                    // Si el nivel se reinicia solo al perder, no sale ningun cartel.
+                    if (m_Game != null && m_Game.reiniciarSoloAlPerder)
+                    {
+                        ShowResult(false, "");
+                    }
                     // Con el cartel de derrota (Level_lose) no hace falta el texto:
                     // la frase y "Pulsa R" ya estan en el dibujo.
-                    if (m_Libro != null && m_Libro.TieneCartelDerrota)
+                    else if (m_Libro != null && m_Libro.TieneCartelDerrota)
                     {
                         ShowResult(false, "");
                         m_Libro.MostrarDerrota();

@@ -28,6 +28,15 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Builder del nivel. Si esta asignado, R reconstruye el tablero sin recargar la escena.")]
         public LevelBuilder builder;
 
+        [Header("Al perder")]
+        [Tooltip("ON: al perder el nivel se reinicia solo, SIN cartel de derrota. " +
+                 "OFF: sale el cartel de derrota y hay que pulsar R. (R siempre reinicia al instante.)")]
+        public bool reiniciarSoloAlPerder = true;
+
+        [Tooltip("Segundos entre que se rompe el ingrediente y se reinicia el nivel " +
+                 "(para alcanzar a ver y oir que se rompio). 0 = inmediato.")]
+        public float segundosAntesDeReiniciar = 0.6f;
+
         [Header("Al superar el nivel")]
         [Tooltip("Escena que se carga al ganar. Vacio = se queda en la pantalla de victoria.")]
         public string escenaSiguiente = "";
@@ -106,6 +115,7 @@ namespace Chocoflan.KiraPotionQuest
         bool NivelHorneado => builder != null && !builder.buildOnAwake;
 
         float m_CuentaAtras = -1f;
+        float m_ReinicioEn = -1f;
         float m_VistoVictoria;
         bool m_SoltoTrasGanar;
 
@@ -113,6 +123,17 @@ namespace Chocoflan.KiraPotionQuest
         {
             HandleRestartInput();
             HandleSiguienteNivel();
+            HandleReinicioAutomatico();
+        }
+
+        /// <summary>Al perder: espera con el cartel en pantalla y reinicia sola el nivel.</summary>
+        void HandleReinicioAutomatico()
+        {
+            if (m_ReinicioEn < 0f) return;
+            m_ReinicioEn -= Time.unscaledDeltaTime;
+            if (m_ReinicioEn > 0f) return;
+            m_ReinicioEn = -1f;
+            RestartLevel();
         }
 
         /// <summary>
@@ -253,6 +274,9 @@ namespace Chocoflan.KiraPotionQuest
             m_CuentaAtras = (newState == LevelState.Won && avanzarSolo && !string.IsNullOrEmpty(escenaSiguiente))
                 ? Mathf.Max(0.3f, segundosParaSiguiente)
                 : -1f;
+            m_ReinicioEn = (newState == LevelState.Lost && reiniciarSoloAlPerder)
+                ? Mathf.Max(0.01f, segundosAntesDeReiniciar)
+                : -1f;
             m_VistoVictoria = 0f;
             m_SoltoTrasGanar = false;
             LastMessage = message;
@@ -293,6 +317,7 @@ namespace Chocoflan.KiraPotionQuest
             // El nivel pudo quedar congelado al ganar o perder.
             Time.timeScale = 1f;
             m_CuentaAtras = -1f;
+            m_ReinicioEn = -1f;
 
             // Con el nivel horneado NO se puede reconstruir en caliente: eso
             // borraria los objetos de la escena y con ellos lo que el equipo haya
