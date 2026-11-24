@@ -536,7 +536,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -2052,7 +2052,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 74a250df3f87144c08c4970ca72f5e5a, type: 3}
   - {fileID: 21300000, guid: 9f7732d60a51f49759f4214c3459ee3c, type: 3}
   fotogramasPorSegundo: 6
+  animarFotogramas: 1
   desfaseAleatorio: 1
+  desplazamientoInfinito: 1
+  velocidadDesplazamiento: 1.5
+  sincronizarConCorriente: 1
+  direccionManual: {x: 0, y: 1}
+  invertirDesplazamiento: 0
+  bloquearEjeX: 1
+  duracionFadeIn: 0.5
+  duracionFadeOut: 0.5
+  opacidadMaxima: 1
+  moverDuranteFadeOut: 1
+  fadeAlComenzar: 0
+  animarDurantePausa: 0
+  reiniciarAlApagarse: 0
+  opacidadActual: 0
 --- !u!114 &695370704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2084,6 +2099,14 @@ MonoBehaviour:
   acceleration: 8
   maxSpeed: 2
   levitatingFactor: 0.7
+  vientoIntermitente: 1
+  duracionActivo: 2
+  duracionInactivo: 1
+  comenzarApagado: 0
+  cicloAleatorio: 0
+  desfaseCiclo: 1
+  vientoActivo: 1
+  tiempoRestante: 0
 --- !u!61 &695370706
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2156,7 +2179,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: c225638327024904492a00b4fba67b25, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2847,7 +2870,7 @@ MonoBehaviour:
   quemar: {fileID: 8300000, guid: 9de9c3de29c833a40b1dc71143bed74f, type: 3}
   caldero: {fileID: 8300000, guid: c36160f346f0e1248a25a9591e963c9e, type: 3}
   ganar: {fileID: 8300000, guid: 3679a3818be68fe418ae901763de80dd, type: 3}
-  perder: {fileID: 8300000, guid: d6ba885340bdebf4f93a995c4b9df0e6, type: 3}
+  perder: {fileID: 8300000, guid: 87b8357be1d6c23438b1a9b19ca7add3, type: 3}
   boton: {fileID: 8300000, guid: 949c805bc996e71418600e18e448533d, type: 3}
   lanzar: {fileID: 8300000, guid: 220f745b030ab7441964e2d8f562c516, type: 3}
   empezarNivel: {fileID: 8300000, guid: ea3a0d0a39e5e11488a441bd1a63f97c, type: 3}
@@ -3076,6 +3099,8 @@ MonoBehaviour:
   manaDrainPerSecond: 28
   manaRegenPerSecond: 25
   builder: {fileID: 961912930}
+  reiniciarSoloAlPerder: 1
+  segundosAntesDeReiniciar: 0.6
   escenaSiguiente: 
   avanzarSolo: 0
   segundosParaSiguiente: 4
@@ -3456,7 +3481,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: -0.59843755
-    y: -0.8842592
+    y: -0.8712963
     width: 2
     height: 2
   near clip plane: 0.3
@@ -3789,11 +3814,11 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.29999352}
+  m_Offset: {x: 0, y: -0.32601732}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -3803,7 +3828,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.4000276, y: 0.9299798}
+  m_Size: {x: 0.4000276, y: 0.8779322}
   m_EdgeRadius: 0
 --- !u!212 &1348556531
 SpriteRenderer:
@@ -4834,7 +4859,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
