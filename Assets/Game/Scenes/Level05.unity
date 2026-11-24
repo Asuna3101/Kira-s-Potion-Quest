@@ -161,11 +161,18 @@ MonoBehaviour:
   gates:
   - {fileID: 371853436}
   seQuedaPulsado: 1
+  requiereImpacto: 1
+  velocidadMinimaImpacto: 2.5
+  requiereImpactoSuperior: 1
+  alineacionMinimaImpacto: 0.65
+  permitirImpactoLevitando: 0
   alturaDeteccion: 0.4
   spritePresionado: {fileID: -29324363082825270, guid: 95cb758c532255b44905c7c136f3c22b, type: 3}
   hundimiento: 0.06
   velocidadHundido: 10
   aviso: "La pared se abri\xF3."
+  ultimoImpacto: 0
+  impactoValido: 0
 --- !u!1 &92331360
 GameObject:
   m_ObjectHideFlags: 0
@@ -2100,8 +2107,8 @@ MonoBehaviour:
   maxSpeed: 2
   levitatingFactor: 0.7
   vientoIntermitente: 1
-  duracionActivo: 2
-  duracionInactivo: 1
+  duracionActivo: 4
+  duracionInactivo: 2
   comenzarApagado: 0
   cicloAleatorio: 0
   desfaseCiclo: 1
@@ -3480,8 +3487,8 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.59843755
-    y: -0.8712963
+    x: -0.5
+    y: -0.5
     width: 2
     height: 2
   near clip plane: 0.3
