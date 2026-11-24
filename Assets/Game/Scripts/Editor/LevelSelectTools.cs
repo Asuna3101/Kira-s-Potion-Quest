@@ -49,6 +49,32 @@ namespace Chocoflan.KiraPotionQuest.EditorTools
             if (ctrl != null) Limpiar(ctrl, true);
         }
 
+        [MenuItem("Chocoflan/12 - Borrar progreso de niveles", false, 20)]
+        public static void BorrarProgreso()
+        {
+            ProgresoNiveles.Borrar(EscenasDeNiveles());
+            Debug.Log("[Chocoflan] Progreso borrado: solo el nivel 1 queda abierto.");
+        }
+
+        [MenuItem("Chocoflan/13 - Desbloquear todos los niveles (pruebas)", false, 21)]
+        public static void DesbloquearTodos()
+        {
+            ProgresoNiveles.Marcar(EscenasDeNiveles());
+            Debug.Log("[Chocoflan] Todos los niveles quedan marcados como superados.");
+        }
+
+        static System.Collections.Generic.List<string> EscenasDeNiveles()
+        {
+            // Lista fija de respaldo + las que haya en el selector de la escena.
+            var lista = new System.Collections.Generic.List<string>
+                { "Level01", "Level02", "Level03", "Level04", "Level05" };
+            var ctrl = Object.FindFirstObjectByType<LevelSelectController>();
+            if (ctrl != null)
+                foreach (var n in ctrl.niveles)
+                    if (!string.IsNullOrEmpty(n.escena) && !lista.Contains(n.escena)) lista.Add(n.escena);
+            return lista;
+        }
+
         static LevelSelectController Preparar()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return null;

@@ -259,6 +259,13 @@ namespace Chocoflan.KiraPotionQuest
             // moviles, llamas y particulas. Antes el mapa seguia animandose detras
             // del cartel. El HUD, el libro de victoria y la barra de mana usan
             // tiempo real (unscaledDeltaTime), asi que siguen funcionando.
+            if (newState == LevelState.Won)
+            {
+                // Guarda el progreso: es lo que desbloquea el siguiente nivel en el
+                // selector. NEXT sigue llevando al siguiente de inmediato.
+                ProgresoNiveles.MarcarSuperado(SceneManager.GetActiveScene().name);
+            }
+
             if (newState != LevelState.Playing)
             {
                 // Suena junto con el cartel. Los AudioSource del director tienen

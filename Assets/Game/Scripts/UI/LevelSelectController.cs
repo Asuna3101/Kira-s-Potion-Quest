@@ -86,6 +86,20 @@ namespace Chocoflan.KiraPotionQuest
         [Header("Niveles")]
         public List<EntradaNivel> niveles = new List<EntradaNivel>();
 
+        [Header("Bloqueo de niveles")]
+        [Tooltip("ON: un nivel solo se puede abrir si ya se supero el anterior.")]
+        public bool bloquearNiveles = true;
+
+        [Tooltip("Arte del candado (se estira sobre toda la tarjeta, como en el boceto). " +
+                 "Vacio = candado provisional dibujado por codigo.")]
+        public Sprite spriteCandado;
+
+        [Tooltip("SOLO PARA PRUEBAS: abre todos los niveles sin tocar el progreso guardado.")]
+        public bool desbloquearTodoParaPruebas = false;
+
+        [Tooltip("Segundos que tiembla una tarjeta bloqueada al pulsarla.")]
+        public float duracionTemblor = 0.25f;
+
         [Header("Navegacion")]
         public string escenaDelMenu = "MainMenu";
 
@@ -116,7 +130,13 @@ namespace Chocoflan.KiraPotionQuest
             public Image borde;
             public Action onClick;
             public Vector3 baseScale;
+            public string escena;          // null en botones que no son niveles
+            public bool bloqueada;
+            public float temblor = -1f;    // tiempo de temblor; <0 = quieta
+            public Vector2 basePos;
         }
+
+        static Sprite s_CandadoProvisional;
 
         readonly List<Tarjeta> m_Tarjetas = new List<Tarjeta>();
         Canvas m_Canvas;
@@ -150,6 +170,7 @@ namespace Chocoflan.KiraPotionQuest
             if (horneado != null) EngancharCanvasHorneado(horneado);
             else Construir();
 
+            AplicarBloqueos();
             PrepararApertura();
         }
 
@@ -173,7 +194,7 @@ namespace Chocoflan.KiraPotionQuest
             foreach (EntradaNivel nivel in niveles)
             {
                 string escena = nivel.escena;
-                Enganchar(canvas.transform, "Tarjeta_" + nivel.nombre, () => Cargar(escena));
+                Enganchar(canvas.transform, "Tarjeta_" + nivel.nombre, () => Cargar(escena), escena);
             }
             Enganchar(canvas.transform, "Btn_Volver", Volver);
 
@@ -201,7 +222,7 @@ namespace Chocoflan.KiraPotionQuest
             return null;
         }
 
-        void Enganchar(Transform canvas, string nombre, Action onClick)
+        void Enganchar(Transform canvas, string nombre, Action onClick, string escenaNivel = null)
         {
             Transform t = BuscarEnLaRama(canvas, nombre);
             if (t == null)
@@ -219,7 +240,9 @@ namespace Chocoflan.KiraPotionQuest
                 rect = rect,
                 borde = t.GetComponent<Image>(),
                 onClick = onClick,
-                baseScale = rect.localScale
+                baseScale = rect.localScale,
+                escena = escenaNivel,
+                basePos = rect.anchoredPosition
             });
         }
 
@@ -245,6 +268,14 @@ namespace Chocoflan.KiraPotionQuest
                 bool dentro = t.rect.gameObject.activeInHierarchy &&
                               RectTransformUtility.RectangleContainsScreenPoint(t.rect, screen, CamaraDelCanvas);
 
+                // Nivel bloqueado: sin hover ni carga. Solo un temblor al pulsarlo.
+                if (t.bloqueada)
+                {
+                    if (dentro && click) t.temblor = 0f;
+                    AnimarTemblor(t);
+                    continue;
+                }
+
                 t.rect.localScale = Vector3.Lerp(t.rect.localScale,
                     t.baseScale * (dentro ? hoverScale : 1f),
                     1f - Mathf.Exp(-hoverLerp * Time.unscaledDeltaTime));
@@ -257,6 +288,131 @@ namespace Chocoflan.KiraPotionQuest
                     t.onClick?.Invoke();
                 }
             }
+        }
+
+        // ------------------------------------------------------ bloqueo
+
+        /// <summary>
+        /// Un nivel esta abierto si es el primero o si el anterior de la lista ya
+        /// se supero. Se calcula en cada visita al selector, asi que al volver de
+        /// ganar un nivel el siguiente ya aparece desbloqueado.
+        /// </summary>
+        bool NivelAbierto(int indice)
+        {
+            if (!bloquearNiveles || desbloquearTodoParaPruebas) return true;
+            if (indice <= 0) return true;
+            return ProgresoNiveles.EstaSuperado(niveles[indice - 1].escena);
+        }
+
+        void AplicarBloqueos()
+        {
+            foreach (var t in m_Tarjetas)
+            {
+                if (string.IsNullOrEmpty(t.escena)) continue;
+
+                int indice = niveles.FindIndex(n => n.escena == t.escena);
+                if (indice < 0 || NivelAbierto(indice)) continue;
+
+                t.bloqueada = true;
+                CrearCandado(t);
+            }
+        }
+
+        /// <summary>
+        /// Pone el candado ENCIMA de la tarjeta. Se crea al jugar, no al hornear,
+        /// asi no ensucia la escena guardada y siempre refleja el progreso actual.
+        /// </summary>
+        void CrearCandado(Tarjeta t)
+        {
+            var go = NuevoUI(t.rect, "Candado");
+            var img = go.AddComponent<Image>();
+            img.sprite = spriteCandado != null ? spriteCandado : CandadoProvisional();
+            img.preserveAspect = false;
+            img.raycastTarget = false;
+            Estirar(img.rectTransform);
+            // Cubre solo el interior de la tarjeta, sin tapar el borde.
+            img.rectTransform.offsetMin = new Vector2(7f, 7f);
+            img.rectTransform.offsetMax = new Vector2(-7f, -7f);
+            go.transform.SetAsLastSibling();
+        }
+
+        void AnimarTemblor(Tarjeta t)
+        {
+            if (t.temblor < 0f) return;
+
+            t.temblor += Time.unscaledDeltaTime;
+            if (t.temblor >= duracionTemblor)
+            {
+                t.temblor = -1f;
+                t.rect.anchoredPosition = t.basePos;
+                return;
+            }
+
+            float k = 1f - t.temblor / Mathf.Max(0.01f, duracionTemblor);
+            float dx = Mathf.Sin(t.temblor * 70f) * 10f * k;
+            t.rect.anchoredPosition = t.basePos + new Vector2(dx, 0f);
+        }
+
+        /// <summary>
+        /// Candado provisional hasta que llegue el arte: velo oscuro sobre toda la
+        /// tarjeta y un candado dorado en el centro. Se dibuja por codigo.
+        /// </summary>
+        static Sprite CandadoProvisional()
+        {
+            if (s_CandadoProvisional != null) return s_CandadoProvisional;
+
+            const int W = 512, H = 288;
+            var px = new Color32[W * H];
+            var velo = new Color32(18, 12, 30, 215);
+            var oro = new Color32(240, 196, 92, 255);
+            var oroOscuro = new Color32(150, 104, 40, 255);
+            var hueco = new Color32(28, 18, 40, 255);
+
+            float cx = W * 0.5f, cy = H * 0.5f;
+            for (int y = 0; y < H; y++)
+            {
+                for (int x = 0; x < W; x++)
+                {
+                    Color32 c = velo;
+
+                    // Cuerpo: rectangulo redondeado.
+                    float bx = Mathf.Abs(x - cx), dy = (y - (cy - 22f));
+                    bool cuerpo = bx < 62f && dy > -58f && dy < 58f;
+                    if (cuerpo)
+                    {
+                        // Esquinas redondeadas.
+                        float ex = Mathf.Max(0f, bx - 44f), ey = Mathf.Max(0f, Mathf.Abs(dy) - 40f);
+                        if (ex * ex + ey * ey > 18f * 18f) cuerpo = false;
+                    }
+                    if (cuerpo) c = (dy < -44f) ? oroOscuro : oro;
+
+                    // Arco: anillo sobre el cuerpo.
+                    float ax = x - cx, ay = y - (cy + 36f);
+                    float r = Mathf.Sqrt(ax * ax + ay * ay);
+                    if (ay >= -6f && r > 30f && r < 46f) c = oro;
+                    if (ay < -6f && Mathf.Abs(Mathf.Abs(ax) - 38f) < 8f && ay > -26f) c = oro;
+
+                    // Ojo de la cerradura.
+                    float kx = x - cx, ky = y - (cy - 14f);
+                    if (kx * kx + ky * ky < 11f * 11f) c = hueco;
+                    if (Mathf.Abs(kx) < 5f && ky < 0f && ky > -30f) c = hueco;
+
+                    px[y * W + x] = c;
+                }
+            }
+
+            var tex = new Texture2D(W, H, TextureFormat.RGBA32, false)
+            {
+                name = "Candado_provisional",
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear
+            };
+            tex.SetPixels32(px);
+            tex.Apply(false, true);
+
+            s_CandadoProvisional = Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0.5f), 100f);
+            s_CandadoProvisional.name = "Candado_provisional";
+            return s_CandadoProvisional;
         }
 
         public void Volver() => Cargar(escenaDelMenu);
@@ -599,7 +755,9 @@ namespace Chocoflan.KiraPotionQuest
                 rect = bordeImg.rectTransform,
                 borde = bordeImg,
                 onClick = onClick,
-                baseScale = bordeImg.rectTransform.localScale
+                baseScale = bordeImg.rectTransform.localScale,
+                escena = nivel.escena,
+                basePos = pos
             });
         }
 
