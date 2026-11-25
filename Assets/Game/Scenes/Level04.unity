@@ -167,7 +167,7 @@ MonoBehaviour:
   alineacionMinimaImpacto: 0.65
   permitirImpactoLevitando: 0
   alturaDeteccion: 0.4
-  spritePresionado: {fileID: -29324363082825270, guid: 95cb758c532255b44905c7c136f3c22b, type: 3}
+  spritePresionado: {fileID: -2430289541554729368, guid: 6ada2bf058c947741be96b0fab60573e, type: 3}
   hundimiento: 0.06
   velocidadHundido: 10
   aviso: "La pared se abri\xF3."
@@ -2309,7 +2309,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4077920997968710466, guid: 565a8b38a929b7c4aa3a0656a161a2fb, type: 3}
+  m_Sprite: {fileID: -2084501126574536857, guid: d0b22153805b3174d81abd64453273db, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4344,8 +4344,8 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.5
-    y: -0.5
+    x: -0.17552084
+    y: -0.6574074
     width: 2
     height: 2
   near clip plane: 0.3
@@ -4536,13 +4536,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  libroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
   libroAbierto: {fileID: -566771948524518883, guid: a9d20020d8283104bb57c1bfde4e08fc, type: 3}
   libroLetras: {fileID: 0}
   soloImagenCompleta: 1
   entradaCartel: 0.35
-  botonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
-  botonNext: {fileID: 7657008966190279101, guid: 83546cf65aa0c63498e62fdcad951ac5, type: 3}
+  botonMenu: {fileID: 21300000, guid: 3f6c57b9f0b330546894a26cd7387947, type: 3}
+  botonNext: {fileID: 21300000, guid: 6be74e1460dd74c488c9e635281de3a0, type: 3}
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
   escalaVictoria: 0.65
@@ -4573,12 +4573,12 @@ MonoBehaviour:
   referenceWidth: 1920
   referenceHeight: 1080
   mostrarTitulo: 0
-  spriteBotonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
+  spriteBotonMenu: {fileID: 21300000, guid: 3f6c57b9f0b330546894a26cd7387947, type: 3}
   escenaDelMenu: LevelSelect
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: -994983170010146492, guid: 697990156b7f5744ab82c342fb7e2610, type: 3}
   alturaGuia: 170
-  spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  spriteLibroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
   entradaLibroCerrado: 0.25
   pausaLibroCerrado: 0.55
   aperturaLibro: 0.35
@@ -4893,7 +4893,7 @@ BoxCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0.025523186, y: 0.07656956}
   m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
+    border: {x: 0, y: 0.025000002, z: 0, w: 0.0375}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1.3, y: 3.8333333}
     newSize: {x: 1.24, y: 7.2901573}

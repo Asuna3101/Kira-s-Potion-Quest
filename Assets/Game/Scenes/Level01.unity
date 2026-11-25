@@ -182,8 +182,8 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.59843755
-    y: -0.8712963
+    x: -0.5
+    y: -0.5
     width: 2
     height: 2
   near clip plane: 0.3
@@ -587,7 +587,7 @@ MonoBehaviour:
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
   spriteGuia: {fileID: 21300000, guid: c58a0e93d27b41f6a9e3704b1d86f2ac, type: 3}
   alturaGuia: 185
-  spriteLibroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  spriteLibroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
   entradaLibroCerrado: 0.25
   pausaLibroCerrado: 0.55
   aperturaLibro: 0.35
@@ -613,13 +613,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
+  libroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
   libroAbierto: {fileID: -234898234377868160, guid: 650e4a07749876f46859fdf6808cb52b, type: 3}
   libroLetras: {fileID: -234898234377868160, guid: 650e4a07749876f46859fdf6808cb52b, type: 3}
   soloImagenCompleta: 1
   entradaCartel: 0.35
-  botonMenu: {fileID: 700734071883827773, guid: 177d0f1e57abb264a8d7e15aca034b33, type: 3}
-  botonNext: {fileID: 7657008966190279101, guid: 83546cf65aa0c63498e62fdcad951ac5, type: 3}
+  botonMenu: {fileID: 21300000, guid: 3f6c57b9f0b330546894a26cd7387947, type: 3}
+  botonNext: {fileID: 21300000, guid: 6be74e1460dd74c488c9e635281de3a0, type: 3}
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
   escalaVictoria: 0.65
@@ -4372,7 +4372,7 @@ Transform:
   m_GameObject: {fileID: 2140105750}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.95, y: -0.62, z: 0}
+  m_LocalPosition: {x: 4.66, y: -0.69, z: 0}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 1
   m_Children: []

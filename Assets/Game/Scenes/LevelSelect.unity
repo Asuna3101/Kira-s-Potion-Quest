@@ -320,6 +320,7 @@ MonoBehaviour:
     width: 0.74
     height: 0.58
   ajusteTarjetas: {x: 0, y: 0}
+  prefijoMarcos: Marco_lv
   niveles:
   - nombre: Nivel 1
     escena: Level01
@@ -336,6 +337,10 @@ MonoBehaviour:
   - nombre: Nivel 5
     escena: Level05
     vistaPrevia: {fileID: 21300000, guid: b19e7c35408df2641ae93057d8c16e2b, type: 3}
+  bloquearNiveles: 1
+  spriteCandado: {fileID: 0}
+  desbloquearTodoParaPruebas: 0
+  duracionTemblor: 0.25
   escenaDelMenu: MainMenu
   canvasWidth: 1920
   canvasHeight: 1080
