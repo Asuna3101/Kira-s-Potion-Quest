@@ -23,6 +23,10 @@ namespace Chocoflan.KiraPotionQuest
 
         [Tooltip("Imagen de la vista previa (Sprites/UI/Preview_*.png).")]
         public Sprite vistaPrevia;
+
+        [Tooltip("Imagen con el texto del nivel (Sprites/UI/Textos_Niveles/NIVEL_*.png). " +
+                 "Vacio = se queda el texto normal.")]
+        public Sprite textoImagen;
     }
 
     /// <summary>
@@ -82,6 +86,9 @@ namespace Chocoflan.KiraPotionQuest
         [Tooltip("Los objetos cuyo nombre empieza asi (Marco_lv1, Marco_lv2...) son los marcos de las " +
                  "vistas previas. Salen DESPUES de que el pergamino se abre, junto con las tarjetas.")]
         public string prefijoMarcos = "Marco_lv";
+
+        [Tooltip("Tamano de las imagenes con el texto de cada nivel (1 = tamano original de la imagen).")]
+        [Range(0.2f, 1.5f)] public float escalaTextoNivel = 0.65f;
 
         [Header("Niveles")]
         public List<EntradaNivel> niveles = new List<EntradaNivel>();
@@ -202,6 +209,42 @@ namespace Chocoflan.KiraPotionQuest
             // version de Unity; se rellenan para que no salgan invisibles.
             foreach (var t in canvas.GetComponentsInChildren<Text>(true))
                 if (t.font == null) t.font = m_Font;
+
+            AplicarTextosImagen(canvas.transform);
+        }
+
+        /// <summary>
+        /// Cambia el texto "Nivel N" bajo cada tarjeta por su imagen dibujada a mano.
+        /// La imagen se pone en el mismo sitio que el texto y comparte su fundido
+        /// (sale cuando el pergamino ya esta abierto).
+        /// </summary>
+        void AplicarTextosImagen(Transform canvas)
+        {
+            foreach (EntradaNivel nivel in niveles)
+            {
+                if (nivel.textoImagen == null) continue;
+
+                Transform etiqueta = BuscarEnLaRama(canvas, "Txt_" + nivel.nombre);
+                if (etiqueta == null) continue;
+
+                var texto = etiqueta.GetComponent<Text>();
+                if (texto != null) texto.enabled = false;
+
+                Transform previa = etiqueta.Find("Imagen_Texto");
+                GameObject go = previa != null ? previa.gameObject : new GameObject("Imagen_Texto", typeof(RectTransform));
+                go.transform.SetParent(etiqueta, false);
+
+                var rt = (RectTransform)go.transform;
+                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = Vector2.zero;
+                rt.sizeDelta = nivel.textoImagen.rect.size * escalaTextoNivel;
+
+                var img = go.GetComponent<Image>();
+                if (img == null) img = go.AddComponent<Image>();
+                img.sprite = nivel.textoImagen;
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+            }
         }
 
         /// <summary>

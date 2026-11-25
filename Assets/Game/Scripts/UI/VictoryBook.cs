@@ -40,6 +40,17 @@ namespace Chocoflan.KiraPotionQuest
                  "No sale si el GameManager no tiene 'Escena Siguiente'.")]
         public Sprite botonNext;
 
+        [Header("Posicion de los botones (pagina izquierda del libro)")]
+        [Tooltip("Centro del boton MENU en el lienzo original del cartel (3840 x 2160): X desde la " +
+                 "izquierda, Y desde ABAJO. Es el mismo para todos los niveles.")]
+        public Vector2 posicionBotonMenu = new Vector2(806f, 604.5f);
+
+        [Tooltip("Centro del boton NEXT en ese mismo lienzo.")]
+        public Vector2 posicionBotonNext = new Vector2(1481f, 607.5f);
+
+        [Tooltip("Ancho de cada boton en ese mismo lienzo (el alto sale de la proporcion del dibujo).")]
+        public float anchoBotonesCartel = 496f;
+
         [Header("Cartel de derrota (Level_lose)")]
         [Tooltip("Imagen completa que sale al perder. Vacio = el cartel de texto de siempre.")]
         public Sprite cartelDerrota;
@@ -200,6 +211,13 @@ namespace Chocoflan.KiraPotionQuest
 
                 // Botones: estan dibujados en el mismo lienzo (3840 x 2160) que el
                 // cartel, asi que se colocan por el recuadro de su sprite.
+                // Los botones salen SIEMPRE de Assets/Resources/BotonesCartel: asi tienen el mismo
+                // diseno en todos los niveles, sin importar lo que tenga asignado cada escena.
+                var spMenu = Resources.Load<Sprite>("BotonesCartel/Boton_menu");
+                var spNext = Resources.Load<Sprite>("BotonesCartel/Boton_next");
+                if (spMenu != null) botonMenu = spMenu;
+                if (spNext != null) botonNext = spNext;
+
                 m_BtnMenu = CrearBoton(m_Raiz, "Boton_Menu", botonMenu);
                 m_BtnNext = CrearBoton(m_Raiz, "Boton_Next", botonNext);
 
@@ -273,16 +291,18 @@ namespace Chocoflan.KiraPotionQuest
             Rect rr = m_Raiz.rect;
             if (cr.width <= 0f || cr.height <= 0f) return;
             float s = Mathf.Min(rr.width / cr.width, rr.height / cr.height);
-            Poner(m_BtnMenu, botonMenu, cr, s);
-            Poner(m_BtnNext, botonNext, cr, s);
+            Poner(m_BtnMenu, botonMenu, cr, s, posicionBotonMenu);
+            Poner(m_BtnNext, botonNext, cr, s, posicionBotonNext);
         }
 
-        static void Poner(RectTransform rt, Sprite sp, Rect cr, float s)
+        // La posicion y el tamano NO dependen del recorte del sprite del boton: salen de
+        // los valores fijos de arriba, asi los botones quedan iguales en todos los niveles.
+        void Poner(RectTransform rt, Sprite sp, Rect cr, float s, Vector2 centro)
         {
-            if (rt == null || sp == null) return;
-            Rect r = sp.rect;
-            rt.anchoredPosition = (r.center - cr.center) * s;
-            rt.sizeDelta = r.size * s;
+            if (rt == null || sp == null || sp.rect.width <= 0f) return;
+            float alto = anchoBotonesCartel * sp.rect.height / sp.rect.width;
+            rt.anchoredPosition = (centro - cr.center) * s;
+            rt.sizeDelta = new Vector2(anchoBotonesCartel, alto) * s;
         }
 
         bool HaySiguiente => m_Juego != null && !string.IsNullOrEmpty(m_Juego.SiguienteNivel);

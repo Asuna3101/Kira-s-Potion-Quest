@@ -325,18 +325,23 @@ MonoBehaviour:
   - nombre: Nivel 1
     escena: Level01
     vistaPrevia: {fileID: 21300000, guid: 4f3f74b06d4f1cdbd166d6e143bd28f4, type: 3}
+    textoImagen: {fileID: 21300000, guid: a17c3e9d5b2f4806b1d94e07c8a35f21, type: 3}
   - nombre: Nivel 2
     escena: Level02
     vistaPrevia: {fileID: 21300000, guid: 0ebe020688ec8a9e05afd64d4f005c64, type: 3}
+    textoImagen: {fileID: 21300000, guid: b28d4f0e6c3a5917c2ea5f18d9b46a32, type: 3}
   - nombre: Nivel 3
     escena: Level03
     vistaPrevia: {fileID: 21300000, guid: 6ad13f0e92c7b45d8e210473fa9c58b1, type: 3}
+    textoImagen: {fileID: 21300000, guid: c39e501f7d4b6a28d3fb6a29eac57b43, type: 3}
   - nombre: Nivel 4
     escena: Level04
     vistaPrevia: {fileID: 21300000, guid: 8c4f20de71ab35906d37e1948bc02f7a, type: 3}
+    textoImagen: {fileID: 21300000, guid: d4af612a8e5c7b39e40c7b3afbd68c54, type: 3}
   - nombre: Nivel 5
     escena: Level05
     vistaPrevia: {fileID: 21300000, guid: b19e7c35408df2641ae93057d8c16e2b, type: 3}
+    textoImagen: {fileID: 21300000, guid: e5b0723b9f6d8c4af51d8c4b0ce79d65, type: 3}
   bloquearNiveles: 1
   spriteCandado: {fileID: 0}
   desbloquearTodoParaPruebas: 0
