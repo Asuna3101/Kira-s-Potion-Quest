@@ -182,10 +182,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.5
-    y: -0.5
-    width: 2
-    height: 2
+    x: -0.93533957
+    y: -1.7886021
+    width: 3.1232207
+    height: 4.2084756
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
@@ -613,13 +613,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d72ae9c1b5f4e06a8c91d3b27e5f0a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  libroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
+  libroCerrado: {fileID: 21300000, guid: 73f9aad85e297ef43b29a9507014991f, type: 3}
   libroAbierto: {fileID: -234898234377868160, guid: 650e4a07749876f46859fdf6808cb52b, type: 3}
   libroLetras: {fileID: -234898234377868160, guid: 650e4a07749876f46859fdf6808cb52b, type: 3}
   soloImagenCompleta: 1
   entradaCartel: 0.35
   botonMenu: {fileID: 21300000, guid: 3f6c57b9f0b330546894a26cd7387947, type: 3}
   botonNext: {fileID: 21300000, guid: 6be74e1460dd74c488c9e635281de3a0, type: 3}
+  posicionBotonMenu: {x: 806, y: 604.5}
+  posicionBotonNext: {x: 1481, y: 607.5}
+  anchoBotonesCartel: 496
   cartelDerrota: {fileID: 2932036982813213105, guid: 3cbf019ad8dbecb4ba97d537edd4c21d, type: 3}
   pergaminoCerrado: {fileID: -2926040966945750165, guid: ab506e772534ab341b774c452e37602b, type: 3}
   escalaVictoria: 0.65
@@ -628,6 +631,10 @@ MonoBehaviour:
   pausaPergamino: 0.15
   aperturaPergamino: 0.4
   altoPergaminoCerrado: 0.85
+  entradaLibroWin: 0.25
+  pausaLibroWin: 0.25
+  aperturaLibroWin: 0.4
+  altoLibroCerradoWin: 0.85
   anchoLibro: 1000
   posicion: {x: 0, y: 0}
   entrada: 0.3
@@ -4372,7 +4379,7 @@ Transform:
   m_GameObject: {fileID: 2140105750}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.66, y: -0.69, z: 0}
+  m_LocalPosition: {x: -5.03, y: -0.49, z: 0}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 1
   m_Children: []

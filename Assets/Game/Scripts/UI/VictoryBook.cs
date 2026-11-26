@@ -83,6 +83,22 @@ namespace Chocoflan.KiraPotionQuest
 
         bool ModoCartel => soloImagenCompleta && libroAbierto != null;
 
+        [Header("Victoria: libro cerrado -> abierto (segundos)")]
+        [Tooltip("El libro CERRADO (campo 'Libro Cerrado', sprite 'Libro') aparece primero. " +
+                 "Despues se abre y deja ver el cartel de WIN. Sin 'Libro Cerrado' el cartel entra directo.")]
+        public float entradaLibroWin = 0.25f;
+
+        [Tooltip("Cuanto se queda cerrado antes de abrirse.")]
+        public float pausaLibroWin = 0.25f;
+
+        [Tooltip("Lo que tarda en abrirse.")]
+        public float aperturaLibroWin = 0.4f;
+
+        [Tooltip("Alto del libro cerrado respecto al alto del cartel de WIN.")]
+        [Range(0.3f, 1.2f)] public float altoLibroCerradoWin = 0.85f;
+
+        bool LibroCerradoWin => ModoCartel && libroCerrado != null;
+
         [Header("Tamano")]
         [Tooltip("Ancho del libro abierto en pixeles de canvas. Lo demas se calcula a partir de este.")]
         public float anchoLibro = 1400f;
@@ -104,7 +120,9 @@ namespace Chocoflan.KiraPotionQuest
         public float aparicionLetras = 0.40f;
 
         /// <summary>Lo que dura la animacion entera, para que el nivel no avance antes.</summary>
-        public float DuracionTotal => ModoCartel ? entradaCartel : entrada + pausaCerrado + apertura + aparicionLetras;
+        public float DuracionTotal => ModoCartel ? DuracionCartel : entrada + pausaCerrado + apertura + aparicionLetras;
+
+        float DuracionCartel => LibroCerradoWin ? entradaLibroWin + pausaLibroWin + aperturaLibroWin : entradaCartel;
 
         [Header("Pie")]
         [Tooltip("Texto pequeno bajo el libro. Vacio = no se muestra.")]
@@ -141,6 +159,9 @@ namespace Chocoflan.KiraPotionQuest
         GameManager m_Juego;
         HudController m_Hud;
         bool m_ClickSuelto;
+
+        RectTransform m_WinCerrado;
+        CanvasGroup m_WinCerradoGrupo;
 
         RectTransform m_Derrota;
         CanvasGroup m_DerrotaGrupo;
@@ -220,6 +241,22 @@ namespace Chocoflan.KiraPotionQuest
 
                 m_BtnMenu = CrearBoton(m_Raiz, "Boton_Menu", botonMenu);
                 m_BtnNext = CrearBoton(m_Raiz, "Boton_Next", botonNext);
+
+                // El libro CERRADO va encima del cartel: sale primero y luego se abre.
+                if (libroCerrado != null)
+                {
+                    var wc = NuevoUI(canvas, "Libro_Cerrado_Victoria");
+                    m_WinCerrado = wc.GetComponent<RectTransform>();
+                    AjustarCentrado(m_WinCerrado, libroCerrado, altoCanvas * escalaVictoria * altoLibroCerradoWin);
+                    var wimg = wc.AddComponent<Image>();
+                    wimg.sprite = libroCerrado;
+                    wimg.preserveAspect = true;
+                    wimg.raycastTarget = false;
+                    m_WinCerradoGrupo = wc.AddComponent<CanvasGroup>();
+                    m_WinCerradoGrupo.interactable = false;
+                    m_WinCerradoGrupo.blocksRaycasts = false;
+                    wc.SetActive(false);
+                }
 
                 cartelRaiz.SetActive(false);
                 return;
@@ -309,7 +346,7 @@ namespace Chocoflan.KiraPotionQuest
 
         void ManejarBotones()
         {
-            if (!ModoCartel || m_T < entradaCartel) return;
+            if (!ModoCartel || m_T < DuracionCartel) return;
 
             var mouse = Mouse.current;
             if (mouse == null) return;
@@ -353,6 +390,7 @@ namespace Chocoflan.KiraPotionQuest
             if (m_BtnNext != null) m_BtnNext.localScale = Vector3.one;
             m_T = 0f;
             m_Raiz.gameObject.SetActive(true);
+            if (m_WinCerrado != null) m_WinCerrado.gameObject.SetActive(true);
             Aplicar();
         }
 
@@ -360,6 +398,7 @@ namespace Chocoflan.KiraPotionQuest
         {
             m_T = -1f;
             if (m_Raiz != null) m_Raiz.gameObject.SetActive(false);
+            if (m_WinCerrado != null) m_WinCerrado.gameObject.SetActive(false);
             OcultarDerrota();
         }
 
@@ -440,6 +479,26 @@ namespace Chocoflan.KiraPotionQuest
         void Aplicar()
         {
             float t = m_T;
+
+            if (ModoCartel && m_WinCerrado != null)
+            {
+                // 1) el libro cerrado aparece y se queda un momento, 2) se abre y deja ver el cartel.
+                float e0 = entradaLibroWin <= 0f ? 1f : Mathf.Clamp01(t / entradaLibroWin);
+                float u0 = e0 - 1f;
+                float escC = Mathf.LerpUnclamped(0.6f, 1f, 1f + 2.70158f * u0 * u0 * u0 + 1.70158f * u0 * u0);
+
+                float inicio = entradaLibroWin + pausaLibroWin;
+                float a0 = aperturaLibroWin <= 0f ? (t >= inicio ? 1f : 0f) : Mathf.Clamp01((t - inicio) / aperturaLibroWin);
+                float sa = a0 * a0 * (3f - 2f * a0);
+
+                if (m_WinCerradoGrupo != null) m_WinCerradoGrupo.alpha = e0 * (1f - sa);
+                m_WinCerrado.localScale = new Vector3(escC * (1f - 0.35f * sa), escC, 1f);
+
+                if (m_LibroGrupo != null) m_LibroGrupo.alpha = sa;
+                if (m_Raiz != null)
+                    m_Raiz.localScale = new Vector3(Mathf.Lerp(0.35f, 1f, sa), Mathf.Lerp(0.92f, 1f, sa), 1f);
+                return;
+            }
 
             if (ModoCartel)
             {
