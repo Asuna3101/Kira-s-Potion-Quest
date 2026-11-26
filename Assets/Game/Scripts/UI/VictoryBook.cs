@@ -328,18 +328,23 @@ namespace Chocoflan.KiraPotionQuest
             Rect rr = m_Raiz.rect;
             if (cr.width <= 0f || cr.height <= 0f) return;
             float s = Mathf.Min(rr.width / cr.width, rr.height / cr.height);
-            Poner(m_BtnMenu, botonMenu, cr, s, posicionBotonMenu);
-            Poner(m_BtnNext, botonNext, cr, s, posicionBotonNext);
+
+            // Las posiciones estan medidas en el PNG original (3840 de ancho), pero Unity
+            // puede importarlo mas chico (Max Size 2048): el sprite.rect viene en esos pixeles
+            // reducidos. 'f' pasa de pixeles del PNG original a pixeles del sprite importado.
+            float f = libroAbierto.texture != null ? libroAbierto.texture.width / 3840f : 1f;
+            Poner(m_BtnMenu, botonMenu, cr, s, f, posicionBotonMenu);
+            Poner(m_BtnNext, botonNext, cr, s, f, posicionBotonNext);
         }
 
         // La posicion y el tamano NO dependen del recorte del sprite del boton: salen de
         // los valores fijos de arriba, asi los botones quedan iguales en todos los niveles.
-        void Poner(RectTransform rt, Sprite sp, Rect cr, float s, Vector2 centro)
+        void Poner(RectTransform rt, Sprite sp, Rect cr, float s, float f, Vector2 centro)
         {
             if (rt == null || sp == null || sp.rect.width <= 0f) return;
             float alto = anchoBotonesCartel * sp.rect.height / sp.rect.width;
-            rt.anchoredPosition = (centro - cr.center) * s;
-            rt.sizeDelta = new Vector2(anchoBotonesCartel, alto) * s;
+            rt.anchoredPosition = (centro * f - cr.center) * s;
+            rt.sizeDelta = new Vector2(anchoBotonesCartel, alto) * (f * s);
         }
 
         bool HaySiguiente => m_Juego != null && !string.IsNullOrEmpty(m_Juego.SiguienteNivel);
