@@ -1,10 +1,25 @@
 fileFormatVersion: 2
-guid: 697990156b7f5744ab82c342fb7e2610
+guid: dc9f2061d3241f543b4f6edd5e23185e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -994983170010146492
-    second: Guia_libro2_0
+      213: 3446899826229043174
+    second: IMG_4574_0
+  - first:
+      213: -2043092812199727894
+    second: IMG_4574_1
+  - first:
+      213: 8445831298547937130
+    second: IMG_4574_2
+  - first:
+      213: 2114800709266103030
+    second: IMG_4574_3
+  - first:
+      213: -3030260117602863575
+    second: IMG_4574_4
+  - first:
+      213: -5829262578365623791
+    second: IMG_4574_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 240
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,7 +128,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Guia_libro2_0
+      name: IMG_4574_0
       rect:
         serializedVersion: 2
         x: 245
@@ -128,8 +143,118 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4499d0a141c1132f0800000000000000
-      internalID: -994983170010146492
+      spriteID: 6efdcb62129d5df20800000000000000
+      internalID: 3446899826229043174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4574_1
+      rect:
+        serializedVersion: 2
+        x: 3808
+        y: 575
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aec6ead79e975a3e0800000000000000
+      internalID: -2043092812199727894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4574_2
+      rect:
+        serializedVersion: 2
+        x: 3812
+        y: 595
+        width: 28
+        height: 174
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6f63de61de953570800000000000000
+      internalID: 8445831298547937130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4574_3
+      rect:
+        serializedVersion: 2
+        x: 3815
+        y: 589
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fadc865a08495d10800000000000000
+      internalID: 2114800709266103030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4574_4
+      rect:
+        serializedVersion: 2
+        x: 3785
+        y: 428
+        width: 32
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9267f316a7a52f5d0800000000000000
+      internalID: -3030260117602863575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4574_5
+      rect:
+        serializedVersion: 2
+        x: 3809
+        y: 569
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1121a0ad19c4a1fa0800000000000000
+      internalID: -5829262578365623791
       vertices: []
       indices: 
       edges: []
@@ -148,7 +273,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Guia_libro2_0: -994983170010146492
+      IMG_4574_0: 3446899826229043174
+      IMG_4574_1: -2043092812199727894
+      IMG_4574_2: 8445831298547937130
+      IMG_4574_3: 2114800709266103030
+      IMG_4574_4: -3030260117602863575
+      IMG_4574_5: -5829262578365623791
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

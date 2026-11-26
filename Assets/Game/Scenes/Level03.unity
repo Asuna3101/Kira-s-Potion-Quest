@@ -833,7 +833,7 @@ MonoBehaviour:
   spriteBotonMenu: {fileID: 21300000, guid: 3f6c57b9f0b330546894a26cd7387947, type: 3}
   escenaDelMenu: LevelSelect
   spriteBotonAyuda: {fileID: 21300000, guid: 46c31c5f350614d13aa0ab7e1715ef6b, type: 3}
-  spriteGuia: {fileID: -994983170010146492, guid: 697990156b7f5744ab82c342fb7e2610, type: 3}
+  spriteGuia: {fileID: 3446899826229043174, guid: dc9f2061d3241f543b4f6edd5e23185e, type: 3}
   alturaGuia: 170
   spriteLibroCerrado: {fileID: 21300000, guid: 25ad6bec390147e42830807f326c5ab1, type: 3}
   entradaLibroCerrado: 0.25
@@ -1778,10 +1778,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.93533957
-    y: -1.6468546
-    width: 3.1232207
-    height: 3.748373
+    x: -0.6322917
+    y: -0.84166664
+    width: 2
+    height: 2
   near clip plane: 0.3
   far clip plane: 100
   field of view: 34
